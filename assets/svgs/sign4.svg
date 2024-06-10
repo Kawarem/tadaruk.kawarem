@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg height="48px" version="1.1" viewBox="0 0 48 48" width="48px" xmlns="http://www.w3.org/2000/svg">
+    <g id="Group">
+        <path d="M4.00001 26L4.00001 22L44 22L44 26L4.00001 26Z" fill="#FFFFFF"
+            fill-rule="evenodd" id="Rectangle-5" stroke="none" transform="rotate(45 24 24)" />
+        <path d="M4.00005 26L4.00005 22L44 22L44 26L4.00005 26Z" fill="#FFFFFF"
+            fill-rule="evenodd" id="Rectangle-6" stroke="none" transform="rotate(135 24 24)" />
+    </g>
+</svg>
