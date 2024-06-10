@@ -8,8 +8,11 @@ import 'package:tadarok/app_bloc/app_bloc.dart';
 import 'package:tadarok/modules/home_screen/home_screen.dart';
 import 'package:tadarok/theme/bloc/theme_bloc.dart';
 
+import 'helpers/my_bloc_observer.dart';
+
 void main() async {
   await ScreenUtil.ensureScreenSize();
+  Bloc.observer = MyBlocObserver();
   runApp(const MyApp());
 }
 
