@@ -4,7 +4,7 @@ part of 'app_bloc.dart';
 sealed class AppEvent {}
 
 class ChangeNotificationsNumberEvent extends AppEvent {
-  final int notificationsNumber;
+  final double notificationsNumber;
 
   ChangeNotificationsNumberEvent({required this.notificationsNumber});
 }
@@ -19,4 +19,16 @@ class ChangeNotificationsEndTimeEvent extends AppEvent {
   final TimeOfDay notificationEndTime;
 
   ChangeNotificationsEndTimeEvent({required this.notificationEndTime});
+}
+
+class ChangeMistakeRepetitionEvent extends AppEvent {
+  final double mistakeRepetition;
+
+  ChangeMistakeRepetitionEvent({required this.mistakeRepetition});
+}
+
+class ChangeMistakeKindEvent extends AppEvent {
+  final int mistakeKind;
+
+  ChangeMistakeKindEvent({required this.mistakeKind});
 }

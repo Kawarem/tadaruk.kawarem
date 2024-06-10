@@ -8,29 +8,17 @@ class AppBloc extends Bloc<AppEvent, AppState> {
   static AppBloc get(context) => BlocProvider.of(context);
 
   int notificationsNumber = 20;
-
   TimeOfDay notificationStartTime = const TimeOfDay(hour: 8, minute: 0);
   TimeOfDay notificationEndTime = const TimeOfDay(hour: 20, minute: 0);
-
-  String convertTimeToString({required int hour, required int minute}) {
-    return '${(hour == 0) ? '12' : (hour > 12) ? hour - 12 : hour}:${minute.toString().padLeft(2, '0')} ${(hour > 11) ? 'م' : 'ص'}';
-  }
-
   String timeBetweenEachNotifications = '36';
-
-  String calculateTimeBetweenEachNotifications() {
-    return (((notificationEndTime.hour - notificationStartTime.hour) * 60 +
-                notificationStartTime.minute -
-                notificationEndTime.minute) /
-            notificationsNumber)
-        .round()
-        .toString();
-  }
+  int mistakeKind = 0;
+  int mistakeRepetition = 1;
+  Color circleColor = const Color(0xffb5e742);
 
   AppBloc() : super(AppInitial()) {
     on<AppEvent>((event, emit) {
       if (event is ChangeNotificationsNumberEvent) {
-        notificationsNumber = event.notificationsNumber;
+        notificationsNumber = event.notificationsNumber.toInt();
         timeBetweenEachNotifications = calculateTimeBetweenEachNotifications();
         emit(ChangeNotificationsNumberState());
       } else if (event is ChangeNotificationsStartTimeEvent) {
@@ -41,7 +29,42 @@ class AppBloc extends Bloc<AppEvent, AppState> {
         notificationEndTime = event.notificationEndTime;
         timeBetweenEachNotifications = calculateTimeBetweenEachNotifications();
         emit(ChangeNotificationsTimeState());
+      } else if (event is ChangeMistakeRepetitionEvent) {
+        mistakeRepetition = event.mistakeRepetition.toInt();
+        circleColor = changeCircleColor()!;
+        emit(ChangeMistakeRepetitionState());
+        print(circleColor.toString());
+      } else if (event is ChangeMistakeKindEvent) {
+        mistakeKind = event.mistakeKind;
+        emit(ChangeMistakeKindState());
       }
     });
+  }
+
+  String convertTimeToString({required int hour, required int minute}) {
+    return '${(hour == 0) ? '12' : (hour > 12) ? hour - 12 : hour}:${minute.toString().padLeft(2, '0')} ${(hour > 11) ? 'م' : 'ص'}';
+  }
+
+  String calculateTimeBetweenEachNotifications() {
+    return (((notificationEndTime.hour - notificationStartTime.hour) * 60 +
+                notificationStartTime.minute -
+                notificationEndTime.minute) /
+            notificationsNumber)
+        .round()
+        .toString();
+  }
+
+  Color? changeCircleColor() {
+    switch (mistakeRepetition) {
+      case 1:
+        return const Color(0xffb5e742);
+      case 2:
+        return const Color(0xfffae800);
+      case 3:
+        return const Color(0xfffa8e00);
+      case 4:
+        return const Color(0xfffc4850);
+    }
+    return null;
   }
 }

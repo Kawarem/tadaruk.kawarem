@@ -6,15 +6,13 @@ import 'package:tadarok/modules/themes_screen/themes_screen.dart';
 import '../../app_bloc/app_bloc.dart';
 
 class SettingsScreen extends StatelessWidget {
-  SettingsScreen({super.key});
-
-  String? timetest;
+  const SettingsScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<AppBloc, AppState>(
       builder: (context, state) {
-        var bloc = AppBloc.get(context);
+        var appBloc = AppBloc.get(context);
 
         return Scaffold(
           appBar: AppBar(
@@ -88,17 +86,17 @@ class SettingsScreen extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Text(
-                            bloc.notificationsNumber.toString(),
+                            appBloc.notificationsNumber.toString(),
                             style: Theme.of(context).textTheme.displayLarge,
                           ),
                         ],
                       ),
                       Slider(
-                        value: bloc.notificationsNumber.toDouble(),
+                        value: appBloc.notificationsNumber.toDouble(),
                         onChanged: (value) {
                           BlocProvider.of<AppBloc>(context).add(
                               ChangeNotificationsNumberEvent(
-                                  notificationsNumber: value.toInt()));
+                                  notificationsNumber: value));
                         },
                         min: 1,
                         max: 100,
@@ -137,9 +135,9 @@ class SettingsScreen extends StatelessWidget {
                                     showTimePicker(
                                             context: context,
                                             initialTime:
-                                                bloc.notificationStartTime)
+                                                appBloc.notificationStartTime)
                                         .then((value) {
-                                      bloc.add(
+                                      appBloc.add(
                                           ChangeNotificationsStartTimeEvent(
                                               notificationStartTime: value!));
                                     });
@@ -154,10 +152,10 @@ class SettingsScreen extends StatelessWidget {
                                               Colors.white.withOpacity(0.12)),
                                       child: Center(
                                         child: Text(
-                                            bloc.convertTimeToString(
-                                                hour: bloc
+                                            appBloc.convertTimeToString(
+                                                hour: appBloc
                                                     .notificationStartTime.hour,
-                                                minute: bloc
+                                                minute: appBloc
                                                     .notificationStartTime
                                                     .minute),
                                             style: Theme.of(context)
@@ -180,10 +178,11 @@ class SettingsScreen extends StatelessWidget {
                                   onTap: () {
                                     showTimePicker(
                                       context: context,
-                                      initialTime: bloc.notificationEndTime,
+                                      initialTime: appBloc.notificationEndTime,
                                     ).then((value) {
-                                      bloc.add(ChangeNotificationsEndTimeEvent(
-                                          notificationEndTime: value!));
+                                      appBloc.add(
+                                          ChangeNotificationsEndTimeEvent(
+                                              notificationEndTime: value!));
                                     });
                                   },
                                   child: Container(
@@ -196,10 +195,11 @@ class SettingsScreen extends StatelessWidget {
                                               Colors.white.withOpacity(0.12)),
                                       child: Center(
                                         child: Text(
-                                            bloc.convertTimeToString(
-                                                hour: bloc
+                                            appBloc.convertTimeToString(
+                                                hour: appBloc
                                                     .notificationEndTime.hour,
-                                                minute: bloc.notificationEndTime
+                                                minute: appBloc
+                                                    .notificationEndTime
                                                     .minute),
                                             style: Theme.of(context)
                                                 .textTheme
@@ -222,7 +222,7 @@ class SettingsScreen extends StatelessWidget {
                         ),
                         Center(
                           child: Text(
-                              'سيتم عرض إشعار كل ${bloc.timeBetweenEachNotifications} دقيقة تقريباً',
+                              'سيتم عرض إشعار كل ${appBloc.timeBetweenEachNotifications} دقيقة تقريباً',
                               style: Theme.of(context).textTheme.displaySmall),
                         ),
                       ],
