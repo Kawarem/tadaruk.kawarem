@@ -14,6 +14,9 @@ class AppBloc extends Bloc<AppEvent, AppState> {
   int mistakeKind = 0;
   int mistakeRepetition = 1;
   Color circleColor = const Color(0xffb5e742);
+  bool validatorInAddMistakeScreen = false;
+  int surahNumber = 0;
+  int displayTypeInHomeScreen = 0;
 
   AppBloc() : super(AppInitial()) {
     on<AppEvent>((event, emit) {
@@ -37,6 +40,15 @@ class AppBloc extends Bloc<AppEvent, AppState> {
       } else if (event is ChangeMistakeKindEvent) {
         mistakeKind = event.mistakeKind;
         emit(ChangeMistakeKindState());
+      } else if (event is ValidateTextFormFieldEvent) {
+        emit(ValidateTextFormFieldState(validator: event.validator));
+      } else if (event is ChangeSurahInAddMistakeScreen) {
+        surahNumber = event.surahNumber;
+        emit(ChangeSurahInAddMistakeScreenState(
+            versesNumber: event.surahNumber));
+      } else if (event is ChangeDisplayTypeInHomeScreenEvent) {
+        displayTypeInHomeScreen = event.displayTypeInHomeScreen;
+        emit(ChangeDisplayTypeInHomeScreenState());
       }
     });
   }

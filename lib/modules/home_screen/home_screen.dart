@@ -37,7 +37,7 @@ class HomeScreen extends StatelessWidget {
                   Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => SettingsScreen()));
+                          builder: (context) => const SettingsScreen()));
                 },
                 icon: const Icon(Icons.settings))
           ],
@@ -60,7 +60,7 @@ class HomeScreen extends StatelessWidget {
                     Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => AddMistakeScreen()));
+                            builder: (context) => const AddMistakeScreen()));
                   },
                   child: Text(
                     'إضافة خطأ',

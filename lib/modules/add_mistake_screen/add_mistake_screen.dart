@@ -5,8 +5,18 @@ import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../app_bloc/app_bloc.dart';
 
-class AddMistakeScreen extends StatelessWidget {
+class AddMistakeScreen extends StatefulWidget {
   const AddMistakeScreen({super.key});
+
+  @override
+  State<AddMistakeScreen> createState() => _AddMistakeScreenState();
+}
+
+class _AddMistakeScreenState extends State<AddMistakeScreen> {
+  final _mistakeController = TextEditingController();
+  final _correctionController = TextEditingController();
+  final formKey = GlobalKey<FormState>();
+  final _listWheelScrollController = FixedExtentScrollController();
 
   @override
   Widget build(BuildContext context) {
@@ -76,13 +86,15 @@ class AddMistakeScreen extends StatelessWidget {
                                     ).createShader(bounds);
                                   },
                                   child: ListWheelScrollView.useDelegate(
+                                      controller: _listWheelScrollController,
                                       onSelectedItemChanged: (index) {},
                                       itemExtent: 18.h,
                                       perspective: 0.0001,
                                       physics: const FixedExtentScrollPhysics(),
                                       childDelegate:
                                           ListWheelChildBuilderDelegate(
-                                              childCount: 100,
+                                              childCount: versesNumber[
+                                                  appBloc.surahNumber],
                                               builder: (BuildContext context,
                                                   int index) {
                                                 return Text(
@@ -184,7 +196,22 @@ class AddMistakeScreen extends StatelessWidget {
                                     ).createShader(bounds);
                                   },
                                   child: ListWheelScrollView.useDelegate(
-                                      onSelectedItemChanged: (index) {},
+                                      onSelectedItemChanged: (index) async {
+                                        if (_listWheelScrollController
+                                                    .selectedItem +
+                                                1 >
+                                            versesNumber[index]) {
+                                          await _listWheelScrollController
+                                              .animateToItem(
+                                                  versesNumber[index] - 1,
+                                                  duration: const Duration(
+                                                      milliseconds: 500),
+                                                  curve: Curves.easeInOut);
+                                        }
+                                        appBloc.add(
+                                            ChangeSurahInAddMistakeScreen(
+                                                surahNumber: index));
+                                      },
                                       itemExtent: 18.h,
                                       perspective: 0.0001,
                                       physics: const FixedExtentScrollPhysics(),
@@ -413,26 +440,56 @@ class AddMistakeScreen extends StatelessWidget {
                   SizedBox(
                     height: 16.h,
                   ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16.0).r,
-                    child: TextFormField(
-                        keyboardType: TextInputType.text,
-                        decoration: const InputDecoration(
-                          labelText: 'الخطأ',
-                          prefixIcon: Icon(Icons.bookmark_outline_rounded),
-                        )),
-                  ),
-                  SizedBox(
-                    height: 16.h,
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16.0).r,
-                    child: TextFormField(
-                        keyboardType: TextInputType.text,
-                        decoration: const InputDecoration(
-                          labelText: 'التصحيح',
-                          prefixIcon: Icon(Icons.check_circle_outline_rounded),
-                        )),
+                  Form(
+                    key: formKey,
+                    // autovalidateMode: (state is ValidateTextFormFieldState)
+                    //     ? (state.validator)
+                    //         ? AutovalidateMode.always
+                    //         : AutovalidateMode.disabled
+                    //     : AutovalidateMode.disabled,
+                    child: Column(
+                      children: [
+                        Padding(
+                          padding:
+                              const EdgeInsets.symmetric(horizontal: 16.0).r,
+                          child: TextFormField(
+                              controller: _mistakeController,
+                              keyboardType: TextInputType.text,
+                              validator: (value) {
+                                if (value!.isEmpty) {
+                                  return 'يجب ملأ هذا الحقل';
+                                }
+                                return null;
+                              },
+                              decoration: const InputDecoration(
+                                labelText: 'الخطأ',
+                                prefixIcon:
+                                    Icon(Icons.bookmark_outline_rounded),
+                              )),
+                        ),
+                        SizedBox(
+                          height: 16.h,
+                        ),
+                        Padding(
+                          padding:
+                              const EdgeInsets.symmetric(horizontal: 16.0).r,
+                          child: TextFormField(
+                              controller: _correctionController,
+                              keyboardType: TextInputType.text,
+                              validator: (value) {
+                                if (value!.isEmpty) {
+                                  return 'يجب ملأ هذا الحقل';
+                                }
+                                return null;
+                              },
+                              decoration: const InputDecoration(
+                                labelText: 'التصحيح',
+                                prefixIcon:
+                                    Icon(Icons.check_circle_outline_rounded),
+                              )),
+                        ),
+                      ],
+                    ),
                   ),
                   SizedBox(
                     height: 16.h,
@@ -505,7 +562,17 @@ class AddMistakeScreen extends StatelessWidget {
                     padding: const EdgeInsets.only(bottom: 16).r,
                     child: ElevatedButton(
                       onPressed: () {
-                        Navigator.pop(context);
+                        // appBloc
+                        //     .add(ValidateTextFormFieldEvent(validator: true));
+                        // if (_mistakeController.text.isNotEmpty &&
+                        //     _correctionController.text.isNotEmpty) {
+                        //   appBloc.add(
+                        //       ValidateTextFormFieldEvent(validator: false));
+                        //   Navigator.pop(context);
+                        // }
+                        if (formKey.currentState!.validate()) {
+                          Navigator.pop(context);
+                        }
                       },
                       child: Text(
                         'حفظ',
@@ -521,7 +588,15 @@ class AddMistakeScreen extends StatelessWidget {
       },
     );
   }
+
+  @override
+  void dispose() {
+    _mistakeController.dispose();
+    _correctionController.dispose();
+    super.dispose();
+  }
 }
 
 const List<String> surah = ['الفاتحة', 'البقرة', 'آل عمران'];
 const List<String> mistakeKinds = ['نقص', 'إبدال', 'زيادة', 'تشكيل', 'مجمل'];
+const List<int> versesNumber = [7, 286, 200];

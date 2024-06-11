@@ -32,3 +32,21 @@ class ChangeMistakeKindEvent extends AppEvent {
 
   ChangeMistakeKindEvent({required this.mistakeKind});
 }
+
+class ValidateTextFormFieldEvent extends AppEvent {
+  final bool validator;
+
+  ValidateTextFormFieldEvent({required this.validator});
+}
+
+class ChangeSurahInAddMistakeScreen extends AppEvent {
+  final int surahNumber;
+
+  ChangeSurahInAddMistakeScreen({required this.surahNumber});
+}
+
+class ChangeDisplayTypeInHomeScreenEvent extends AppEvent {
+  final int displayTypeInHomeScreen;
+
+  ChangeDisplayTypeInHomeScreenEvent({required this.displayTypeInHomeScreen});
+}
