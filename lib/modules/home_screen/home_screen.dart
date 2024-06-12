@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:tadarok/constants/components.dart';
+import 'package:tadarok/modules/home_screen/scroll_to_hide_widget.dart';
 
 import '../add_mistake_screen/add_mistake_screen.dart';
 import '../settings_screen/settings_screen.dart';
 import 'expandable_app_bar/expandable_app_bar.dart';
-import 'expansion_tile.dart';
+
+ScrollController scrollController = ScrollController();
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -43,8 +47,8 @@ class HomeScreen extends StatelessWidget {
           ],
           sliverList: SliverList(
               delegate: SliverChildBuilderDelegate((context, index) {
-            return const ExpansionTiles();
-          }, childCount: 2)
+            return expansionTiles(context);
+          }, childCount: 5)
               //     SliverChildListDelegate([
               //   ExpansionTiles(),
               //   ExpansionTiles(),
@@ -53,19 +57,23 @@ class HomeScreen extends StatelessWidget {
         ),
         Align(
             alignment: Alignment.bottomCenter,
-            child: SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                  onPressed: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const AddMistakeScreen()));
-                  },
-                  child: Text(
-                    'إضافة خطأ',
-                    style: Theme.of(context).textTheme.displayLarge,
-                  )),
+            child: ScrollToHideWidget(
+              controller: scrollController,
+              height: 43.h,
+              child: SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                    onPressed: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const AddMistakeScreen()));
+                    },
+                    child: Text(
+                      'إضافة خطأ',
+                      style: Theme.of(context).textTheme.displayLarge,
+                    )),
+              ),
             ))
       ]),
       // floatingActionButton: FloatingActionButton(

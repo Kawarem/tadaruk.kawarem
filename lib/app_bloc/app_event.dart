@@ -50,3 +50,5 @@ class ChangeDisplayTypeInHomeScreenEvent extends AppEvent {
 
   ChangeDisplayTypeInHomeScreenEvent({required this.displayTypeInHomeScreen});
 }
+
+class AppBarCollapsedEvent extends AppEvent {}

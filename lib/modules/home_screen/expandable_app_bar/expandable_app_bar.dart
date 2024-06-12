@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:tadarok/app_bloc/app_bloc.dart';
 import 'package:tadarok/constants/components.dart';
 import 'package:tadarok/modules/home_screen/expandable_app_bar/fade_animation.dart';
+import 'package:tadarok/modules/home_screen/home_screen.dart';
+
+final sliverAppBarKey = GlobalKey();
 
 class ExpandableAppBar extends StatelessWidget {
   final double? expandedHeight; // max height
@@ -43,6 +48,7 @@ class ExpandableAppBar extends StatelessWidget {
         handle: NestedScrollView.sliverOverlapAbsorberHandleFor(context),
         sliver: SliverAppBar(
           // backgroundColor: Color(0xff12a36c),
+          key: sliverAppBarKey,
           pinned: true,
           floating: true,
           snap: true,
@@ -119,33 +125,38 @@ class ExpandableAppBar extends StatelessWidget {
                         padding: const EdgeInsets.symmetric(
                                 horizontal: 16.0, vertical: 4)
                             .r,
-                        child: Row(
-                          children: [
-                            Text(
-                              'عرض كل:',
-                              style: Theme.of(context).textTheme.displaySmall,
-                            ),
-                            SizedBox(
-                              width: 8.w,
-                            ),
-                            buttonInHomeScreen(context,
-                                title: 'السور', isSelected: true),
-                            SizedBox(
-                              width: 8.w,
-                            ),
-                            buttonInHomeScreen(context,
-                                title: 'الصفحات', isSelected: false),
-                            SizedBox(
-                              width: 8.w,
-                            ),
-                            buttonInHomeScreen(context,
-                                title: 'الأجزاء', isSelected: false),
-                            SizedBox(
-                              width: 8.w,
-                            ),
-                            buttonInHomeScreen(context,
-                                title: 'الأحزاب', isSelected: false),
-                          ],
+                        child: BlocBuilder<AppBloc, AppState>(
+                          builder: (context, state) {
+                            return Row(
+                              children: [
+                                Text(
+                                  'عرض كل:',
+                                  style:
+                                      Theme.of(context).textTheme.displaySmall,
+                                ),
+                                SizedBox(
+                                  width: 8.w,
+                                ),
+                                buttonInHomeScreen(context,
+                                    title: 'السور', index: 0),
+                                SizedBox(
+                                  width: 8.w,
+                                ),
+                                buttonInHomeScreen(context,
+                                    title: 'الصفحات', index: 1),
+                                SizedBox(
+                                  width: 8.w,
+                                ),
+                                buttonInHomeScreen(context,
+                                    title: 'الأجزاء', index: 2),
+                                SizedBox(
+                                  width: 8.w,
+                                ),
+                                buttonInHomeScreen(context,
+                                    title: 'الأحزاب', index: 3),
+                              ],
+                            );
+                          },
                         ),
                       ),
                     ),
@@ -164,18 +175,33 @@ class ExpandableAppBar extends StatelessWidget {
       // color: widget.sliverBackgroundColor ??
       //     Theme.of(context).scaffoldBackgroundColor,
       child: Builder(builder: (context) {
-        return CustomScrollView(slivers: [
-          SliverOverlapInjector(
-              handle: NestedScrollView.sliverOverlapAbsorberHandleFor(context)),
-          sliverList,
-          // SliverFillRemaining(
-          //     child: Column(
-          //   children: [
-          //     Expanded(child: SizedBox()),
-          //     ElevatedButton(onPressed: () {}, child: Text('data')),
-          //   ],
-          // ))
-        ]);
+        return NotificationListener<ScrollNotification>(
+          onNotification: (notification) {
+            final appBarContext = sliverAppBarKey.currentContext;
+            final appBarState = Scrollable.of(appBarContext!).position;
+            final isCollapsed = appBarState.pixels >
+                (appBarState.maxScrollExtent) - kToolbarHeight;
+            if (isCollapsed !=
+                BlocProvider.of<AppBloc>(context).appBarIsCollapsed) {
+              BlocProvider.of<AppBloc>(context).appBarIsCollapsed = isCollapsed;
+              BlocProvider.of<AppBloc>(context).add(AppBarCollapsedEvent());
+            }
+            return false;
+          },
+          child: CustomScrollView(controller: scrollController, slivers: [
+            SliverOverlapInjector(
+                handle:
+                    NestedScrollView.sliverOverlapAbsorberHandleFor(context)),
+            sliverList,
+            // SliverFillRemaining(
+            //     child: Column(
+            //   children: [
+            //     Expanded(child: SizedBox()),
+            //     ElevatedButton(onPressed: () {}, child: Text('data')),
+            //   ],
+            // ))
+          ]),
+        );
       }),
     );
   }

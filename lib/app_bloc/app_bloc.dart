@@ -17,6 +17,7 @@ class AppBloc extends Bloc<AppEvent, AppState> {
   bool validatorInAddMistakeScreen = false;
   int surahNumber = 0;
   int displayTypeInHomeScreen = 0;
+  bool appBarIsCollapsed = false;
 
   AppBloc() : super(AppInitial()) {
     on<AppEvent>((event, emit) {
@@ -36,7 +37,6 @@ class AppBloc extends Bloc<AppEvent, AppState> {
         mistakeRepetition = event.mistakeRepetition.toInt();
         circleColor = changeCircleColor()!;
         emit(ChangeMistakeRepetitionState());
-        print(circleColor.toString());
       } else if (event is ChangeMistakeKindEvent) {
         mistakeKind = event.mistakeKind;
         emit(ChangeMistakeKindState());
@@ -49,6 +49,9 @@ class AppBloc extends Bloc<AppEvent, AppState> {
       } else if (event is ChangeDisplayTypeInHomeScreenEvent) {
         displayTypeInHomeScreen = event.displayTypeInHomeScreen;
         emit(ChangeDisplayTypeInHomeScreenState());
+      } else if (event is AppBarCollapsedEvent) {
+        emit(AppBarCollapsedState(isCollapsed: appBarIsCollapsed));
+        // }
       }
     });
   }

@@ -26,3 +26,9 @@ class ChangeSurahInAddMistakeScreenState extends AppState {
 }
 
 class ChangeDisplayTypeInHomeScreenState extends AppState {}
+
+class AppBarCollapsedState extends AppState {
+  final bool isCollapsed;
+
+  AppBarCollapsedState({required this.isCollapsed});
+}
