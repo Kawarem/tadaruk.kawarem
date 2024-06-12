@@ -13,7 +13,8 @@ class AppBloc extends Bloc<AppEvent, AppState> {
   String timeBetweenEachNotifications = '36';
   int mistakeKind = 0;
   int mistakeRepetition = 1;
-  Color circleColor = const Color(0xffb5e742);
+  Color circleColor0 = const Color(0xffb5e742);
+  Color circleColor1 = const Color(0xffb5e742);
   bool validatorInAddMistakeScreen = false;
   int surahNumber = 0;
   int displayTypeInHomeScreen = 0;
@@ -35,7 +36,8 @@ class AppBloc extends Bloc<AppEvent, AppState> {
         emit(ChangeNotificationsTimeState());
       } else if (event is ChangeMistakeRepetitionEvent) {
         mistakeRepetition = event.mistakeRepetition.toInt();
-        circleColor = changeCircleColor()!;
+        circleColor0 = circleColor1;
+        circleColor1 = changeCircleColor();
         emit(ChangeMistakeRepetitionState());
       } else if (event is ChangeMistakeKindEvent) {
         mistakeKind = event.mistakeKind;
@@ -82,7 +84,7 @@ class AppBloc extends Bloc<AppEvent, AppState> {
     }
   }
 
-  Color? changeCircleColor() {
+  Color changeCircleColor() {
     switch (mistakeRepetition) {
       case 1:
         return const Color(0xffb5e742);
@@ -93,6 +95,6 @@ class AppBloc extends Bloc<AppEvent, AppState> {
       case 4:
         return const Color(0xfffc4850);
     }
-    return null;
+    return const Color(0xffb5e742);
   }
 }

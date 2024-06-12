@@ -396,16 +396,29 @@ class _AddMistakeScreenState extends State<AddMistakeScreen> {
                                   SizedBox(
                                     width: 4.w,
                                   ),
-                                  Container(
+                                  AnimatedContainer(
                                     width: 43.r,
                                     height: 43.r,
                                     clipBehavior: Clip.antiAliasWithSaveLayer,
                                     decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(90),
-                                      color: appBloc.circleColor,
+                                      borderRadius: BorderRadius.circular(45),
+                                      color: Color.lerp(appBloc.circleColor0,
+                                          appBloc.circleColor1, 1),
                                     ),
-                                    child: SvgPicture.asset(
-                                        'assets/svgs/sign${appBloc.mistakeKind}.svg'),
+                                    duration: Duration(milliseconds: 500),
+                                    child: AnimatedSwitcher(
+                                      duration: Duration(milliseconds: 250),
+                                      transitionBuilder: (child, animation) {
+                                        return ScaleTransition(
+                                          scale: animation,
+                                          child: child,
+                                        );
+                                      },
+                                      child: SvgPicture.asset(
+                                        'assets/svgs/sign${appBloc.mistakeKind}.svg',
+                                        key: ValueKey<int>(appBloc.mistakeKind),
+                                      ),
+                                    ),
                                   ),
                                 ],
                               ),
