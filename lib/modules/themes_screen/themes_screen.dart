@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:get/get.dart';
 import 'package:tadarok/theme/bloc/theme_bloc.dart';
 
 import '../../theme/app_theme.dart';
@@ -16,7 +17,7 @@ class ThemesScreen extends StatelessWidget {
         title: const Text('الثيمات'),
         leading: IconButton(
           onPressed: () {
-            Navigator.pop(context);
+            Get.back();
           },
           icon: const Icon(Icons.arrow_back_ios_rounded),
         ),

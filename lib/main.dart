@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get_navigation/src/root/get_material_app.dart';
 import 'package:tadarok/app_bloc/app_bloc.dart';
 import 'package:tadarok/modules/home_screen/home_screen.dart';
 import 'package:tadarok/theme/bloc/theme_bloc.dart';
@@ -37,7 +38,7 @@ class MyApp extends StatelessWidget {
             child: BlocBuilder<ThemeBloc, ThemeState>(
               builder: (context, state) {
                 if (state is LoadedThemeState) {
-                  return MaterialApp(
+                  return GetMaterialApp(
                     supportedLocales: const [
                       Locale('ar'),
                     ],

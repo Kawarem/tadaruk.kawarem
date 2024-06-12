@@ -80,13 +80,6 @@ class AppBloc extends Bloc<AppEvent, AppState> {
           .round()
           .toString();
     }
-
-    return (((notificationEndTime.hour - notificationStartTime.hour) * 60 +
-                notificationStartTime.minute -
-                notificationEndTime.minute) /
-            notificationsNumber)
-        .round()
-        .toString();
   }
 
   Color? changeCircleColor() {

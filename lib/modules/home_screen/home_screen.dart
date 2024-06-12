@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get.dart';
 import 'package:tadarok/constants/components.dart';
 import 'package:tadarok/modules/home_screen/scroll_to_hide_widget.dart';
 
@@ -38,10 +39,12 @@ class HomeScreen extends StatelessWidget {
           actions: [
             IconButton(
                 onPressed: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const SettingsScreen()));
+                  Get.to(() => const SettingsScreen(),
+                      transition: Transition.leftToRightWithFade);
+                  // Navigator.push(
+                  //     context,
+                  //     MaterialPageRoute(
+                  //         builder: (context) => const SettingsScreen()));
                 },
                 icon: const Icon(Icons.settings))
           ],
@@ -64,10 +67,8 @@ class HomeScreen extends StatelessWidget {
                 width: double.infinity,
                 child: ElevatedButton(
                     onPressed: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const AddMistakeScreen()));
+                      Get.to(() => const AddMistakeScreen(),
+                          transition: Transition.fade);
                     },
                     child: Text(
                       'إضافة خطأ',

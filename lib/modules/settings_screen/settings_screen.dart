@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_bloc/flutter_bloc.dart' as bloc;
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get.dart';
 import 'package:tadarok/modules/themes_screen/themes_screen.dart';
 
 import '../../app_bloc/app_bloc.dart';
@@ -10,7 +11,7 @@ class SettingsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<AppBloc, AppState>(
+    return bloc.BlocBuilder<AppBloc, AppState>(
       builder: (context, state) {
         var appBloc = AppBloc.get(context);
 
@@ -19,7 +20,7 @@ class SettingsScreen extends StatelessWidget {
             title: const Text('الإعدادات'),
             leading: IconButton(
               onPressed: () {
-                Navigator.pop(context);
+                Get.back();
               },
               icon: const Icon(Icons.arrow_back_ios_rounded),
             ),
@@ -35,10 +36,8 @@ class SettingsScreen extends StatelessWidget {
                     children: [
                       InkWell(
                         onTap: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => const ThemesScreen()));
+                          Get.to(() => const ThemesScreen(),
+                              transition: Transition.leftToRightWithFade);
                         },
                         child: Container(
                           padding: const EdgeInsets.all(16).r,
@@ -94,7 +93,7 @@ class SettingsScreen extends StatelessWidget {
                       Slider(
                         value: appBloc.notificationsNumber.toDouble(),
                         onChanged: (value) {
-                          BlocProvider.of<AppBloc>(context).add(
+                          bloc.BlocProvider.of<AppBloc>(context).add(
                               ChangeNotificationsNumberEvent(
                                   notificationsNumber: value));
                         },
