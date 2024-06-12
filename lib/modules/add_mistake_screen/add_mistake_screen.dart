@@ -17,7 +17,31 @@ class _AddMistakeScreenState extends State<AddMistakeScreen> {
   final _mistakeController = TextEditingController();
   final _correctionController = TextEditingController();
   final formKey = GlobalKey<FormState>();
-  final _listWheelScrollController = FixedExtentScrollController();
+  final _listWheelScrollVerseController = FixedExtentScrollController();
+  final _listWheelScrollSurahController = FixedExtentScrollController();
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _listWheelScrollVerseController.jumpToItem(5);
+      _listWheelScrollVerseController.animateToItem(0,
+          duration: const Duration(milliseconds: 1000),
+          curve: Curves.easeInOut);
+      _listWheelScrollSurahController.jumpToItem(3);
+      _listWheelScrollSurahController.animateToItem(0,
+          duration: const Duration(milliseconds: 1000),
+          curve: Curves.easeInOut);
+    });
+  }
+
+  @override
+  void dispose() {
+    _listWheelScrollVerseController.dispose();
+    _mistakeController.dispose();
+    _correctionController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -87,7 +111,8 @@ class _AddMistakeScreenState extends State<AddMistakeScreen> {
                                     ).createShader(bounds);
                                   },
                                   child: ListWheelScrollView.useDelegate(
-                                      controller: _listWheelScrollController,
+                                      controller:
+                                          _listWheelScrollVerseController,
                                       onSelectedItemChanged: (index) {},
                                       itemExtent: 18.h,
                                       perspective: 0.0001,
@@ -197,16 +222,18 @@ class _AddMistakeScreenState extends State<AddMistakeScreen> {
                                     ).createShader(bounds);
                                   },
                                   child: ListWheelScrollView.useDelegate(
+                                      controller:
+                                          _listWheelScrollSurahController,
                                       onSelectedItemChanged: (index) async {
-                                        if (_listWheelScrollController
+                                        if (_listWheelScrollVerseController
                                                     .selectedItem +
                                                 1 >
                                             versesNumber[index]) {
-                                          await _listWheelScrollController
+                                          await _listWheelScrollVerseController
                                               .animateToItem(
                                                   versesNumber[index] - 1,
                                                   duration: const Duration(
-                                                      milliseconds: 500),
+                                                      milliseconds: 1000),
                                                   curve: Curves.easeInOut);
                                         }
                                         appBloc.add(
@@ -405,9 +432,10 @@ class _AddMistakeScreenState extends State<AddMistakeScreen> {
                                       color: Color.lerp(appBloc.circleColor0,
                                           appBloc.circleColor1, 1),
                                     ),
-                                    duration: Duration(milliseconds: 500),
+                                    duration: const Duration(milliseconds: 500),
                                     child: AnimatedSwitcher(
-                                      duration: Duration(milliseconds: 250),
+                                      duration:
+                                          const Duration(milliseconds: 250),
                                       transitionBuilder: (child, animation) {
                                         return ScaleTransition(
                                           scale: animation,
@@ -605,15 +633,8 @@ class _AddMistakeScreenState extends State<AddMistakeScreen> {
       },
     );
   }
-
-  @override
-  void dispose() {
-    _mistakeController.dispose();
-    _correctionController.dispose();
-    super.dispose();
-  }
 }
 
-const List<String> surah = ['الفاتحة', 'البقرة', 'آل عمران'];
+const List<String> surah = ['الفاتحة', 'البقرة', 'آل عمران', 'الناس'];
 const List<String> mistakeKinds = ['نقص', 'إبدال', 'زيادة', 'تشكيل', 'مجمل'];
-const List<int> versesNumber = [7, 286, 200];
+const List<int> versesNumber = [7, 286, 200, 6];

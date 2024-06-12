@@ -53,7 +53,6 @@ class AppBloc extends Bloc<AppEvent, AppState> {
         emit(ChangeDisplayTypeInHomeScreenState());
       } else if (event is AppBarCollapsedEvent) {
         emit(AppBarCollapsedState(isCollapsed: appBarIsCollapsed));
-        // }
       }
     });
   }
