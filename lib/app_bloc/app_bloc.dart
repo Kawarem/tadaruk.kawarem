@@ -61,6 +61,26 @@ class AppBloc extends Bloc<AppEvent, AppState> {
   }
 
   String calculateTimeBetweenEachNotifications() {
+    DateTime endDateTime;
+    DateTime startDateTime = DateTime(
+        2024, 6, 12, notificationStartTime.hour, notificationStartTime.minute);
+    if (notificationStartTime == notificationEndTime) {
+      endDateTime = DateTime(
+          2024, 6, 13, notificationEndTime.hour, notificationEndTime.minute);
+    } else {
+      endDateTime = DateTime(
+          2024, 6, 12, notificationEndTime.hour, notificationEndTime.minute);
+    }
+
+    Duration difference = endDateTime.difference(startDateTime);
+    if (difference.inMinutes > 0) {
+      return (difference.inMinutes / notificationsNumber).round().toString();
+    } else {
+      return ((1440 + difference.inMinutes) / notificationsNumber)
+          .round()
+          .toString();
+    }
+
     return (((notificationEndTime.hour - notificationStartTime.hour) * 60 +
                 notificationStartTime.minute -
                 notificationEndTime.minute) /
