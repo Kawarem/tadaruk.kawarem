@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:tadarok/app_bloc/app_bloc.dart';
 import 'package:tadarok/constants/components.dart';
+import 'package:tadarok/modules/home_screen/animated_gradiant_container.dart';
 import 'package:tadarok/modules/home_screen/expandable_app_bar/fade_animation.dart';
 import 'package:tadarok/modules/home_screen/home_screen.dart';
 
@@ -13,7 +14,8 @@ class ExpandableAppBar extends StatelessWidget {
   final double? toolbarHeight; // min height
   final Widget? expandedWidget; // widget to show when expanded
   final Widget? collapsedWidget; // widget to show when collapsed
-  final BoxDecoration? boxDecoration;
+  // final BoxDecoration? boxDecoration;
+  final List<Color>? colors;
   final Widget? leadingIcon;
   final List<Widget>? actions;
   final SliverList sliverList;
@@ -24,12 +26,13 @@ class ExpandableAppBar extends StatelessWidget {
       this.expandedHeight,
       this.toolbarHeight,
       this.expandedWidget,
-      this.boxDecoration,
+      // this.boxDecoration,
       this.collapsedWidget,
       this.leadingIcon,
       this.actions,
       required this.sliverList,
-      this.sliverBackgroundColor});
+      this.sliverBackgroundColor,
+      this.colors});
 
   late double _expandedHeight;
   late double _toolbarHeight;
@@ -63,13 +66,17 @@ class ExpandableAppBar extends StatelessWidget {
             return Stack(
               children: [
                 // background color, image or gradient
-                FadeAnimation(
-                  animation: animation,
-                  isExpandedWidget: true,
-                  child: Container(
-                    decoration: boxDecoration,
-                  ),
-                ),
+                if (colors != null)
+                  FadeAnimation(
+                      animation: animation,
+                      isExpandedWidget: true,
+                      child: AnimatedGradiantContainer(
+                        colors: colors!,
+                      )
+                      // Container(
+                      //   decoration: boxDecoration,
+                      // ),
+                      ),
                 // center big title
                 if (expandedWidget != null)
                   Center(

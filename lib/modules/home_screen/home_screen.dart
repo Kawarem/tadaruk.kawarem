@@ -29,9 +29,7 @@ class HomeScreen extends StatelessWidget {
             'مساعدك في المراجعة',
             style: Theme.of(context).textTheme.headlineLarge,
           ),
-          boxDecoration: const BoxDecoration(
-              gradient: LinearGradient(
-                  colors: [Color(0xff75BCD1), Color(0xff70C42F)])),
+          colors: const [Color(0xff75BCD1), Color(0xff70C42F)],
           collapsedWidget: Text(
             'تدارُك',
             style: Theme.of(context).appBarTheme.titleTextStyle,
