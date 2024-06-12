@@ -77,41 +77,6 @@ class ExpandableAppBar extends StatelessWidget {
                           animation: animation,
                           isExpandedWidget: true,
                           child: expandedWidget!)),
-                SafeArea(
-                  child: Align(
-                    alignment: Alignment.topCenter,
-                    child: SizedBox(
-                      height: _toolbarHeight,
-                      child: Row(
-                        children: [
-                          // leading icon
-                          if (leadingIcon != null) leadingIcon!,
-                          // collapsed widget
-                          if (collapsedWidget != null)
-                            Padding(
-                              padding: EdgeInsets.only(
-                                  left: leadingIcon != null ? 0 : 20),
-                              child: Row(
-                                children: [
-                                  SizedBox(
-                                    width: 16.r,
-                                  ),
-                                  collapsedWidget!,
-                                ],
-                              ),
-                            ),
-                          if (actions != null)
-                            Expanded(
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.end,
-                                children: actions!.reversed.toList(),
-                              ),
-                            )
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
                 FadeAnimation(
                   animation: animation,
                   isExpandedWidget: true,
@@ -161,7 +126,42 @@ class ExpandableAppBar extends StatelessWidget {
                       ),
                     ),
                   ),
-                )
+                ),
+                SafeArea(
+                  child: Align(
+                    alignment: Alignment.topCenter,
+                    child: SizedBox(
+                      height: _toolbarHeight,
+                      child: Row(
+                        children: [
+                          // leading icon
+                          if (leadingIcon != null) leadingIcon!,
+                          // collapsed widget
+                          if (collapsedWidget != null)
+                            Padding(
+                              padding: EdgeInsets.only(
+                                  left: leadingIcon != null ? 0 : 20),
+                              child: Row(
+                                children: [
+                                  SizedBox(
+                                    width: 16.r,
+                                  ),
+                                  collapsedWidget!,
+                                ],
+                              ),
+                            ),
+                          // if (actions != null)
+                          Expanded(
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: actions!.reversed.toList(),
+                            ),
+                          )
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
               ],
             );
           }),
