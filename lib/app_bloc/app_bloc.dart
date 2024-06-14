@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:tadarok/helpers/app_cash_helper.dart';
 
 part 'app_event.dart';
 part 'app_state.dart';
@@ -21,7 +22,7 @@ class AppBloc extends Bloc<AppEvent, AppState> {
   bool appBarIsCollapsed = false;
 
   AppBloc() : super(AppInitial()) {
-    on<AppEvent>((event, emit) {
+    on<AppEvent>((event, emit) async {
       if (event is ChangeNotificationsNumberEvent) {
         notificationsNumber = event.notificationsNumber.toInt();
         timeBetweenEachNotifications = calculateTimeBetweenEachNotifications();
@@ -29,10 +30,15 @@ class AppBloc extends Bloc<AppEvent, AppState> {
       } else if (event is ChangeNotificationsStartTimeEvent) {
         notificationStartTime = event.notificationStartTime;
         timeBetweenEachNotifications = calculateTimeBetweenEachNotifications();
+        await AppCacheHelper()
+            .cacheNotificationStartTime(notificationStartTime);
         emit(ChangeNotificationsTimeState());
       } else if (event is ChangeNotificationsEndTimeEvent) {
         notificationEndTime = event.notificationEndTime;
         timeBetweenEachNotifications = calculateTimeBetweenEachNotifications();
+        await AppCacheHelper().cacheNotificationEndTime(notificationEndTime);
+
+        await AppCacheHelper().cacheNotificationsNumber(notificationsNumber);
         emit(ChangeNotificationsTimeState());
       } else if (event is ChangeMistakeRepetitionEvent) {
         mistakeRepetition = event.mistakeRepetition.toInt();
@@ -53,6 +59,14 @@ class AppBloc extends Bloc<AppEvent, AppState> {
         emit(ChangeDisplayTypeInHomeScreenState());
       } else if (event is AppBarCollapsedEvent) {
         emit(AppBarCollapsedState(isCollapsed: appBarIsCollapsed));
+      } else if (event is GetSettingsDataFromSharedPreferencesEvent) {
+        notificationsNumber =
+            await AppCacheHelper().getCachedNotificationsNumber();
+        notificationStartTime =
+            await AppCacheHelper().getNotificationStartTime();
+        notificationEndTime = await AppCacheHelper().getNotificationEndTime();
+        timeBetweenEachNotifications = calculateTimeBetweenEachNotifications();
+        emit(GetSettingsDataFromSharedPreferencesState());
       }
     });
   }

@@ -52,3 +52,5 @@ class ChangeDisplayTypeInHomeScreenEvent extends AppEvent {
 }
 
 class AppBarCollapsedEvent extends AppEvent {}
+
+class GetSettingsDataFromSharedPreferencesEvent extends AppEvent {}

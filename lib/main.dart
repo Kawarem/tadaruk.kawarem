@@ -34,7 +34,7 @@ class MyApp extends StatelessWidget {
               BlocProvider(
                 create: (context) => ThemeBloc()..add(GetCurrentThemeEvent()),
               ),
-              BlocProvider(create: (create) => AppBloc())
+              BlocProvider(create: (create) => AppBloc()..add(GetSettingsDataFromSharedPreferencesEvent()),),
             ],
             child: BlocBuilder<ThemeBloc, ThemeState>(
               builder: (context, state) {

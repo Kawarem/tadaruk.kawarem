@@ -93,9 +93,8 @@ class SettingsScreen extends StatelessWidget {
                       Slider(
                         value: appBloc.notificationsNumber.toDouble(),
                         onChanged: (value) {
-                          bloc.BlocProvider.of<AppBloc>(context).add(
-                              ChangeNotificationsNumberEvent(
-                                  notificationsNumber: value));
+                          appBloc.add(ChangeNotificationsNumberEvent(
+                              notificationsNumber: value));
                         },
                         min: 1,
                         max: 100,

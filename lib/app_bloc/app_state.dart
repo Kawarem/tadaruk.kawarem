@@ -32,3 +32,5 @@ class AppBarCollapsedState extends AppState {
 
   AppBarCollapsedState({required this.isCollapsed});
 }
+
+class GetSettingsDataFromSharedPreferencesState extends AppState {}
