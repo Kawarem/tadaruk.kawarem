@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:tadarok/constants/data.dart';
 import 'package:vibration/vibration.dart';
 
 import '../../app_bloc/app_bloc.dart';
@@ -119,7 +120,7 @@ class _AddMistakeScreenState extends State<AddMistakeScreen> {
                                       physics: const FixedExtentScrollPhysics(),
                                       childDelegate:
                                           ListWheelChildBuilderDelegate(
-                                              childCount: versesNumber[
+                                              childCount: quranSurahVerses[
                                                   appBloc.surahNumber],
                                               builder: (BuildContext context,
                                                   int index) {
@@ -228,10 +229,10 @@ class _AddMistakeScreenState extends State<AddMistakeScreen> {
                                         if (_listWheelScrollVerseController
                                                     .selectedItem +
                                                 1 >
-                                            versesNumber[index]) {
+                                            quranSurahVerses[index]) {
                                           await _listWheelScrollVerseController
                                               .animateToItem(
-                                                  versesNumber[index] - 1,
+                                                  quranSurahVerses[index] - 1,
                                                   duration: const Duration(
                                                       milliseconds: 1000),
                                                   curve: Curves.easeInOut);
@@ -245,11 +246,12 @@ class _AddMistakeScreenState extends State<AddMistakeScreen> {
                                       physics: const FixedExtentScrollPhysics(),
                                       childDelegate:
                                           ListWheelChildBuilderDelegate(
-                                              childCount: surah.length,
+                                              childCount:
+                                                  quranSurahNames.length,
                                               builder: (BuildContext context,
                                                   int index) {
                                                 return Text(
-                                                  surah[index],
+                                                  quranSurahNames[index],
                                                   style: Theme.of(context)
                                                       .textTheme
                                                       .displayMedium,
@@ -635,6 +637,6 @@ class _AddMistakeScreenState extends State<AddMistakeScreen> {
   }
 }
 
-const List<String> surah = ['الفاتحة', 'البقرة', 'آل عمران', 'الناس'];
+// const List<String> surah = ['الفاتحة', 'البقرة', 'آل عمران', 'الناس'];
+// const List<int> versesNumber = [7, 286, 200, 6];
 const List<String> mistakeKinds = ['نقص', 'إبدال', 'زيادة', 'تشكيل', 'مجمل'];
-const List<int> versesNumber = [7, 286, 200, 6];
