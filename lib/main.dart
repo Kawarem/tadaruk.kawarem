@@ -6,9 +6,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get_navigation/src/root/get_material_app.dart';
-import 'package:tadarok/app_bloc/app_bloc.dart';
 import 'package:tadarok/modules/home_screen/home_screen.dart';
-import 'package:tadarok/theme/bloc/theme_bloc.dart';
+import 'package:tadarok/state_management/app_bloc/app_bloc.dart';
+import 'package:tadarok/state_management/sql_cubit/sql_cubit.dart';
+import 'package:tadarok/theme/theme_bloc/theme_bloc.dart';
 
 import 'helpers/my_bloc_observer.dart';
 
@@ -32,9 +33,13 @@ class MyApp extends StatelessWidget {
           return MultiBlocProvider(
             providers: [
               BlocProvider(
-                create: (context) => ThemeBloc()..add(GetCurrentThemeEvent()),
-              ),
-              BlocProvider(create: (create) => AppBloc()..add(GetSettingsDataFromSharedPreferencesEvent()),),
+                  create: (context) =>
+                      ThemeBloc()..add(GetCurrentThemeEvent())),
+              BlocProvider(
+                  create: (create) => AppBloc()
+                    ..add(GetSettingsDataFromSharedPreferencesEvent())),
+              BlocProvider(
+                  create: (create) => SqlCubit()..ensureDatabaseInitialized()),
             ],
             child: BlocBuilder<ThemeBloc, ThemeState>(
               builder: (context, state) {

@@ -68,6 +68,15 @@ class AppBloc extends Bloc<AppEvent, AppState> {
         timeBetweenEachNotifications = calculateTimeBetweenEachNotifications();
         emit(GetSettingsDataFromSharedPreferencesState());
       }
+      // else if (event is InsertDataToDatabaseEvent) {
+      //   insertToDatabase(
+      //       surahId: event.surahId,
+      //       verseNumber: event.verseNumber,
+      //       mistakeKind: event.mistakeKind,
+      //       mistake: event.mistake,
+      //       mistakeRepetition: event.mistakeRepetition);
+      //   emit(InsertDataToDatabaseState());
+      // }
     });
   }
 

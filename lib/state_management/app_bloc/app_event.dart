@@ -54,3 +54,19 @@ class ChangeDisplayTypeInHomeScreenEvent extends AppEvent {
 class AppBarCollapsedEvent extends AppEvent {}
 
 class GetSettingsDataFromSharedPreferencesEvent extends AppEvent {}
+
+class InsertDataToDatabaseEvent extends AppEvent {
+  final int surahId;
+  final int verseNumber;
+  final int mistakeKind;
+  final String mistake;
+  final int mistakeRepetition;
+
+  InsertDataToDatabaseEvent({
+    required this.surahId,
+    required this.verseNumber,
+    required this.mistakeKind,
+    required this.mistake,
+    required this.mistakeRepetition,
+  });
+}

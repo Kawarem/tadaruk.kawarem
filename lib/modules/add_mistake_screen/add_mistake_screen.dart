@@ -3,9 +3,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:tadarok/constants/data.dart';
+import 'package:tadarok/state_management/app_bloc/app_bloc.dart';
+import 'package:tadarok/state_management/sql_cubit/sql_cubit.dart';
 import 'package:vibration/vibration.dart';
-
-import '../../app_bloc/app_bloc.dart';
 
 class AddMistakeScreen extends StatefulWidget {
   const AddMistakeScreen({super.key});
@@ -20,6 +20,7 @@ class _AddMistakeScreenState extends State<AddMistakeScreen> {
   final formKey = GlobalKey<FormState>();
   final _listWheelScrollVerseController = FixedExtentScrollController();
   final _listWheelScrollSurahController = FixedExtentScrollController();
+  final _listWheelScrollMistakeKindController = FixedExtentScrollController();
 
   @override
   void initState() {
@@ -346,6 +347,8 @@ class _AddMistakeScreenState extends State<AddMistakeScreen> {
                                 ).createShader(bounds);
                               },
                               child: ListWheelScrollView.useDelegate(
+                                  controller:
+                                      _listWheelScrollMistakeKindController,
                                   onSelectedItemChanged: (index) {
                                     appBloc.add(ChangeMistakeKindEvent(
                                         mistakeKind: index));
@@ -434,7 +437,7 @@ class _AddMistakeScreenState extends State<AddMistakeScreen> {
                                       color: Color.lerp(appBloc.circleColor0,
                                           appBloc.circleColor1, 1),
                                     ),
-                                    duration: const Duration(milliseconds: 500),
+                                    duration: const Duration(milliseconds: 250),
                                     child: AnimatedSwitcher(
                                       duration:
                                           const Duration(milliseconds: 250),
@@ -604,27 +607,48 @@ class _AddMistakeScreenState extends State<AddMistakeScreen> {
                   const Expanded(child: SizedBox()),
                   Padding(
                     padding: const EdgeInsets.only(bottom: 16).r,
-                    child: ElevatedButton(
-                      onPressed: () {
-                        // appBloc
-                        //     .add(ValidateTextFormFieldEvent(validator: true));
-                        // if (_mistakeController.text.isNotEmpty &&
-                        //     _correctionController.text.isNotEmpty) {
-                        //   appBloc.add(
-                        //       ValidateTextFormFieldEvent(validator: false));
-                        //   Navigator.pop(context);
-                        // }
+                    child: BlocBuilder<SqlCubit, SqlState>(
+                      builder: (context, state) {
+                        return ElevatedButton(
+                          onPressed: () {
+                            // appBloc
+                            //     .add(ValidateTextFormFieldEvent(validator: true));
+                            // if (_mistakeController.text.isNotEmpty &&
+                            //     _correctionController.text.isNotEmpty) {
+                            //   appBloc.add(
+                            //       ValidateTextFormFieldEvent(validator: false));
+                            //   Navigator.pop(context);
+                            // }
 
-                        if (formKey.currentState!.validate()) {
-                          Navigator.pop(context);
-                        } else {
-                          Vibration.vibrate(duration: 50);
-                        }
+                            if (formKey.currentState!.validate()) {
+                              BlocProvider.of<SqlCubit>(context)
+                                  .insertToDatabase(
+                                      surahId:
+                                          _listWheelScrollSurahController
+                                                  .selectedItem +
+                                              1,
+                                      verseNumber:
+                                          _listWheelScrollVerseController
+                                                  .selectedItem +
+                                              1,
+                                      mistakeKind:
+                                          _listWheelScrollMistakeKindController
+                                                  .selectedItem +
+                                              1,
+                                      mistake: _mistakeController.text,
+                                      mistakeRepetition:
+                                          appBloc.mistakeRepetition);
+                              Navigator.pop(context);
+                            } else {
+                              Vibration.vibrate(duration: 50);
+                            }
+                          },
+                          child: Text(
+                            'حفظ',
+                            style: Theme.of(context).textTheme.displayLarge,
+                          ),
+                        );
                       },
-                      child: Text(
-                        'حفظ',
-                        style: Theme.of(context).textTheme.displayLarge,
-                      ),
                     ),
                   ),
                 ],
@@ -636,7 +660,3 @@ class _AddMistakeScreenState extends State<AddMistakeScreen> {
     );
   }
 }
-
-// const List<String> surah = ['الفاتحة', 'البقرة', 'آل عمران', 'الناس'];
-// const List<int> versesNumber = [7, 286, 200, 6];
-const List<String> mistakeKinds = ['نقص', 'إبدال', 'زيادة', 'تشكيل', 'مجمل'];

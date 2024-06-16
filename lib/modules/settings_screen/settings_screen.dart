@@ -3,8 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart' as bloc;
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:tadarok/modules/themes_screen/themes_screen.dart';
-
-import '../../app_bloc/app_bloc.dart';
+import 'package:tadarok/state_management/app_bloc/app_bloc.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});

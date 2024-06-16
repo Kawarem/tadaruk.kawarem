@@ -3,8 +3,7 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-
-import '../app_bloc/app_bloc.dart';
+import 'package:tadarok/state_management/app_bloc/app_bloc.dart';
 
 Widget buttonInHomeScreen(context,
         {required String title, required int index}) =>
@@ -36,9 +35,10 @@ Widget buttonInHomeScreen(context,
       ),
     );
 
-Widget expansionTiles(context) => ExpansionTile(
+Widget expansionTiles(context, List<Map<String, dynamic>> model) =>
+    ExpansionTile(
       title: Text(
-        'سورة الفاتحة',
+        'سورة ${model[0]['surah']}',
         style: Theme.of(context).textTheme.displayLarge,
       ),
       children: [
@@ -74,13 +74,27 @@ Widget expansionTiles(context) => ExpansionTile(
                 delegate: SliverChildBuilderDelegate(
                   (context, index) {
                     if (index.isEven) {
+                      String mistakeKind;
+                      switch (model[index ~/ 2]['mistake_kind']) {
+                        case 1:
+                          mistakeKind = 'هي نقص في الآية:  ';
+                        case 2:
+                          mistakeKind = 'هي إبدال في الآية:  ';
+                        case 3:
+                          mistakeKind = 'هي زيادة في الآية:  ';
+                        case 4:
+                          mistakeKind = 'خطأ تشكيلي في الآية:  ';
+                        default:
+                          mistakeKind = 'خطأ مجمل في الآية:  ';
+                      }
                       return mistakeCard(context,
-                          word: 'العالمين', mistakeKind: 'ناقصة', verse: 2);
+                          word: model[index ~/ 2]['mistake'],
+                          mistakeKind: mistakeKind,
+                          verse: model[index ~/ 2]['verse_number']);
                     }
                     return const Divider();
                   },
-                  childCount:
-                      math.max(0, mistakesList[0].mistakesNumber * 2 - 1),
+                  childCount: math.max(0, model.length * 2 - 1),
                 ),
               ),
             ],
@@ -89,21 +103,6 @@ Widget expansionTiles(context) => ExpansionTile(
         // ])
       ],
     );
-
-class MistakeCardData {
-  String surah;
-  int mistakesNumber;
-
-  MistakeCardData({
-    required this.surah,
-    required this.mistakesNumber,
-  });
-}
-
-List<MistakeCardData> mistakesList = [
-  MistakeCardData(surah: 'سورة الفاتحة', mistakesNumber: 2),
-  MistakeCardData(surah: 'سورة آل عمران', mistakesNumber: 2),
-];
 
 Widget mistakeCard(context,
         {required String word,
@@ -131,7 +130,7 @@ Widget mistakeCard(context,
                 width: 8.w,
               ),
               Text(
-                'هي $mistakeKind في الآية:  ',
+                mistakeKind,
                 style: Theme.of(context).textTheme.bodyMedium,
               ),
               Text(
@@ -140,13 +139,20 @@ Widget mistakeCard(context,
               ),
             ],
           ),
-          Container(
-            width: 7.w,
-            height: 7.h,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(90),
-              color: Colors.red,
-            ),
+          Row(
+            children: [
+              SizedBox(
+                width: 8.w,
+              ),
+              Container(
+                width: 7.w,
+                height: 7.h,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(90),
+                  color: Colors.red,
+                ),
+              ),
+            ],
           )
         ],
       ),
