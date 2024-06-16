@@ -54,10 +54,8 @@ class HomeScreen extends StatelessWidget {
                     width: double.infinity,
                     child: ElevatedButton(
                         onPressed: () {
-                          bloc.BlocProvider.of<AppBloc>(context).circleColor1 =
-                              const Color(0xffb5e742);
                           bloc.BlocProvider.of<AppBloc>(context)
-                              .changeCircleColor();
+                              .resetAddMistakeScreen();
                           Get.to(() => const AddMistakeScreen(),
                               transition: Transition.fade);
                         },

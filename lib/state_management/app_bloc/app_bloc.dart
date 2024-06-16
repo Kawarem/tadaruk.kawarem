@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tadarok/helpers/app_cash_helper.dart';
 
 part 'app_event.dart';
+
 part 'app_state.dart';
 
 class AppBloc extends Bloc<AppEvent, AppState> {
@@ -68,15 +69,6 @@ class AppBloc extends Bloc<AppEvent, AppState> {
         timeBetweenEachNotifications = calculateTimeBetweenEachNotifications();
         emit(GetSettingsDataFromSharedPreferencesState());
       }
-      // else if (event is InsertDataToDatabaseEvent) {
-      //   insertToDatabase(
-      //       surahId: event.surahId,
-      //       verseNumber: event.verseNumber,
-      //       mistakeKind: event.mistakeKind,
-      //       mistake: event.mistake,
-      //       mistakeRepetition: event.mistakeRepetition);
-      //   emit(InsertDataToDatabaseState());
-      // }
     });
   }
 
@@ -118,5 +110,12 @@ class AppBloc extends Bloc<AppEvent, AppState> {
         return const Color(0xfffc4850);
     }
     return const Color(0xffb5e742);
+  }
+
+  void resetAddMistakeScreen() {
+    mistakeRepetition = 1;
+    mistakeKind = 0;
+    circleColor1 = const Color(0xffb5e742);
+    changeCircleColor();
   }
 }
