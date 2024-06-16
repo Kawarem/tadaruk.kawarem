@@ -36,20 +36,22 @@ class SqlCubit extends Cubit<SqlState> {
   }
 
   static void _onCreate(Database database) {
-    database.execute('''CREATE TABLE surah_names (
+    database.execute('''
+        CREATE TABLE surah_names (
           id INTEGER PRIMARY KEY,
-           surah TEXT,
-           )''');
+          surah TEXT
+        )
+           ''');
     database.execute('''
           CREATE TABLE surah_mistakes (
-           id INTEGER PRIMARY KEY,
+            id INTEGER PRIMARY KEY,
             surah_id INTEGER NOT NULL,
             verse_number INTEGER,
             mistake_kind INTEGER,
             mistake TEXT,
             mistake_repetition INTEGER,
             FOREIGN KEY (surah_id) REFERENCES surah_names(id)
-                )''');
+          )''');
   }
 
   Future<void> ensureSurahNamesInitialized(database) async {

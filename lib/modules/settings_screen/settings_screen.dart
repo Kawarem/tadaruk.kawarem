@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import 'package:tadarok/modules/themes_screen/themes_screen.dart';
 import 'package:tadarok/state_management/app_bloc/app_bloc.dart';
 
+
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
 
@@ -49,7 +50,10 @@ class SettingsScreen extends StatelessWidget {
                               ),
                               Text(
                                 'الثيمات',
-                                style: Theme.of(context).textTheme.bodyLarge,
+                                style: Theme
+                                    .of(context)
+                                    .textTheme
+                                    .bodyLarge,
                               ),
                               const Expanded(
                                 child: Row(
@@ -65,7 +69,7 @@ class SettingsScreen extends StatelessWidget {
                       ),
                       Padding(
                         padding: const EdgeInsets.symmetric(
-                                horizontal: 16.0, vertical: 8)
+                            horizontal: 16.0, vertical: 8)
                             .r,
                         child: Row(
                           children: [
@@ -75,7 +79,10 @@ class SettingsScreen extends StatelessWidget {
                             ),
                             Text(
                               'عدد الإشعارات',
-                              style: Theme.of(context).textTheme.bodyLarge,
+                              style: Theme
+                                  .of(context)
+                                  .textTheme
+                                  .bodyLarge,
                             ),
                           ],
                         ),
@@ -85,7 +92,10 @@ class SettingsScreen extends StatelessWidget {
                         children: [
                           Text(
                             appBloc.notificationsNumber.toString(),
-                            style: Theme.of(context).textTheme.displayLarge,
+                            style: Theme
+                                .of(context)
+                                .textTheme
+                                .displayLarge,
                           ),
                         ],
                       ),
@@ -100,7 +110,7 @@ class SettingsScreen extends StatelessWidget {
                       ),
                       Padding(
                         padding: const EdgeInsets.symmetric(
-                                horizontal: 16.0, vertical: 8)
+                            horizontal: 16.0, vertical: 8)
                             .r,
                         child: Row(
                           children: [
@@ -110,14 +120,17 @@ class SettingsScreen extends StatelessWidget {
                             ),
                             Text(
                               'فترة فعالية الإشعارات',
-                              style: Theme.of(context).textTheme.bodyLarge,
+                              style: Theme
+                                  .of(context)
+                                  .textTheme
+                                  .bodyLarge,
                             )
                           ],
                         ),
                       ),
                       Padding(
                         padding: const EdgeInsets.symmetric(
-                                horizontal: 56.0, vertical: 8)
+                            horizontal: 56.0, vertical: 8)
                             .r,
                         child: Column(
                           children: [
@@ -126,13 +139,16 @@ class SettingsScreen extends StatelessWidget {
                               children: [
                                 Text('من',
                                     style:
-                                        Theme.of(context).textTheme.bodyLarge),
+                                    Theme
+                                        .of(context)
+                                        .textTheme
+                                        .bodyLarge),
                                 GestureDetector(
                                   onTap: () {
                                     showTimePicker(
-                                            context: context,
-                                            initialTime:
-                                                appBloc.notificationStartTime)
+                                        context: context,
+                                        initialTime:
+                                        appBloc.notificationStartTime)
                                         .then((value) {
                                       appBloc.add(
                                           ChangeNotificationsStartTimeEvent(
@@ -144,9 +160,11 @@ class SettingsScreen extends StatelessWidget {
                                       padding: const EdgeInsets.all(8).r,
                                       decoration: BoxDecoration(
                                           borderRadius:
-                                              BorderRadius.circular(8).r,
+                                          BorderRadius
+                                              .circular(8)
+                                              .r,
                                           color:
-                                              Colors.white.withOpacity(0.12)),
+                                          Colors.white.withOpacity(0.12)),
                                       child: Center(
                                         child: Text(
                                             appBloc.convertTimeToString(
@@ -155,7 +173,8 @@ class SettingsScreen extends StatelessWidget {
                                                 minute: appBloc
                                                     .notificationStartTime
                                                     .minute),
-                                            style: Theme.of(context)
+                                            style: Theme
+                                                .of(context)
                                                 .textTheme
                                                 .bodyLarge),
                                       )),
@@ -170,7 +189,10 @@ class SettingsScreen extends StatelessWidget {
                               children: [
                                 Text('إلى',
                                     style:
-                                        Theme.of(context).textTheme.bodyLarge),
+                                    Theme
+                                        .of(context)
+                                        .textTheme
+                                        .bodyLarge),
                                 GestureDetector(
                                   onTap: () {
                                     showTimePicker(
@@ -187,9 +209,11 @@ class SettingsScreen extends StatelessWidget {
                                       padding: const EdgeInsets.all(8).r,
                                       decoration: BoxDecoration(
                                           borderRadius:
-                                              BorderRadius.circular(8).r,
+                                          BorderRadius
+                                              .circular(8)
+                                              .r,
                                           color:
-                                              Colors.white.withOpacity(0.12)),
+                                          Colors.white.withOpacity(0.12)),
                                       child: Center(
                                         child: Text(
                                             appBloc.convertTimeToString(
@@ -198,7 +222,8 @@ class SettingsScreen extends StatelessWidget {
                                                 minute: appBloc
                                                     .notificationEndTime
                                                     .minute),
-                                            style: Theme.of(context)
+                                            style: Theme
+                                                .of(context)
                                                 .textTheme
                                                 .bodyLarge),
                                       )),
@@ -219,8 +244,12 @@ class SettingsScreen extends StatelessWidget {
                         ),
                         Center(
                           child: Text(
-                              'سيتم عرض إشعار كل ${appBloc.timeBetweenEachNotifications} دقيقة تقريباً',
-                              style: Theme.of(context).textTheme.displaySmall),
+                              'سيتم عرض إشعار كل ${appBloc
+                                  .timeBetweenEachNotifications} دقيقة تقريباً',
+                              style: Theme
+                                  .of(context)
+                                  .textTheme
+                                  .displaySmall),
                         ),
                       ],
                     ),

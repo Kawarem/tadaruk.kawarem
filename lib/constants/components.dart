@@ -3,6 +3,7 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:marqueer/marqueer.dart';
 import 'package:tadarok/state_management/app_bloc/app_bloc.dart';
 
 Widget buttonInHomeScreen(context,
@@ -65,13 +66,31 @@ Widget expansionTiles(context, List<Map<String, dynamic>> model) =>
                         default:
                           mistakeKind = 'خطأ مجمل في الآية:  ';
                       }
-                      return mistakeCard(context,
-                          word: model[index ~/ 2]['mistake'],
-                          mistakeKind: mistakeKind,
-                          verse: model[index ~/ 2]['verse_number'],
-                          id: model[index ~/ 2]['mistake_id']);
+                      Color containerColor;
+                      switch (model[index ~/ 2]['mistake_repetition']) {
+                        case 1:
+                          containerColor = Color(0xffb5e742);
+                        case 2:
+                          containerColor = Color(0xfffae800);
+                        case 3:
+                          containerColor = Color(0xfffa8e00);
+                        default:
+                          containerColor = Color(0xfffc4850);
+                      }
+                      return mistakeCard(
+                        context,
+                        id: model[index ~/ 2]['mistake_id'],
+                        word: model[index ~/ 2]['mistake'],
+                        mistakeKind: mistakeKind,
+                        verse: model[index ~/ 2]['verse_number'],
+                        containerColor: containerColor,
+                      );
                     }
-                    return const Divider();
+                    return Container(
+                      width: double.infinity,
+                      height: 1,
+                      color: const Color(0xffbdbdbd),
+                    );
                   },
                   childCount: math.max(0, model.length * 2 - 1),
                 ),
@@ -83,11 +102,14 @@ Widget expansionTiles(context, List<Map<String, dynamic>> model) =>
       ],
     );
 
-Widget mistakeCard(context,
-        {required String word,
-        required String mistakeKind,
-        required int verse,
-        required int id}) =>
+Widget mistakeCard(
+  context, {
+  required int id,
+  required String word,
+  required String mistakeKind,
+  required int verse,
+  required Color containerColor,
+}) =>
     InkWell(
       key: Key(id.toString()),
       onTap: () {},
@@ -96,32 +118,75 @@ Widget mistakeCard(context,
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Row(
-              children: [
-                Text(
-                  word,
-                  style: Theme.of(context).textTheme.bodyLarge,
+            if (word.length > 10)
+              SizedBox(
+                width: 300.w,
+                height: 30.h,
+                child: Expanded(
+                  child: Marqueer(
+                    separatorBuilder: (context, index) => SizedBox(
+                      width: 64.w,
+                    ),
+                    child: Row(
+                      children: [
+                        Text(
+                          word,
+                          style: Theme.of(context).textTheme.bodyLarge,
+                          overflow: TextOverflow.ellipsis,
+                          maxLines: 1,
+                        ),
+                        SizedBox(
+                          width: 8.w,
+                        ),
+                        Text(
+                          '|',
+                          style: Theme.of(context).textTheme.displayLarge,
+                        ),
+                        SizedBox(
+                          width: 8.w,
+                        ),
+                        Text(
+                          mistakeKind,
+                          style: Theme.of(context).textTheme.bodyMedium,
+                        ),
+                        Text(
+                          '$verse',
+                          style: Theme.of(context).textTheme.bodyLarge,
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
-                SizedBox(
-                  width: 8.w,
-                ),
-                Text(
-                  '|',
-                  style: Theme.of(context).textTheme.displayLarge,
-                ),
-                SizedBox(
-                  width: 8.w,
-                ),
-                Text(
-                  mistakeKind,
-                  style: Theme.of(context).textTheme.bodyMedium,
-                ),
-                Text(
-                  '$verse',
-                  style: Theme.of(context).textTheme.bodyLarge,
-                ),
-              ],
-            ),
+              )
+            else
+              Row(
+                children: [
+                  Text(
+                    word,
+                    style: Theme.of(context).textTheme.bodyLarge,
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 1,
+                  ),
+                  SizedBox(
+                    width: 8.w,
+                  ),
+                  Text(
+                    '|',
+                    style: Theme.of(context).textTheme.displayLarge,
+                  ),
+                  SizedBox(
+                    width: 8.w,
+                  ),
+                  Text(
+                    mistakeKind,
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
+                  Text(
+                    '$verse',
+                    style: Theme.of(context).textTheme.bodyLarge,
+                  ),
+                ],
+              ),
             Row(
               children: [
                 SizedBox(
@@ -132,8 +197,11 @@ Widget mistakeCard(context,
                   height: 7.h,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(90),
-                    color: Colors.red,
+                    color: containerColor,
                   ),
+                  // child: SvgPicture.asset(
+                  //   'assets/svgs/sign${1}.svg',
+                  // ),
                 ),
               ],
             )
