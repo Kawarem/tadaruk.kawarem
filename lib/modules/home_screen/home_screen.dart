@@ -37,22 +37,13 @@ class HomeScreen extends StatelessWidget {
                     onPressed: () {
                       Get.to(() => const SettingsScreen(),
                           transition: Transition.leftToRightWithFade);
-                      // Navigator.push(
-                      //     context,
-                      //     MaterialPageRoute(
-                      //         builder: (context) => const SettingsScreen()));
                     },
                     icon: const Icon(Icons.settings))
               ],
               sliverList: SliverList(
                   delegate: SliverChildBuilderDelegate((context, index) {
                 return expansionTiles(context, sqlCubit.homeScreenData[index]);
-              }, childCount: sqlCubit.homeScreenData.length)
-                  //     SliverChildListDelegate([
-                  //   ExpansionTiles(),
-                  //   ExpansionTiles(),
-                  // ])
-                  ),
+              }, childCount: sqlCubit.homeScreenData.length)),
             ),
             Align(
                 alignment: Alignment.bottomCenter,
@@ -77,44 +68,8 @@ class HomeScreen extends StatelessWidget {
                   ),
                 ))
           ]),
-          // floatingActionButton: FloatingActionButton(
-          //   onPressed: () {
-          //     Navigator.push(context,
-          //         MaterialPageRoute(builder: (context) => AddMistakeScreen()));
-          //   },
-          //   shape: const CircleBorder(),
-          //   child: const Icon(Icons.add),
-          // ),
         );
       },
     );
-
-    // return Scaffold(
-    //   appBar: AppBar(
-    //     title: const Text('تدارُك'),
-    //     actions: [
-    //       IconButton(
-    //           onPressed: () {
-    //             Navigator.push(context,
-    //                 MaterialPageRoute(builder: (context) => SettingsScreen()));
-    //           },
-    //           icon: const Icon(Icons.settings))
-    //     ],
-    //   ),
-    //   body: Column(
-    //     children: [
-    //       ExpansionTiles(),
-    //       ExpansionTiles(),
-    //     ],
-    //   ),
-    //   floatingActionButton: FloatingActionButton(
-    //     onPressed: () {
-    //       Navigator.push(context,
-    //           MaterialPageRoute(builder: (context) => AddMistakeScreen()));
-    //     },
-    //     shape: const CircleBorder(),
-    //     child: const Icon(Icons.add),
-    //   ),
-    // );
   }
 }

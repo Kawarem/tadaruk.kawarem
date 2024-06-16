@@ -39,7 +39,6 @@ class SqlCubit extends Cubit<SqlState> {
     database.execute('''CREATE TABLE surah_names (
           id INTEGER PRIMARY KEY,
            surah TEXT,
-           mistake_counter INTEGER
            )''');
     database.execute('''
           CREATE TABLE surah_mistakes (
@@ -61,8 +60,7 @@ class SqlCubit extends Cubit<SqlState> {
       try {
         await database.transaction((txn) async {
           for (final surahName in quranSurahNames) {
-            await txn.insert(
-                'surah_names', {'surah': surahName, 'mistake_counter': 0});
+            await txn.insert('surah_names', {'surah': surahName});
           }
         });
       } catch (error) {
@@ -113,32 +111,8 @@ class SqlCubit extends Cubit<SqlState> {
       if (kDebugMode) {
         print('$value inserted successfully');
       }
-
-      await database.transaction((txn) {
-        return txn.rawUpdate('''
-      UPDATE surah_names
-      SET mistake_counter = mistake_counter + 1
-      WHERE id = ?
-    ''', [surahId]);
-      }).then((value) {
-        if (kDebugMode) {
-          print('$value updated successfully');
-        }
-        emit(InsertDatabaseState());
-        getDatabase(database);
-      }).catchError((error) {
-        if (kDebugMode) {
-          print('error when updating counter for new record $error');
-        }
-      });
-
-      // database.rawQuery('SELECT * FROM surah_mistakes').then((value) {
-      //   for (var element in value) {
-      //     if (kDebugMode) {
-      //       print(element);
-      //     }
-      //   }
-      // });
+      emit(InsertDatabaseState());
+      getDatabase(database);
     }).catchError((error) {
       if (kDebugMode) {
         print('error when inserting new record $error');
@@ -152,7 +126,6 @@ class SqlCubit extends Cubit<SqlState> {
     SELECT 
       s.id AS surah_id, 
       s.surah, 
-      s.mistake_counter,
       m.id AS mistake_id,
       m.verse_number,
       m.mistake_kind,
@@ -243,24 +216,8 @@ class SqlCubit extends Cubit<SqlState> {
       if (kDebugMode) {
         print('$value deleted successfully');
       }
-
-      await database.transaction((txn) {
-        return txn.rawUpdate('''
-                  UPDATE surah_names
-                  SET mistake_counter = mistake_counter - 1
-                  HERE id = ?
-                ''', [mistakeId]);
-      }).then((value) {
-        if (kDebugMode) {
-          print('$value updated successfully');
-        }
-        emit(DeleteDatabaseState());
-        getDatabase(database);
-      }).catchError((error) {
-        if (kDebugMode) {
-          print('error when updating counter for deleted record $error');
-        }
-      });
+      emit(DeleteDatabaseState());
+      getDatabase(database);
     });
   }
 }

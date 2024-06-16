@@ -42,28 +42,6 @@ Widget expansionTiles(context, List<Map<String, dynamic>> model) =>
         style: Theme.of(context).textTheme.displayLarge,
       ),
       children: [
-        // Container(
-        //   color: Theme.of(context).scaffoldBackgroundColor,
-        //   child: CustomScrollView(shrinkWrap: true, slivers: [
-        //     SliverFillRemaining(
-        //       child: ListView.separated(
-        //         shrinkWrap: true,
-        //         physics: NeverScrollableScrollPhysics(),
-        //         itemCount: mistakesList[0].mistakesNumber,
-        //         itemBuilder: (context, index) {
-        //           return mistakeCard(context,
-        //               word: 'العالمين', mistakeKind: 'ناقصة', verse: 2);
-        //         },
-        //         separatorBuilder: (BuildContext context, int index) {
-        //           return Divider(
-        //             color: Colors.white,
-        //           );
-        //         },
-        //       ),
-        //     ),
-        //   ]),
-        // ),
-
         Container(
           color: Theme.of(context).scaffoldBackgroundColor,
           child: CustomScrollView(
@@ -90,7 +68,8 @@ Widget expansionTiles(context, List<Map<String, dynamic>> model) =>
                       return mistakeCard(context,
                           word: model[index ~/ 2]['mistake'],
                           mistakeKind: mistakeKind,
-                          verse: model[index ~/ 2]['verse_number']);
+                          verse: model[index ~/ 2]['verse_number'],
+                          id: model[index ~/ 2]['mistake_id']);
                     }
                     return const Divider();
                   },
@@ -107,53 +86,58 @@ Widget expansionTiles(context, List<Map<String, dynamic>> model) =>
 Widget mistakeCard(context,
         {required String word,
         required String mistakeKind,
-        required int verse}) =>
-    Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8).r,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Row(
-            children: [
-              Text(
-                word,
-                style: Theme.of(context).textTheme.bodyLarge,
-              ),
-              SizedBox(
-                width: 8.w,
-              ),
-              Text(
-                '|',
-                style: Theme.of(context).textTheme.displayLarge,
-              ),
-              SizedBox(
-                width: 8.w,
-              ),
-              Text(
-                mistakeKind,
-                style: Theme.of(context).textTheme.bodyMedium,
-              ),
-              Text(
-                '$verse',
-                style: Theme.of(context).textTheme.bodyLarge,
-              ),
-            ],
-          ),
-          Row(
-            children: [
-              SizedBox(
-                width: 8.w,
-              ),
-              Container(
-                width: 7.w,
-                height: 7.h,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(90),
-                  color: Colors.red,
+        required int verse,
+        required int id}) =>
+    InkWell(
+      key: Key(id.toString()),
+      onTap: () {},
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8).r,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Row(
+              children: [
+                Text(
+                  word,
+                  style: Theme.of(context).textTheme.bodyLarge,
                 ),
-              ),
-            ],
-          )
-        ],
+                SizedBox(
+                  width: 8.w,
+                ),
+                Text(
+                  '|',
+                  style: Theme.of(context).textTheme.displayLarge,
+                ),
+                SizedBox(
+                  width: 8.w,
+                ),
+                Text(
+                  mistakeKind,
+                  style: Theme.of(context).textTheme.bodyMedium,
+                ),
+                Text(
+                  '$verse',
+                  style: Theme.of(context).textTheme.bodyLarge,
+                ),
+              ],
+            ),
+            Row(
+              children: [
+                SizedBox(
+                  width: 8.w,
+                ),
+                Container(
+                  width: 7.w,
+                  height: 7.h,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(90),
+                    color: Colors.red,
+                  ),
+                ),
+              ],
+            )
+          ],
+        ),
       ),
     );
