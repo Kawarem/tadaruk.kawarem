@@ -39,10 +39,10 @@ class ValidateTextFormFieldEvent extends AppEvent {
   ValidateTextFormFieldEvent({required this.validator});
 }
 
-class ChangeSurahInAddMistakeScreen extends AppEvent {
+class ChangeSurahInAddMistakeScreenEvent extends AppEvent {
   final int surahNumber;
 
-  ChangeSurahInAddMistakeScreen({required this.surahNumber});
+  ChangeSurahInAddMistakeScreenEvent({required this.surahNumber});
 }
 
 class ChangeDisplayTypeInHomeScreenEvent extends AppEvent {
@@ -69,4 +69,10 @@ class InsertDataToDatabaseEvent extends AppEvent {
     required this.mistake,
     required this.mistakeRepetition,
   });
+}
+
+class ChangeNotificationsActivationEvent extends AppEvent {
+  final bool isNotificationsActivated;
+
+  ChangeNotificationsActivationEvent({required this.isNotificationsActivated});
 }

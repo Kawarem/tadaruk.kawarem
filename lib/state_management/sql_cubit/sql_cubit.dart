@@ -49,6 +49,7 @@ class SqlCubit extends Cubit<SqlState> {
             verse_number INTEGER,
             mistake_kind INTEGER,
             mistake TEXT,
+            note TEXT,
             mistake_repetition INTEGER,
             FOREIGN KEY (surah_id) REFERENCES surah_names(id)
           )''');
@@ -71,7 +72,7 @@ class SqlCubit extends Cubit<SqlState> {
         }
       }
       if (kDebugMode) {
-        print('surah inserted for the first time successfully');
+        print('surahs inserted for the first time successfully');
       }
     } else {
       if (kDebugMode) {
@@ -96,6 +97,7 @@ class SqlCubit extends Cubit<SqlState> {
     required int verseNumber,
     required int mistakeKind,
     required String mistake,
+    required String note,
     required int mistakeRepetition,
   }) async {
     await database.transaction((txn) {
@@ -105,10 +107,18 @@ class SqlCubit extends Cubit<SqlState> {
           verse_number, 
           mistake_kind, 
           mistake,
+          note,
           mistake_repetition
           ) 
-          VALUES (?, ?, ?, ?, ?)
-          ''', [surahId, verseNumber, mistakeKind, mistake, mistakeRepetition]);
+          VALUES (?, ?, ?, ?, ?, ?)
+          ''', [
+        surahId,
+        verseNumber,
+        mistakeKind,
+        mistake,
+        note,
+        mistakeRepetition
+      ]);
     }).then((value) async {
       if (kDebugMode) {
         print('$value inserted successfully');
@@ -132,6 +142,7 @@ class SqlCubit extends Cubit<SqlState> {
       m.verse_number,
       m.mistake_kind,
       m.mistake,
+      m.note,
       m.mistake_repetition
     FROM surah_names s
     LEFT JOIN surah_mistakes m ON s.id = m.surah_id
@@ -184,6 +195,7 @@ class SqlCubit extends Cubit<SqlState> {
     //     print('Verse Number: ${row['verse_number']}');
     //     print('Mistake Kind: ${row['mistake_kind']}');
     //     print('Mistake: ${row['mistake']}');
+    //     print('note: ${row['note']}');
     //     print('Mistake Repetition: ${row['mistake_repetition']}');
     //     print('---');
     //   }
@@ -202,6 +214,7 @@ class SqlCubit extends Cubit<SqlState> {
           print('Verse Number: ${mistake['verse_number']}');
           print('Mistake Kind: ${mistake['mistake_kind']}');
           print('Mistake: ${mistake['mistake']}');
+          print('Note: ${mistake['note']}');
           print('Mistake Repetition: ${mistake['mistake_repetition']}');
           print('---');
         }

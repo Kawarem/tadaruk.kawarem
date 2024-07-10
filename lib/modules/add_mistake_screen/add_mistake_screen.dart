@@ -16,7 +16,7 @@ class AddMistakeScreen extends StatefulWidget {
 
 class _AddMistakeScreenState extends State<AddMistakeScreen> {
   final _mistakeController = TextEditingController();
-  final _correctionController = TextEditingController();
+  final _noteController = TextEditingController();
   final formKey = GlobalKey<FormState>();
   final _listWheelScrollVerseController = FixedExtentScrollController();
   final _listWheelScrollSurahController = FixedExtentScrollController();
@@ -39,9 +39,11 @@ class _AddMistakeScreenState extends State<AddMistakeScreen> {
 
   @override
   void dispose() {
-    _listWheelScrollVerseController.dispose();
     _mistakeController.dispose();
-    _correctionController.dispose();
+    _noteController.dispose();
+    _listWheelScrollVerseController.dispose();
+    _listWheelScrollSurahController.dispose();
+    _listWheelScrollMistakeKindController.dispose();
     super.dispose();
   }
 
@@ -116,7 +118,7 @@ class _AddMistakeScreenState extends State<AddMistakeScreen> {
                                       controller:
                                           _listWheelScrollVerseController,
                                       onSelectedItemChanged: (index) {},
-                                      itemExtent: 18.h,
+                                      itemExtent: 20.h,
                                       perspective: 0.0001,
                                       physics: const FixedExtentScrollPhysics(),
                                       childDelegate:
@@ -137,7 +139,7 @@ class _AddMistakeScreenState extends State<AddMistakeScreen> {
                               Column(
                                 children: [
                                   SizedBox(
-                                    height: 21.h,
+                                    height: 18.h,
                                   ),
                                   Row(
                                     children: [
@@ -152,7 +154,7 @@ class _AddMistakeScreenState extends State<AddMistakeScreen> {
                                     ],
                                   ),
                                   SizedBox(
-                                    height: 17.h,
+                                    height: 20.h,
                                   ),
                                   Row(
                                     children: [
@@ -239,10 +241,10 @@ class _AddMistakeScreenState extends State<AddMistakeScreen> {
                                                   curve: Curves.easeInOut);
                                         }
                                         appBloc.add(
-                                            ChangeSurahInAddMistakeScreen(
+                                            ChangeSurahInAddMistakeScreenEvent(
                                                 surahNumber: index));
                                       },
-                                      itemExtent: 18.h,
+                                      itemExtent: 20.h,
                                       perspective: 0.0001,
                                       physics: const FixedExtentScrollPhysics(),
                                       childDelegate:
@@ -263,7 +265,7 @@ class _AddMistakeScreenState extends State<AddMistakeScreen> {
                               Column(
                                 children: [
                                   SizedBox(
-                                    height: 21.h,
+                                    height: 18.h,
                                   ),
                                   Row(
                                     children: [
@@ -278,7 +280,7 @@ class _AddMistakeScreenState extends State<AddMistakeScreen> {
                                     ],
                                   ),
                                   SizedBox(
-                                    height: 17.h,
+                                    height: 20.h,
                                   ),
                                   Row(
                                     children: [
@@ -521,18 +523,11 @@ class _AddMistakeScreenState extends State<AddMistakeScreen> {
                           padding:
                               const EdgeInsets.symmetric(horizontal: 16.0).r,
                           child: TextFormField(
-                              controller: _correctionController,
+                              controller: _noteController,
                               keyboardType: TextInputType.text,
-                              validator: (value) {
-                                if (value!.isEmpty) {
-                                  return 'يجب ملأ هذا الحقل';
-                                }
-                                return null;
-                              },
                               decoration: const InputDecoration(
-                                labelText: 'التصحيح',
-                                prefixIcon:
-                                    Icon(Icons.check_circle_outline_rounded),
+                                labelText: 'ملاحظة',
+                                prefixIcon: Icon(Icons.note_alt_outlined),
                               )),
                         ),
                       ],
@@ -636,6 +631,7 @@ class _AddMistakeScreenState extends State<AddMistakeScreen> {
                                                   .selectedItem +
                                               1,
                                       mistake: _mistakeController.text,
+                                      note: _noteController.text,
                                       mistakeRepetition:
                                           appBloc.mistakeRepetition);
                               Navigator.pop(context);

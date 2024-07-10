@@ -20,22 +20,14 @@ class AppBloc extends Bloc<AppEvent, AppState> {
   int surahNumber = 0;
   int displayTypeInHomeScreen = 0;
   bool appBarIsCollapsed = false;
-  List<bool> isOverflowing = [
-    false,
-    false,
-    false,
-  ];
-  List<GlobalKey> textKeys = [
-    GlobalKey(),
-    GlobalKey(),
-    GlobalKey(),
-  ];
+  bool isNotificationsActivated = true;
 
   AppBloc() : super(AppInitial()) {
     on<AppEvent>((event, emit) async {
       if (event is ChangeNotificationsNumberEvent) {
         notificationsNumber = event.notificationsNumber.toInt();
         timeBetweenEachNotifications = calculateTimeBetweenEachNotifications();
+        await AppCacheHelper().cacheNotificationsNumber(notificationsNumber);
         emit(ChangeNotificationsNumberState());
       } else if (event is ChangeNotificationsStartTimeEvent) {
         notificationStartTime = event.notificationStartTime;
@@ -60,7 +52,7 @@ class AppBloc extends Bloc<AppEvent, AppState> {
         emit(ChangeMistakeKindState());
       } else if (event is ValidateTextFormFieldEvent) {
         emit(ValidateTextFormFieldState(validator: event.validator));
-      } else if (event is ChangeSurahInAddMistakeScreen) {
+      } else if (event is ChangeSurahInAddMistakeScreenEvent) {
         surahNumber = event.surahNumber;
         emit(ChangeSurahInAddMistakeScreenState(
             versesNumber: event.surahNumber));
@@ -77,6 +69,9 @@ class AppBloc extends Bloc<AppEvent, AppState> {
         notificationEndTime = await AppCacheHelper().getNotificationEndTime();
         timeBetweenEachNotifications = calculateTimeBetweenEachNotifications();
         emit(GetSettingsDataFromSharedPreferencesState());
+      } else if (event is ChangeNotificationsActivationEvent) {
+        isNotificationsActivated = event.isNotificationsActivated;
+        emit(ChangeNotificationsActivationState());
       }
     });
   }
@@ -125,29 +120,5 @@ class AppBloc extends Bloc<AppEvent, AppState> {
     mistakeKind = 0;
     circleColor1 = const Color(0xffb5e742);
     changeCircleColor();
-  }
-
-  void checkOverflow(int index) {
-    final RenderBox? renderBox =
-        textKeys[index].currentContext?.findRenderObject() as RenderBox?;
-    // if (renderBox != null) {
-    final double minIntrinsicWidth = renderBox!.getMinIntrinsicWidth(30);
-    final double maxIntrinsicWidth = renderBox.getMaxIntrinsicWidth(30);
-    final double containerWidth = renderBox.size.width;
-    print(minIntrinsicWidth);
-    print(maxIntrinsicWidth);
-    print(containerWidth);
-    isOverflowing[index] = minIntrinsicWidth > containerWidth;
-    // }
-  }
-
-  bool hasTextOverflow(String text, TextStyle style,
-      {double minWidth = 0, double maxWidth = 300, int maxLines = 1}) {
-    final TextPainter textPainter = TextPainter(
-      text: TextSpan(text: text, style: style),
-      maxLines: maxLines,
-      textDirection: TextDirection.ltr,
-    )..layout(minWidth: minWidth, maxWidth: maxWidth);
-    return textPainter.didExceedMaxLines;
   }
 }

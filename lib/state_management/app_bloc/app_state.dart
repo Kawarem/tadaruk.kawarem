@@ -36,3 +36,5 @@ class AppBarCollapsedState extends AppState {
 class GetSettingsDataFromSharedPreferencesState extends AppState {}
 
 class InsertDataToDatabaseState extends AppState {}
+
+class ChangeNotificationsActivationState extends AppState {}
