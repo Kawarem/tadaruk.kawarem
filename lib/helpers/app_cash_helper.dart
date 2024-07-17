@@ -2,6 +2,24 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AppCacheHelper {
+  Future<void> cacheIsNotificationsActivated(
+      bool isNotificationsActivated) async {
+    final sharedPreferences = await SharedPreferences.getInstance();
+    sharedPreferences.setBool(
+        "IS_NOTIFICATIONS_ACTIVATED", isNotificationsActivated);
+  }
+
+  Future<bool> getCachedIsNotificationsActivated() async {
+    final sharedPreferences = await SharedPreferences.getInstance();
+    final cachedIsNotificationsActivated =
+        sharedPreferences.getBool("IS_NOTIFICATIONS_ACTIVATED");
+    if (cachedIsNotificationsActivated != null) {
+      return cachedIsNotificationsActivated;
+    } else {
+      return true;
+    }
+  }
+
   Future<void> cacheNotificationsNumber(int notificationsNumber) async {
     final sharedPreferences = await SharedPreferences.getInstance();
     sharedPreferences.setInt("NOTIFICATIONS_NUMBER", notificationsNumber);

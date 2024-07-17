@@ -69,13 +69,13 @@ Widget expansionTiles(context, List<Map<String, dynamic>> model) =>
                       Color containerColor;
                       switch (model[index ~/ 2]['mistake_repetition']) {
                         case 1:
-                          containerColor = Color(0xffb5e742);
+                          containerColor = const Color(0xffb5e742);
                         case 2:
-                          containerColor = Color(0xfffae800);
+                          containerColor = const Color(0xfffae800);
                         case 3:
-                          containerColor = Color(0xfffa8e00);
+                          containerColor = const Color(0xfffa8e00);
                         default:
-                          containerColor = Color(0xfffc4850);
+                          containerColor = const Color(0xfffc4850);
                       }
                       return mistakeCard(
                         context,

@@ -68,9 +68,13 @@ class AppBloc extends Bloc<AppEvent, AppState> {
             await AppCacheHelper().getNotificationStartTime();
         notificationEndTime = await AppCacheHelper().getNotificationEndTime();
         timeBetweenEachNotifications = calculateTimeBetweenEachNotifications();
+        isNotificationsActivated =
+            await AppCacheHelper().getCachedIsNotificationsActivated();
         emit(GetSettingsDataFromSharedPreferencesState());
       } else if (event is ChangeNotificationsActivationEvent) {
         isNotificationsActivated = event.isNotificationsActivated;
+        await AppCacheHelper()
+            .cacheIsNotificationsActivated(isNotificationsActivated);
         emit(ChangeNotificationsActivationState());
       }
     });
