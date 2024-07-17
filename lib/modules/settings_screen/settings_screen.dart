@@ -2,11 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart' as bloc;
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:share_plus/share_plus.dart';
+import 'package:tadarok/constants/data.dart';
 import 'package:tadarok/modules/themes_screen/themes_screen.dart';
 import 'package:tadarok/state_management/app_bloc/app_bloc.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class SettingsScreen extends StatelessWidget {
-  const SettingsScreen({super.key});
+  SettingsScreen({super.key});
+
+  final Uri _url = Uri.parse(TELEGRAM_CHANNEL_LINK);
 
   @override
   Widget build(BuildContext context) {
@@ -265,6 +270,81 @@ class SettingsScreen extends StatelessWidget {
                                   ),
                                 ],
                               ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      InkWell(
+                        onTap: () async {
+                          await Share.share(TELEGRAM_CHANNEL_LINK);
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.all(16).r,
+                          child: Row(
+                            children: [
+                              const Icon(Icons.share_outlined),
+                              SizedBox(
+                                width: 16.w,
+                              ),
+                              Text(
+                                'مشاركة التطبيق',
+                                style: Theme.of(context).textTheme.bodyLarge,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      InkWell(
+                        onTap: () async {
+                          // if (await canLaunchUrl(_url)) {
+                          await launchUrl(_url);
+                          // }
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.all(16).r,
+                          child: Row(
+                            children: [
+                              const Icon(Icons.update_rounded),
+                              SizedBox(
+                                width: 16.w,
+                              ),
+                              Text(
+                                'التحقق من وجود تحديثات',
+                                style: Theme.of(context).textTheme.bodyLarge,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      Container(
+                        padding: const EdgeInsets.all(16).r,
+                        child: Column(
+                          children: [
+                            Row(
+                              children: [
+                                const Icon(Icons.info_outline_rounded),
+                                SizedBox(
+                                  width: 16.w,
+                                ),
+                                Text(
+                                  'حول',
+                                  style: Theme.of(context).textTheme.bodyLarge,
+                                ),
+                              ],
+                            ),
+                            SizedBox(
+                              height: 8.h,
+                            ),
+                            Row(
+                              children: [
+                                SizedBox(
+                                  width: 36.w,
+                                ),
+                                Text(
+                                  'الإصدار $VERSION',
+                                  style: Theme.of(context).textTheme.bodyMedium,
+                                ),
+                              ],
                             ),
                           ],
                         ),

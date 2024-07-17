@@ -25,7 +25,7 @@ final appThemeData = {
         iconTheme: IconThemeData(color: theme0.textColor),
         // systemOverlayStyle: SystemUiOverlayStyle(
         //   statusBarBrightness: Brightness.light,
-        // systemNavigationBarColor: greenDark.appBarColor,
+        // systemNavigationBarColor: theme0.backgroundColor,
         // systemNavigationBarIconBrightness: Brightness.light,
         //   //statusBarColor: greenDark.appBarColor
         // )
@@ -43,7 +43,9 @@ final appThemeData = {
         bodyLarge: TextStyle(
             color: Colors.white, fontSize: 16.sp, fontFamily: 'Rubik'),
         bodyMedium: TextStyle(
-            color: const Color(0xffC9C9C9), fontSize: 14.sp, fontFamily: 'Rubik'),
+            color: const Color(0xffC9C9C9),
+            fontSize: 14.sp,
+            fontFamily: 'Rubik'),
         displayLarge: TextStyle(
             color: Colors.white, fontSize: 18.sp, fontFamily: 'Rubik'),
         displayMedium: TextStyle(

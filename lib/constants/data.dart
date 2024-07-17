@@ -1,3 +1,5 @@
+const String TELEGRAM_CHANNEL_LINK = 'https://t.me/+VjY01iPi_3BlMTI0';
+const String VERSION = '0.8.0';
 List<String> quranSurahNames = [
   'الفاتحة',
   'البقرة',

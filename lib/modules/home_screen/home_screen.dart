@@ -35,7 +35,7 @@ class HomeScreen extends StatelessWidget {
               actions: [
                 IconButton(
                     onPressed: () {
-                      Get.to(() => const SettingsScreen(),
+                      Get.to(() => SettingsScreen(),
                           transition: Transition.leftToRightWithFade);
                     },
                     icon: const Icon(Icons.settings))
