@@ -71,34 +71,41 @@ class SettingsScreen extends StatelessWidget {
                         padding: const EdgeInsets.symmetric(
                                 horizontal: 16.0, vertical: 8)
                             .r,
-                        child: Row(
-                          children: [
-                            Icon(appBloc.isNotificationsActivated
-                                ? Icons.notifications_active_outlined
-                                : Icons.notifications_off_outlined),
-                            SizedBox(
-                              width: 16.w,
-                            ),
-                            Text(
-                              'تفعيل الإشعارات',
-                              style: Theme.of(context).textTheme.bodyLarge,
-                            ),
-                            Expanded(
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.end,
-                                children: [
-                                  Switch(
-                                      value: appBloc.isNotificationsActivated,
-                                      onChanged: (isNotificationsActivated) {
-                                        appBloc.add(
-                                            ChangeNotificationsActivationEvent(
-                                                isNotificationsActivated:
-                                                    isNotificationsActivated));
-                                      }),
-                                ],
+                        child: GestureDetector(
+                          onTap: () {
+                            appBloc.add(ChangeNotificationsActivationEvent(
+                                isNotificationsActivated:
+                                    !appBloc.isNotificationsActivated));
+                          },
+                          child: Row(
+                            children: [
+                              Icon(appBloc.isNotificationsActivated
+                                  ? Icons.notifications_active_outlined
+                                  : Icons.notifications_off_outlined),
+                              SizedBox(
+                                width: 16.w,
                               ),
-                            ),
-                          ],
+                              Text(
+                                'تفعيل الإشعارات',
+                                style: Theme.of(context).textTheme.bodyLarge,
+                              ),
+                              Expanded(
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  children: [
+                                    Switch(
+                                        value: appBloc.isNotificationsActivated,
+                                        onChanged: (isNotificationsActivated) {
+                                          appBloc.add(
+                                              ChangeNotificationsActivationEvent(
+                                                  isNotificationsActivated:
+                                                      isNotificationsActivated));
+                                        }),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                       AnimatedOpacity(
@@ -296,9 +303,9 @@ class SettingsScreen extends StatelessWidget {
                       ),
                       InkWell(
                         onTap: () async {
-                          // if (await canLaunchUrl(_url)) {
-                          await launchUrl(_url);
-                          // }
+                          if (await canLaunchUrl(_url)) {
+                            await launchUrl(_url);
+                          }
                         },
                         child: Container(
                           padding: const EdgeInsets.all(16).r,

@@ -88,7 +88,7 @@ Widget expansionTiles(context, List<Map<String, dynamic>> model) =>
                     }
                     return Container(
                       width: double.infinity,
-                      height: 1,
+                      height: 1.h,
                       color: const Color(0xffbdbdbd),
                     );
                   },
@@ -193,10 +193,10 @@ Widget mistakeCard(
                   width: 8.w,
                 ),
                 Container(
-                  width: 7.w,
-                  height: 7.h,
+                  width: 7.r,
+                  height: 7.r,
                   decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(90),
+                    borderRadius: BorderRadius.circular(90).r,
                     color: containerColor,
                   ),
                   // child: SvgPicture.asset(
