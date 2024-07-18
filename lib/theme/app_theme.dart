@@ -52,7 +52,7 @@ final appThemeData = {
       displayMedium:
           TextStyle(color: Colors.white, fontSize: 16.sp, fontFamily: 'Rubik'),
       displaySmall:
-          TextStyle(color: Colors.white, fontSize: 12.sp, fontFamily: 'Rubik'),
+          TextStyle(color: Colors.white, fontSize: 11.sp, fontFamily: 'Rubik'),
       headlineLarge:
           TextStyle(color: Colors.white, fontSize: 24.sp, fontFamily: 'Rubik'),
     ),

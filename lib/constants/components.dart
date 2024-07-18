@@ -17,21 +17,20 @@ Widget buttonInHomeScreen(context,
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4).r,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(45).r,
-          color: (BlocProvider.of<AppBloc>(context).displayTypeInHomeScreen ==
-                  index)
-              ? Colors.white
-              : Theme.of(context).primaryColor,
+          color:
+              (BlocProvider.of<AppBloc>(context).categoryInHomeScreen == index)
+                  ? Colors.white
+                  : Theme.of(context).primaryColor,
         ),
         child: Text(
           title,
           style: TextStyle(
               fontSize: Theme.of(context).textTheme.displaySmall!.fontSize,
               fontFamily: Theme.of(context).textTheme.displaySmall!.fontFamily,
-              color:
-                  (BlocProvider.of<AppBloc>(context).displayTypeInHomeScreen ==
-                          index)
-                      ? Theme.of(context).primaryColor
-                      : Colors.white),
+              color: (BlocProvider.of<AppBloc>(context).categoryInHomeScreen ==
+                      index)
+                  ? Theme.of(context).primaryColor
+                  : Colors.white),
         ),
       ),
     );

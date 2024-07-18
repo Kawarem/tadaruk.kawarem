@@ -18,7 +18,7 @@ class AppBloc extends Bloc<AppEvent, AppState> {
   Color circleColor1 = const Color(0xffb5e742);
   bool validatorInAddMistakeScreen = false;
   int surahNumber = 0;
-  int displayTypeInHomeScreen = 0;
+  int categoryInHomeScreen = 0;
   bool appBarIsCollapsed = false;
   bool isNotificationsActivated = true;
 
@@ -57,7 +57,7 @@ class AppBloc extends Bloc<AppEvent, AppState> {
         emit(ChangeSurahInAddMistakeScreenState(
             versesNumber: event.surahNumber));
       } else if (event is ChangeDisplayTypeInHomeScreenEvent) {
-        displayTypeInHomeScreen = event.displayTypeInHomeScreen;
+        categoryInHomeScreen = event.displayTypeInHomeScreen;
         emit(ChangeDisplayTypeInHomeScreenState());
       } else if (event is AppBarCollapsedEvent) {
         emit(AppBarCollapsedState(isCollapsed: appBarIsCollapsed));

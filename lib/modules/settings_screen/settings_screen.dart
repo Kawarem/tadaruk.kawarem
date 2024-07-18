@@ -72,6 +72,7 @@ class SettingsScreen extends StatelessWidget {
                                 horizontal: 16.0, vertical: 8)
                             .r,
                         child: GestureDetector(
+                          behavior: HitTestBehavior.opaque,
                           onTap: () {
                             appBloc.add(ChangeNotificationsActivationEvent(
                                 isNotificationsActivated:

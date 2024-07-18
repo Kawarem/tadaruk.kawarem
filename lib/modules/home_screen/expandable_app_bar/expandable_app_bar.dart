@@ -102,7 +102,7 @@ class ExpandableAppBar extends StatelessWidget {
                             return Row(
                               children: [
                                 Text(
-                                  'عرض كل:',
+                                  'عرض حسب:',
                                   style:
                                       Theme.of(context).textTheme.displaySmall,
                                 ),
@@ -125,7 +125,7 @@ class ExpandableAppBar extends StatelessWidget {
                                   width: 8.w,
                                 ),
                                 buttonInHomeScreen(context,
-                                    title: 'الأحزاب', index: 3),
+                                    title: 'تكرار الخطأ', index: 3),
                               ],
                             );
                           },

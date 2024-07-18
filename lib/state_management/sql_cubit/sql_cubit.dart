@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:quran/quran.dart' as quran;
 import 'package:sqflite/sqflite.dart';
 import 'package:tadarok/constants/data.dart';
 
@@ -11,7 +12,10 @@ class SqlCubit extends Cubit<SqlState> {
   static SqlCubit get(context) => BlocProvider.of(context);
 
   late Database database;
-  List<List<Map<String, dynamic>>> homeScreenData = [];
+  List<List<Map<String, dynamic>>> homeScreenSurahData = [];
+  List<List<Map<String, dynamic>>> homeScreenPageNumberData = [];
+  List<List<Map<String, dynamic>>> homeScreenJuzNumberData = [];
+  List<List<Map<String, dynamic>>> homeScreenMistakeRepetitionSurahData = [];
 
   Future<void> ensureDatabaseInitialized() async {
     await createDatabase();
@@ -47,6 +51,8 @@ class SqlCubit extends Cubit<SqlState> {
             id INTEGER PRIMARY KEY,
             surah_id INTEGER NOT NULL,
             verse_number INTEGER,
+            page_number INTEGER,
+            juz_number INTEGER,
             mistake_kind INTEGER,
             mistake TEXT,
             note TEXT,
@@ -81,17 +87,6 @@ class SqlCubit extends Cubit<SqlState> {
     }
   }
 
-  // void _getDatabase(database) async {
-  //   database.rawQuery('SELECT * FROM surah_names').then((value) {
-  //     value.forEach((element) {
-  //       if (kDebugMode) {
-  //         print(element['surah']);
-  //       }
-  //     });
-  //     // emit(AppGetDatabaseState());
-  //   });
-  // }
-
   insertToDatabase({
     required int surahId,
     required int verseNumber,
@@ -100,20 +95,26 @@ class SqlCubit extends Cubit<SqlState> {
     required String note,
     required int mistakeRepetition,
   }) async {
+    int pageNumber = quran.getPageNumber(surahId, verseNumber);
+    int juzNumber = quran.getJuzNumber(surahId, verseNumber);
     await database.transaction((txn) {
       return txn.rawInsert('''
           INSERT INTO surah_mistakes(
           surah_id,
           verse_number, 
+          page_number, 
+          juz_number, 
           mistake_kind, 
           mistake,
           note,
           mistake_repetition
           ) 
-          VALUES (?, ?, ?, ?, ?, ?)
+          VALUES (?, ?, ?, ?, ?, ?, ?, ?)
           ''', [
         surahId,
         verseNumber,
+        pageNumber,
+        juzNumber,
         mistakeKind,
         mistake,
         note,
@@ -124,7 +125,7 @@ class SqlCubit extends Cubit<SqlState> {
         print('$value inserted successfully');
       }
       emit(InsertDatabaseState());
-      getDatabase(database);
+      await getDatabase(database);
     }).catchError((error) {
       if (kDebugMode) {
         print('error when inserting new record $error');
@@ -140,6 +141,8 @@ class SqlCubit extends Cubit<SqlState> {
       s.surah, 
       m.id AS mistake_id,
       m.verse_number,
+      m.page_number,
+      m.juz_number,
       m.mistake_kind,
       m.mistake,
       m.note,
@@ -150,37 +153,74 @@ class SqlCubit extends Cubit<SqlState> {
     ORDER BY s.id, m.verse_number, m.id
   ''');
     // Group the raw data by surah_id
-    Map<int, List<Map<String, dynamic>>> groupedData = {};
+    Map<int, List<Map<String, dynamic>>> surahGroupedData = {};
     for (final row in rawData) {
       final surahId = row['surah_id'] as int;
-      if (!groupedData.containsKey(surahId)) {
-        groupedData[surahId] = [];
+      if (!surahGroupedData.containsKey(surahId)) {
+        surahGroupedData[surahId] = [];
       }
-      groupedData[surahId]!.add(row);
+      surahGroupedData[surahId]!.add(row);
+    }
+    // Group the raw data by page_number
+    Map<int, List<Map<String, dynamic>>> pageGroupedData = {};
+    for (final row in rawData) {
+      final pageNumber = row['page_number'] as int;
+      if (!pageGroupedData.containsKey(pageNumber)) {
+        pageGroupedData[pageNumber] = [];
+      }
+      pageGroupedData[pageNumber]!.add(row);
+    }
+    // Group the raw data by juz_number
+    Map<int, List<Map<String, dynamic>>> juzGroupedData = {};
+    for (final row in rawData) {
+      final juzNumber = row['juz_number'] as int;
+      if (!juzGroupedData.containsKey(juzNumber)) {
+        juzGroupedData[juzNumber] = [];
+      }
+      juzGroupedData[juzNumber]!.add(row);
+    }
+    // Reorder data according to mistake_repetition
+    rawData = await db.rawQuery('''
+    SELECT 
+      s.id AS surah_id, 
+      s.surah, 
+      m.id AS mistake_id,
+      m.verse_number,
+      m.page_number,
+      m.juz_number,
+      m.mistake_kind,
+      m.mistake,
+      m.note,
+      m.mistake_repetition
+    FROM surah_names s
+    LEFT JOIN surah_mistakes m ON s.id = m.surah_id
+    WHERE m.id IS NOT NULL
+    ORDER BY m.mistake_repetition DESC, s.id, m.verse_number, m.id
+  ''');
+    // Group the raw data by mistake_repetition
+    Map<int, List<Map<String, dynamic>>> mistakeRepetitionGroupedData = {};
+    for (final row in rawData) {
+      final mistakeRepetition = row['mistake_repetition'] as int;
+      if (!mistakeRepetitionGroupedData.containsKey(mistakeRepetition)) {
+        mistakeRepetitionGroupedData[mistakeRepetition] = [];
+      }
+      mistakeRepetitionGroupedData[mistakeRepetition]!.add(row);
     }
 
     // Create the homeScreenData list of lists
-
-    homeScreenData = groupedData.entries.map((entry) {
+    homeScreenSurahData = surahGroupedData.entries.map((entry) {
       return entry.value;
     }).toList();
-
-    // homeScreenData = groupedData.entries.map((entry) {
-    //   return {
-    //     'surah_id': entry.key,
-    //     'surah': entry.value.first['surah'] as String,
-    //     'mistake_counter': entry.value.first['mistake_counter'] as int,
-    //     'mistakes': entry.value.map((mistake) {
-    //       return {
-    //         'mistake_id': mistake['mistake_id'] as int,
-    //         'verse_number': mistake['verse_number'] as int,
-    //         'mistake_kind': mistake['mistake_kind'] as int,
-    //         'mistake': mistake['mistake'] as String,
-    //         'mistake_repetition': mistake['mistake_repetition'] as int,
-    //       };
-    //     }).toList(),
-    //   };
-    // }).toList();
+    homeScreenPageNumberData = pageGroupedData.entries.map((entry) {
+      return entry.value;
+    }).toList();
+    homeScreenJuzNumberData = juzGroupedData.entries.map((entry) {
+      return entry.value;
+    }).toList();
+    homeScreenMistakeRepetitionSurahData =
+        mistakeRepetitionGroupedData.entries.map((entry) {
+      return entry.value;
+    }).toList();
     emit(GetDatabaseState());
     displayDatabase();
   }
@@ -201,17 +241,21 @@ class SqlCubit extends Cubit<SqlState> {
     //   }
     // }
     // print(homeScreenData);
-    for (final surah in homeScreenData) {
+    for (final surah in homeScreenSurahData) {
       // if (kDebugMode) {
       //   print('Surah: ${surah['surah']}');
       //   print('Surah ID: ${surah['surah_id']}');
       //   print('Mistake Counter: ${surah['mistake_counter']}');
       // }
-      print(surah.indexed);
+      if (kDebugMode) {
+        print(surah.indexed);
+      }
       for (final mistake in surah) {
         if (kDebugMode) {
           print('Mistake ID: ${mistake['mistake_id']}');
           print('Verse Number: ${mistake['verse_number']}');
+          print('Page Number: ${mistake['page_number']}');
+          print('Juz Number: ${mistake['juz_number']}');
           print('Mistake Kind: ${mistake['mistake_kind']}');
           print('Mistake: ${mistake['mistake']}');
           print('Note: ${mistake['note']}');

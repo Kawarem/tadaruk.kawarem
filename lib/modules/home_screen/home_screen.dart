@@ -20,52 +20,58 @@ class HomeScreen extends StatelessWidget {
     return bloc.BlocBuilder<SqlCubit, SqlState>(
       builder: (context, state) {
         var sqlCubit = SqlCubit.get(context);
-        return Scaffold(
-          body: Stack(children: [
-            ExpandableAppBar(
-              expandedWidget: Text(
-                'مساعدك في المراجعة',
-                style: Theme.of(context).textTheme.headlineLarge,
-              ),
-              colors: const [Color(0xff75BCD1), Color(0xff70C42F)],
-              collapsedWidget: Text(
-                'تدارُك',
-                style: Theme.of(context).appBarTheme.titleTextStyle,
-              ),
-              actions: [
-                IconButton(
-                    onPressed: () {
-                      Get.to(() => SettingsScreen(),
-                          transition: Transition.leftToRightWithFade);
-                    },
-                    icon: const Icon(Icons.settings))
-              ],
-              sliverList: SliverList(
-                  delegate: SliverChildBuilderDelegate((context, index) {
-                return expansionTiles(context, sqlCubit.homeScreenData[index]);
-              }, childCount: sqlCubit.homeScreenData.length)),
-            ),
-            Align(
-                alignment: Alignment.bottomCenter,
-                child: ScrollToHideWidget(
-                  controller: scrollController,
-                  height: 43.h,
-                  child: SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton(
-                        onPressed: () {
-                          bloc.BlocProvider.of<AppBloc>(context)
-                              .resetAddMistakeScreen();
-                          Get.to(() => const AddMistakeScreen(),
-                              transition: Transition.fade);
-                        },
-                        child: Text(
-                          'إضافة خطأ',
-                          style: Theme.of(context).textTheme.displayLarge,
-                        )),
+        return bloc.BlocBuilder<AppBloc, AppState>(
+          builder: (context, state) {
+            return Scaffold(
+              body: Stack(children: [
+                ExpandableAppBar(
+                  expandedWidget: Text(
+                    'مساعدك في المراجعة',
+                    style: Theme.of(context).textTheme.headlineLarge,
                   ),
-                ))
-          ]),
+                  colors: const [Color(0xff75BCD1), Color(0xff70C42F)],
+                  collapsedWidget: Text(
+                    'تدارُك',
+                    style: Theme.of(context).appBarTheme.titleTextStyle,
+                  ),
+                  actions: [
+                    IconButton(
+                        onPressed: () {
+                          Get.to(() => SettingsScreen(),
+                              transition: Transition.leftToRightWithFade);
+                        },
+                        icon: const Icon(Icons.settings))
+                  ],
+                  sliverList: SliverList(
+                    delegate: SliverChildBuilderDelegate((context, index) {
+                      return expansionTiles(
+                          context, sqlCubit.homeScreenSurahData[index]);
+                    }, childCount: sqlCubit.homeScreenSurahData.length),
+                  ),
+                ),
+                Align(
+                    alignment: Alignment.bottomCenter,
+                    child: ScrollToHideWidget(
+                      controller: scrollController,
+                      height: 43.h,
+                      child: SizedBox(
+                        width: double.infinity,
+                        child: ElevatedButton(
+                            onPressed: () {
+                              bloc.BlocProvider.of<AppBloc>(context)
+                                  .resetAddMistakeScreen();
+                              Get.to(() => const AddMistakeScreen(),
+                                  transition: Transition.fade);
+                            },
+                            child: Text(
+                              'إضافة خطأ',
+                              style: Theme.of(context).textTheme.displayLarge,
+                            )),
+                      ),
+                    ))
+              ]),
+            );
+          },
         );
       },
     );
