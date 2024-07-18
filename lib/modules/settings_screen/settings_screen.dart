@@ -94,13 +94,14 @@ class SettingsScreen extends StatelessWidget {
                                   mainAxisAlignment: MainAxisAlignment.end,
                                   children: [
                                     Switch(
-                                        value: appBloc.isNotificationsActivated,
-                                        onChanged: (isNotificationsActivated) {
-                                          appBloc.add(
-                                              ChangeNotificationsActivationEvent(
-                                                  isNotificationsActivated:
-                                                      isNotificationsActivated));
-                                        }),
+                                      value: appBloc.isNotificationsActivated,
+                                      onChanged: (isNotificationsActivated) {
+                                        appBloc.add(
+                                            ChangeNotificationsActivationEvent(
+                                                isNotificationsActivated:
+                                                    isNotificationsActivated));
+                                      },
+                                    ),
                                   ],
                                 ),
                               ),
@@ -349,7 +350,7 @@ class SettingsScreen extends StatelessWidget {
                                 ),
                                 Text(
                                   'الإصدار $VERSION',
-                                  style: Theme.of(context).textTheme.bodyMedium,
+                                  style: Theme.of(context).textTheme.bodySmall,
                                 ),
                               ],
                             ),

@@ -80,7 +80,7 @@ Widget expansionTiles(context, List<Map<String, dynamic>> model) =>
                       return mistakeCard(
                         context,
                         id: model[index ~/ 2]['mistake_id'],
-                        word: model[index ~/ 2]['mistake'],
+                        mistake: model[index ~/ 2]['mistake'],
                         mistakeKind: mistakeKind,
                         verse: model[index ~/ 2]['verse_number'],
                         containerColor: containerColor,
@@ -105,7 +105,7 @@ Widget expansionTiles(context, List<Map<String, dynamic>> model) =>
 Widget mistakeCard(
   context, {
   required int id,
-  required String word,
+  required String mistake,
   required String mistakeKind,
   required int verse,
   required Color containerColor,
@@ -118,19 +118,52 @@ Widget mistakeCard(
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            if (word.length > 10)
+            if (mistake.length > 10)
               SizedBox(
                 width: 300.w,
                 height: 30.h,
-                child: Expanded(
-                  child: Marqueer(
-                    separatorBuilder: (context, index) => SizedBox(
-                      width: 64.w,
-                    ),
-                    child: Row(
+                child: Marqueer(
+                  separatorBuilder: (context, index) => SizedBox(
+                    width: 64.w,
+                  ),
+                  child: Row(
+                    children: [
+                      Text(
+                        mistake,
+                        style: Theme.of(context).textTheme.bodyLarge,
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 1,
+                      ),
+                      SizedBox(
+                        width: 8.w,
+                      ),
+                      Text(
+                        '|',
+                        style: Theme.of(context).textTheme.displayLarge,
+                      ),
+                      SizedBox(
+                        width: 8.w,
+                      ),
+                      Text(
+                        mistakeKind,
+                        style: Theme.of(context).textTheme.bodyMedium,
+                      ),
+                      Text(
+                        '$verse',
+                        style: Theme.of(context).textTheme.bodyLarge,
+                      ),
+                    ],
+                  ),
+                ),
+              )
+            else
+              Row(
+                children: [
+                  if (mistake.isNotEmpty)
+                    Row(
                       children: [
                         Text(
-                          word,
+                          mistake,
                           style: Theme.of(context).textTheme.bodyLarge,
                           overflow: TextOverflow.ellipsis,
                           maxLines: 1,
@@ -145,38 +178,8 @@ Widget mistakeCard(
                         SizedBox(
                           width: 8.w,
                         ),
-                        Text(
-                          mistakeKind,
-                          style: Theme.of(context).textTheme.bodyMedium,
-                        ),
-                        Text(
-                          '$verse',
-                          style: Theme.of(context).textTheme.bodyLarge,
-                        ),
                       ],
                     ),
-                  ),
-                ),
-              )
-            else
-              Row(
-                children: [
-                  Text(
-                    word,
-                    style: Theme.of(context).textTheme.bodyLarge,
-                    overflow: TextOverflow.ellipsis,
-                    maxLines: 1,
-                  ),
-                  SizedBox(
-                    width: 8.w,
-                  ),
-                  Text(
-                    '|',
-                    style: Theme.of(context).textTheme.displayLarge,
-                  ),
-                  SizedBox(
-                    width: 8.w,
-                  ),
                   Text(
                     mistakeKind,
                     style: Theme.of(context).textTheme.bodyMedium,

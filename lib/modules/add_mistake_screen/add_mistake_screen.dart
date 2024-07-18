@@ -22,6 +22,16 @@ class _AddMistakeScreenState extends State<AddMistakeScreen> {
   final _listWheelScrollSurahController = FixedExtentScrollController();
   final _listWheelScrollMistakeKindController = FixedExtentScrollController();
 
+  void _insertData(context, AppBloc appBloc) {
+    BlocProvider.of<SqlCubit>(context).insertToDatabase(
+        surahId: _listWheelScrollSurahController.selectedItem + 1,
+        verseNumber: _listWheelScrollVerseController.selectedItem + 1,
+        mistakeKind: _listWheelScrollMistakeKindController.selectedItem + 1,
+        mistake: _mistakeController.text,
+        note: _noteController.text,
+        mistakeRepetition: appBloc.mistakeRepetition);
+  }
+
   @override
   void initState() {
     super.initState();
@@ -81,117 +91,6 @@ class _AddMistakeScreenState extends State<AddMistakeScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Column(
-                          children: [
-                            Text(
-                              'آية',
-                              style: Theme.of(context).textTheme.displayLarge,
-                            ),
-                            SizedBox(
-                              height: 8.h,
-                            ),
-                            Stack(children: [
-                              SizedBox(
-                                width: 40.w,
-                                height: 60.h,
-                                child: ShaderMask(
-                                  shaderCallback: (bounds) {
-                                    return LinearGradient(
-                                      begin: Alignment.topCenter,
-                                      end: Alignment.bottomCenter,
-                                      colors: [
-                                        Colors.transparent,
-                                        Theme.of(context)
-                                            .textTheme
-                                            .displayMedium!
-                                            .color!,
-                                        Theme.of(context)
-                                            .textTheme
-                                            .displayMedium!
-                                            .color!,
-                                        Colors.transparent,
-                                      ],
-                                      stops: const [0.0, 0.2, 0.7, 1],
-                                    ).createShader(bounds);
-                                  },
-                                  child: ListWheelScrollView.useDelegate(
-                                      controller:
-                                          _listWheelScrollVerseController,
-                                      onSelectedItemChanged: (index) {},
-                                      itemExtent: 20.h,
-                                      perspective: 0.0001,
-                                      physics: const FixedExtentScrollPhysics(),
-                                      childDelegate:
-                                          ListWheelChildBuilderDelegate(
-                                              childCount: quranSurahVerses[
-                                                  appBloc.surahNumber],
-                                              builder: (BuildContext context,
-                                                  int index) {
-                                                return Text(
-                                                  '${index + 1}',
-                                                  style: Theme.of(context)
-                                                      .textTheme
-                                                      .displayMedium,
-                                                );
-                                              })),
-                                ),
-                              ),
-                              Column(
-                                children: [
-                                  SizedBox(
-                                    height: 18.h,
-                                  ),
-                                  Row(
-                                    children: [
-                                      SizedBox(
-                                        width: 8.w,
-                                      ),
-                                      Container(
-                                        height: 1.h,
-                                        width: 24.w,
-                                        color: Theme.of(context).primaryColor,
-                                      ),
-                                    ],
-                                  ),
-                                  SizedBox(
-                                    height: 20.h,
-                                  ),
-                                  Row(
-                                    children: [
-                                      SizedBox(
-                                        width: 8.w,
-                                      ),
-                                      Container(
-                                        height: 1.h,
-                                        width: 24.w,
-                                        color: Theme.of(context).primaryColor,
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              )
-                            ])
-                          ],
-                        ),
-                        Column(
-                          children: [
-                            Container(
-                              height: 20.h,
-                              width: 1.w,
-                              color: Theme.of(context).primaryColor,
-                            ),
-                            SizedBox(
-                              height: 22.h,
-                            ),
-                            Text(
-                              ":",
-                              style: TextStyle(
-                                  color: Theme.of(context).primaryColor,
-                                  fontSize: 18.sp,
-                                  fontWeight: FontWeight.bold),
-                            )
-                          ],
-                        ),
                         Column(
                           children: [
                             Text(
@@ -290,6 +189,117 @@ class _AddMistakeScreenState extends State<AddMistakeScreen> {
                                       Container(
                                         height: 1.h,
                                         width: 60.w,
+                                        color: Theme.of(context).primaryColor,
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              )
+                            ])
+                          ],
+                        ),
+                        Column(
+                          children: [
+                            Container(
+                              height: 20.h,
+                              width: 1.w,
+                              color: Theme.of(context).primaryColor,
+                            ),
+                            SizedBox(
+                              height: 22.h,
+                            ),
+                            Text(
+                              ":",
+                              style: TextStyle(
+                                  color: Theme.of(context).primaryColor,
+                                  fontSize: 18.sp,
+                                  fontWeight: FontWeight.bold),
+                            )
+                          ],
+                        ),
+                        Column(
+                          children: [
+                            Text(
+                              'آية',
+                              style: Theme.of(context).textTheme.displayLarge,
+                            ),
+                            SizedBox(
+                              height: 8.h,
+                            ),
+                            Stack(children: [
+                              SizedBox(
+                                width: 40.w,
+                                height: 60.h,
+                                child: ShaderMask(
+                                  shaderCallback: (bounds) {
+                                    return LinearGradient(
+                                      begin: Alignment.topCenter,
+                                      end: Alignment.bottomCenter,
+                                      colors: [
+                                        Colors.transparent,
+                                        Theme.of(context)
+                                            .textTheme
+                                            .displayMedium!
+                                            .color!,
+                                        Theme.of(context)
+                                            .textTheme
+                                            .displayMedium!
+                                            .color!,
+                                        Colors.transparent,
+                                      ],
+                                      stops: const [0.0, 0.2, 0.7, 1],
+                                    ).createShader(bounds);
+                                  },
+                                  child: ListWheelScrollView.useDelegate(
+                                      controller:
+                                          _listWheelScrollVerseController,
+                                      onSelectedItemChanged: (index) {},
+                                      itemExtent: 20.h,
+                                      perspective: 0.0001,
+                                      physics: const FixedExtentScrollPhysics(),
+                                      childDelegate:
+                                          ListWheelChildBuilderDelegate(
+                                              childCount: quranSurahVerses[
+                                                  appBloc.surahNumber],
+                                              builder: (BuildContext context,
+                                                  int index) {
+                                                return Text(
+                                                  '${index + 1}',
+                                                  style: Theme.of(context)
+                                                      .textTheme
+                                                      .displayMedium,
+                                                );
+                                              })),
+                                ),
+                              ),
+                              Column(
+                                children: [
+                                  SizedBox(
+                                    height: 18.h,
+                                  ),
+                                  Row(
+                                    children: [
+                                      SizedBox(
+                                        width: 8.w,
+                                      ),
+                                      Container(
+                                        height: 1.h,
+                                        width: 24.w,
+                                        color: Theme.of(context).primaryColor,
+                                      ),
+                                    ],
+                                  ),
+                                  SizedBox(
+                                    height: 20.h,
+                                  ),
+                                  Row(
+                                    children: [
+                                      SizedBox(
+                                        width: 8.w,
+                                      ),
+                                      Container(
+                                        height: 1.h,
+                                        width: 24.w,
                                         color: Theme.of(context).primaryColor,
                                       ),
                                     ],
@@ -606,34 +616,13 @@ class _AddMistakeScreenState extends State<AddMistakeScreen> {
                       builder: (context, state) {
                         return ElevatedButton(
                           onPressed: () {
-                            // appBloc
-                            //     .add(ValidateTextFormFieldEvent(validator: true));
-                            // if (_mistakeController.text.isNotEmpty &&
-                            //     _correctionController.text.isNotEmpty) {
-                            //   appBloc.add(
-                            //       ValidateTextFormFieldEvent(validator: false));
-                            //   Navigator.pop(context);
-                            // }
-
-                            if (formKey.currentState!.validate()) {
-                              BlocProvider.of<SqlCubit>(context)
-                                  .insertToDatabase(
-                                      surahId:
-                                          _listWheelScrollSurahController
-                                                  .selectedItem +
-                                              1,
-                                      verseNumber:
-                                          _listWheelScrollVerseController
-                                                  .selectedItem +
-                                              1,
-                                      mistakeKind:
-                                          _listWheelScrollMistakeKindController
-                                                  .selectedItem +
-                                              1,
-                                      mistake: _mistakeController.text,
-                                      note: _noteController.text,
-                                      mistakeRepetition:
-                                          appBloc.mistakeRepetition);
+                            if (_listWheelScrollMistakeKindController
+                                    .selectedItem ==
+                                4) {
+                              _insertData(context, appBloc);
+                              Navigator.pop(context);
+                            } else if (formKey.currentState!.validate()) {
+                              _insertData(context, appBloc);
                               Navigator.pop(context);
                             } else {
                               Vibration.vibrate(duration: 50);
