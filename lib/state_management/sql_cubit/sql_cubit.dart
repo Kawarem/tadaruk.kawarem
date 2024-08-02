@@ -22,7 +22,8 @@ class SqlCubit extends Cubit<SqlState> {
   }
 
   Future<void> createDatabase() async {
-    await openDatabase('tadarok.db', version: 1, onCreate: (database, version) {
+    await openDatabase('kawarem.tadarok.db', version: 1,
+        onCreate: (database, version) {
       _onCreate(database);
       if (kDebugMode) {
         print('database created');
@@ -49,7 +50,7 @@ class SqlCubit extends Cubit<SqlState> {
     database.execute('''
           CREATE TABLE surah_mistakes (
             id INTEGER PRIMARY KEY,
-            surah_id INTEGER NOT NULL,
+            surah_number INTEGER NOT NULL,
             verse_number INTEGER,
             page_number INTEGER,
             juz_number INTEGER,
@@ -57,7 +58,7 @@ class SqlCubit extends Cubit<SqlState> {
             mistake TEXT,
             note TEXT,
             mistake_repetition INTEGER,
-            FOREIGN KEY (surah_id) REFERENCES surah_names(id)
+            FOREIGN KEY (surah_number) REFERENCES surah_names(id)
           )''');
   }
 
@@ -88,19 +89,19 @@ class SqlCubit extends Cubit<SqlState> {
   }
 
   insertToDatabase({
-    required int surahId,
+    required int surahNumber,
     required int verseNumber,
     required int mistakeKind,
     required String mistake,
     required String note,
     required int mistakeRepetition,
   }) async {
-    int pageNumber = quran.getPageNumber(surahId, verseNumber);
-    int juzNumber = quran.getJuzNumber(surahId, verseNumber);
+    int pageNumber = quran.getPageNumber(surahNumber, verseNumber);
+    int juzNumber = quran.getJuzNumber(surahNumber, verseNumber);
     await database.transaction((txn) {
       return txn.rawInsert('''
           INSERT INTO surah_mistakes(
-          surah_id,
+          surah_number,
           verse_number, 
           page_number, 
           juz_number, 
@@ -111,7 +112,7 @@ class SqlCubit extends Cubit<SqlState> {
           ) 
           VALUES (?, ?, ?, ?, ?, ?, ?, ?)
           ''', [
-        surahId,
+        surahNumber,
         verseNumber,
         pageNumber,
         juzNumber,
@@ -137,7 +138,7 @@ class SqlCubit extends Cubit<SqlState> {
     dynamic db = database;
     List<Map<String, dynamic>> rawData = await db.rawQuery('''
     SELECT 
-      s.id AS surah_id, 
+      s.id AS surah_number, 
       s.surah, 
       m.id AS mistake_id,
       m.verse_number,
@@ -148,18 +149,18 @@ class SqlCubit extends Cubit<SqlState> {
       m.note,
       m.mistake_repetition
     FROM surah_names s
-    LEFT JOIN surah_mistakes m ON s.id = m.surah_id
+    LEFT JOIN surah_mistakes m ON s.id = m.surah_number
     WHERE m.id IS NOT NULL
     ORDER BY s.id, m.verse_number, m.id
   ''');
-    // Group the raw data by surah_id
+    // Group the raw data by surah_number
     Map<int, List<Map<String, dynamic>>> surahGroupedData = {};
     for (final row in rawData) {
-      final surahId = row['surah_id'] as int;
-      if (!surahGroupedData.containsKey(surahId)) {
-        surahGroupedData[surahId] = [];
+      final surahNumber = row['surah_number'] as int;
+      if (!surahGroupedData.containsKey(surahNumber)) {
+        surahGroupedData[surahNumber] = [];
       }
-      surahGroupedData[surahId]!.add(row);
+      surahGroupedData[surahNumber]!.add(row);
     }
     // Group the raw data by page_number
     Map<int, List<Map<String, dynamic>>> pageGroupedData = {};
@@ -182,7 +183,7 @@ class SqlCubit extends Cubit<SqlState> {
     // Reorder data according to mistake_repetition
     rawData = await db.rawQuery('''
     SELECT 
-      s.id AS surah_id, 
+      s.id AS surah_number, 
       s.surah, 
       m.id AS mistake_id,
       m.verse_number,
@@ -193,7 +194,7 @@ class SqlCubit extends Cubit<SqlState> {
       m.note,
       m.mistake_repetition
     FROM surah_names s
-    LEFT JOIN surah_mistakes m ON s.id = m.surah_id
+    LEFT JOIN surah_mistakes m ON s.id = m.surah_number
     WHERE m.id IS NOT NULL
     ORDER BY m.mistake_repetition DESC, s.id, m.verse_number, m.id
   ''');
@@ -229,7 +230,7 @@ class SqlCubit extends Cubit<SqlState> {
     // for (final row in homeScreenData) {
     //   if (kDebugMode) {
     //     print('Surah: ${row['surah']}');
-    //     print('Surah ID: ${row['surah_id']}');
+    //     print('Surah ID: ${row['surah_number']}');
     //     print('Mistake Counter: ${row['mistake_counter']}');
     //     print('Mistake ID: ${row['mistake_id']}');
     //     print('Verse Number: ${row['verse_number']}');
@@ -244,7 +245,7 @@ class SqlCubit extends Cubit<SqlState> {
     for (final surah in homeScreenSurahData) {
       // if (kDebugMode) {
       //   print('Surah: ${surah['surah']}');
-      //   print('Surah ID: ${surah['surah_id']}');
+      //   print('Surah ID: ${surah['surah_number']}');
       //   print('Mistake Counter: ${surah['mistake_counter']}');
       // }
       if (kDebugMode) {
@@ -252,7 +253,7 @@ class SqlCubit extends Cubit<SqlState> {
       }
       for (final mistake in surah) {
         if (kDebugMode) {
-          print('Mistake ID: ${mistake['mistake_id']}');
+          print('ID: ${mistake['mistake_id']}');
           print('Verse Number: ${mistake['verse_number']}');
           print('Page Number: ${mistake['page_number']}');
           print('Juz Number: ${mistake['juz_number']}');
@@ -266,12 +267,51 @@ class SqlCubit extends Cubit<SqlState> {
     }
   }
 
-  void deleteDatabase({
-    required int mistakeId,
+  void updateDatabase({
+    required int id,
+    required int surahNumber,
+    required int verseNumber,
+    required int mistakeKind,
+    required String mistake,
+    required String note,
+    required int mistakeRepetition,
   }) {
-    database
-        .rawDelete('DELETE FROM surah_mistakes WHERE id = ?', [mistakeId]).then(
-            (value) async {
+    int pageNumber = quran.getPageNumber(surahNumber, verseNumber);
+    int juzNumber = quran.getJuzNumber(surahNumber, verseNumber);
+    database.rawUpdate('''
+    UPDATE surah_mistakes
+    SET
+      surah_number = ?,
+      verse_number = ?, 
+      page_number = ?, 
+      juz_number = ?, 
+      mistake_kind = ?, 
+      mistake = ?,
+      note = ?,
+      mistake_repetition = ?
+    WHERE id = ?
+    ''', [
+      surahNumber,
+      verseNumber,
+      pageNumber,
+      juzNumber,
+      mistakeKind,
+      mistake,
+      note,
+      mistakeRepetition,
+      id
+    ]).then((value) {
+      emit(UpdateDatabaseState());
+      getDatabase(database);
+      debugPrint('database updated: $value');
+    });
+  }
+
+  void deleteFromDatabase({
+    required int id,
+  }) {
+    database.rawDelete('DELETE FROM surah_mistakes WHERE id = ?', [id]).then(
+        (value) async {
       if (kDebugMode) {
         print('$value deleted successfully');
       }

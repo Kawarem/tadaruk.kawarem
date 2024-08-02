@@ -233,4 +233,4 @@ List<int> quranSurahVerses = [
   5,
   6,
 ];
-const List<String> mistakeKinds = ['نقص', 'إبدال', 'زيادة', 'تشكيل', 'مجمل'];
+const List<String> mistakeKinds = ['مجمل', 'نقص', 'زيادة', 'تشكيل', 'إبدال'];

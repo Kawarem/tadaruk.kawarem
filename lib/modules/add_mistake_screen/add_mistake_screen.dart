@@ -2,13 +2,34 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:get/get.dart' as Get;
 import 'package:tadarok/constants/data.dart';
+import 'package:tadarok/modules/home_screen/home_screen.dart';
 import 'package:tadarok/state_management/app_bloc/app_bloc.dart';
 import 'package:tadarok/state_management/sql_cubit/sql_cubit.dart';
 import 'package:vibration/vibration.dart';
 
 class AddMistakeScreen extends StatefulWidget {
-  const AddMistakeScreen({super.key});
+  final bool isEdit;
+  final int? id;
+  final int? surahNumber;
+  final int? verseNumber;
+  final int? mistakeKind;
+  final String? mistake;
+  final String? note;
+  final double? mistakeRepetition;
+
+  const AddMistakeScreen({
+    super.key,
+    required this.isEdit,
+    this.id,
+    this.surahNumber,
+    this.verseNumber,
+    this.mistakeKind,
+    this.mistake,
+    this.note,
+    this.mistakeRepetition,
+  });
 
   @override
   State<AddMistakeScreen> createState() => _AddMistakeScreenState();
@@ -22,29 +43,63 @@ class _AddMistakeScreenState extends State<AddMistakeScreen> {
   final _listWheelScrollSurahController = FixedExtentScrollController();
   final _listWheelScrollMistakeKindController = FixedExtentScrollController();
 
-  void _insertData(context, AppBloc appBloc) {
+  void _insertData(context) {
     BlocProvider.of<SqlCubit>(context).insertToDatabase(
-        surahId: _listWheelScrollSurahController.selectedItem + 1,
+        surahNumber: _listWheelScrollSurahController.selectedItem + 1,
         verseNumber: _listWheelScrollVerseController.selectedItem + 1,
         mistakeKind: _listWheelScrollMistakeKindController.selectedItem + 1,
         mistake: _mistakeController.text,
         note: _noteController.text,
-        mistakeRepetition: appBloc.mistakeRepetition);
+        mistakeRepetition: BlocProvider.of<AppBloc>(context).mistakeRepetition);
+  }
+
+  void _updateData(context) {
+    BlocProvider.of<SqlCubit>(context).updateDatabase(
+        id: widget.id!,
+        surahNumber: _listWheelScrollSurahController.selectedItem + 1,
+        verseNumber: _listWheelScrollVerseController.selectedItem + 1,
+        mistakeKind: _listWheelScrollMistakeKindController.selectedItem + 1,
+        mistake: _mistakeController.text,
+        note: _noteController.text,
+        mistakeRepetition: BlocProvider.of<AppBloc>(context).mistakeRepetition);
   }
 
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _listWheelScrollVerseController.jumpToItem(5);
-      _listWheelScrollVerseController.animateToItem(0,
-          duration: const Duration(milliseconds: 1000),
-          curve: Curves.easeInOut);
-      _listWheelScrollSurahController.jumpToItem(3);
-      _listWheelScrollSurahController.animateToItem(0,
-          duration: const Duration(milliseconds: 1000),
-          curve: Curves.easeInOut);
-    });
+    if (widget.isEdit) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        // _listWheelScrollSurahController.jumpToItem(3);
+        _listWheelScrollSurahController.animateToItem(widget.surahNumber! - 1,
+            duration: const Duration(milliseconds: 1000),
+            curve: Curves.easeInOut);
+        // _listWheelScrollVerseController.jumpToItem(5);
+        _listWheelScrollVerseController.animateToItem(widget.verseNumber! - 1,
+            duration: const Duration(milliseconds: 1000),
+            curve: Curves.easeInOut);
+        _listWheelScrollMistakeKindController.animateToItem(
+            widget.mistakeKind! - 1,
+            duration: const Duration(milliseconds: 1000),
+            curve: Curves.easeInOut);
+        BlocProvider.of<AppBloc>(context).add(ChangeMistakeRepetitionEvent(
+            mistakeRepetition: widget.mistakeRepetition!));
+        BlocProvider.of<AppBloc>(context)
+            .add(ChangeMistakeKindEvent(mistakeKind: widget.mistakeKind! - 1));
+        _mistakeController.text = widget.mistake!;
+        _noteController.text = widget.note!;
+      });
+    } else {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _listWheelScrollSurahController.jumpToItem(3);
+        _listWheelScrollSurahController.animateToItem(0,
+            duration: const Duration(milliseconds: 1000),
+            curve: Curves.easeInOut);
+        _listWheelScrollVerseController.jumpToItem(5);
+        _listWheelScrollVerseController.animateToItem(0,
+            duration: const Duration(milliseconds: 1000),
+            curve: Curves.easeInOut);
+      });
+    }
   }
 
   @override
@@ -59,6 +114,7 @@ class _AddMistakeScreenState extends State<AddMistakeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    int? id = widget.id;
     return BlocBuilder<AppBloc, AppState>(
       builder: (context, state) {
         var appBloc = AppBloc.get(context);
@@ -69,10 +125,135 @@ class _AddMistakeScreenState extends State<AddMistakeScreen> {
             ),
             leading: IconButton(
               onPressed: () {
-                Navigator.pop(context);
+                Get.Get.back();
               },
               icon: const Icon(Icons.arrow_back_ios_rounded),
             ),
+            actions: [
+              if (widget.isEdit)
+                IconButton(
+                    onPressed: () {
+                      showGeneralDialog(
+                          context: context,
+                          pageBuilder: (context, animation1, animation2) {
+                            return Container();
+                          },
+                          barrierDismissible: true,
+                          barrierLabel: '',
+                          //transitionDuration: const Duration(microseconds: 400),
+                          transitionBuilder: (context, a1, a2, widget) {
+                            return ScaleTransition(
+                                scale: Tween<double>(begin: 0.5, end: 1)
+                                    .animate(a1),
+                                child: FadeTransition(
+                                    opacity: Tween<double>(begin: 0.5, end: 1)
+                                        .animate(a1),
+                                    child: AlertDialog(
+                                      backgroundColor: Theme.of(context)
+                                          .scaffoldBackgroundColor,
+                                      shape: OutlineInputBorder(
+                                        borderSide: BorderSide.none,
+                                        borderRadius:
+                                            BorderRadius.circular(8).r,
+                                      ),
+                                      content: SizedBox(
+                                        width: 300.w,
+                                        child: Column(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            SizedBox(
+                                              height: 8.h,
+                                            ),
+                                            Text(
+                                              'هل أنت متأكد أنك تريد حذف هذا الخطأ؟',
+                                              style: Theme.of(context)
+                                                  .textTheme
+                                                  .displayLarge,
+                                              textAlign: TextAlign.center,
+                                            ),
+                                            SizedBox(
+                                              height: 32.h,
+                                            ),
+                                            ElevatedButton(
+                                              onPressed: () {
+                                                BlocProvider.of<SqlCubit>(
+                                                        context)
+                                                    .deleteFromDatabase(
+                                                        id: id!);
+                                                Get.Get.offAll(
+                                                    () => const HomeScreen());
+                                              },
+                                              style: ElevatedButton.styleFrom(
+                                                minimumSize: Size(170.w, 43.h),
+                                                shape: RoundedRectangleBorder(
+                                                    borderRadius:
+                                                        BorderRadius.circular(8)
+                                                            .r),
+                                              ),
+                                              child: Padding(
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                            vertical: 8)
+                                                        .h,
+                                                child: Text(
+                                                  'حذف',
+                                                  style: Theme.of(context)
+                                                      .textTheme
+                                                      .displayLarge,
+                                                ),
+                                              ),
+                                            ),
+                                            SizedBox(
+                                              height: 8.h,
+                                            ),
+                                            SizedBox(
+                                              width: 170.w,
+                                              height: 43.h,
+                                              child: TextButton(
+                                                onPressed: () {
+                                                  Get.Get.back();
+                                                },
+                                                style: ButtonStyle(
+                                                  shape: WidgetStateProperty.all<
+                                                      RoundedRectangleBorder>(
+                                                    RoundedRectangleBorder(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                                  8)
+                                                              .r,
+                                                    ),
+                                                  ),
+                                                  overlayColor:
+                                                      WidgetStateProperty
+                                                          .resolveWith<Color>(
+                                                    (Set<WidgetState> states) {
+                                                      if (states.contains(
+                                                          WidgetState
+                                                              .pressed)) {
+                                                        return Colors.grey
+                                                            .withOpacity(0.1);
+                                                      }
+                                                      return Colors.transparent;
+                                                    },
+                                                  ),
+                                                ),
+                                                child: Text(
+                                                  'تراجع',
+                                                  style: Theme.of(context)
+                                                      .textTheme
+                                                      .displayLarge,
+                                                ),
+                                              ),
+                                            )
+                                          ],
+                                        ),
+                                      ),
+                                    )));
+                          });
+                    },
+                    icon: const Icon(Icons.delete_outline_rounded)),
+              const SizedBox()
+            ],
           ),
           body: CustomScrollView(slivers: [
             SliverFillRemaining(
@@ -228,7 +409,7 @@ class _AddMistakeScreenState extends State<AddMistakeScreen> {
                             ),
                             Stack(children: [
                               SizedBox(
-                                width: 40.w,
+                                width: 46.w,
                                 height: 60.h,
                                 child: ShaderMask(
                                   shaderCallback: (bounds) {
@@ -284,7 +465,7 @@ class _AddMistakeScreenState extends State<AddMistakeScreen> {
                                       ),
                                       Container(
                                         height: 1.h,
-                                        width: 24.w,
+                                        width: 30.w,
                                         color: Theme.of(context).primaryColor,
                                       ),
                                     ],
@@ -299,7 +480,7 @@ class _AddMistakeScreenState extends State<AddMistakeScreen> {
                                       ),
                                       Container(
                                         height: 1.h,
-                                        width: 24.w,
+                                        width: 30.w,
                                         color: Theme.of(context).primaryColor,
                                       ),
                                     ],
@@ -618,18 +799,30 @@ class _AddMistakeScreenState extends State<AddMistakeScreen> {
                           onPressed: () {
                             if (_listWheelScrollMistakeKindController
                                     .selectedItem ==
-                                4) {
-                              _insertData(context, appBloc);
-                              Navigator.pop(context);
+                                0) {
+                              if (widget.isEdit) {
+                                _updateData(context);
+                                Get.Get.back();
+                                Get.Get.back();
+                              } else {
+                                _insertData(context);
+                                Get.Get.back();
+                              }
                             } else if (formKey.currentState!.validate()) {
-                              _insertData(context, appBloc);
-                              Navigator.pop(context);
+                              if (widget.isEdit) {
+                                _updateData(context);
+                                Get.Get.back();
+                                Get.Get.back();
+                              } else {
+                                _insertData(context);
+                                Get.Get.back();
+                              }
                             } else {
                               Vibration.vibrate(duration: 50);
                             }
                           },
                           child: Text(
-                            'حفظ',
+                            widget.isEdit ? 'تعديل' : 'حفظ',
                             style: Theme.of(context).textTheme.displayLarge,
                           ),
                         );

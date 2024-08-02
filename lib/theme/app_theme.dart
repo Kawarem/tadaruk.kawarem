@@ -52,9 +52,11 @@ final appThemeData = {
       displayMedium:
           TextStyle(color: Colors.white, fontSize: 16.sp, fontFamily: 'Rubik'),
       displaySmall:
-          TextStyle(color: Colors.white, fontSize: 11.sp, fontFamily: 'Rubik'),
+          TextStyle(color: Colors.white, fontSize: 12.sp, fontFamily: 'Rubik'),
       headlineLarge:
           TextStyle(color: Colors.white, fontSize: 24.sp, fontFamily: 'Rubik'),
+      titleMedium:
+          TextStyle(color: Colors.white, fontSize: 14.sp, fontFamily: 'Rubik'),
     ),
     sliderTheme: SliderThemeData(
       activeTrackColor: theme0.primaryColor,
@@ -75,7 +77,9 @@ final appThemeData = {
         backgroundColor: theme0.primaryColor,
         foregroundColor: theme0.textColor,
         minimumSize: Size(170.w, 43.h),
-        shape: const RoundedRectangleBorder(),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(8).r,
+        ),
       ),
     ),
     expansionTileTheme: ExpansionTileThemeData(

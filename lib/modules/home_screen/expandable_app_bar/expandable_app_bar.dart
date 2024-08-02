@@ -102,7 +102,7 @@ class ExpandableAppBar extends StatelessWidget {
                             return Row(
                               children: [
                                 Text(
-                                  'عرض حسب:',
+                                  'عرض:',
                                   style:
                                       Theme.of(context).textTheme.displaySmall,
                                 ),

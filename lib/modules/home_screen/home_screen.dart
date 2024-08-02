@@ -60,9 +60,14 @@ class HomeScreen extends StatelessWidget {
                             onPressed: () {
                               bloc.BlocProvider.of<AppBloc>(context)
                                   .resetAddMistakeScreen();
-                              Get.to(() => const AddMistakeScreen(),
+                              Get.to(
+                                  () => const AddMistakeScreen(
+                                        isEdit: false,
+                                      ),
                                   transition: Transition.fade);
                             },
+                            style: ElevatedButton.styleFrom(
+                                shape: const RoundedRectangleBorder()),
                             child: Text(
                               'إضافة خطأ',
                               style: Theme.of(context).textTheme.displayLarge,
