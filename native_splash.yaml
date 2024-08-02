@@ -1,0 +1,13 @@
+flutter_native_splash:
+  android: true
+  ios: false
+  web: false
+
+  color: '#005154'
+  image: 'assets/tadaruk_app_icon.png'
+
+  android_12:
+    color: '#005154'
+    image: 'assets/tadaruk_app_icon.png'
+
+#dart run flutter_native_splash:create --path=native_splash.yaml
