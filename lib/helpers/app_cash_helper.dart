@@ -16,7 +16,7 @@ class AppCacheHelper {
     if (cachedIsNotificationsActivated != null) {
       return cachedIsNotificationsActivated;
     } else {
-      return true;
+      return false;
     }
   }
 
@@ -78,6 +78,22 @@ class AppCacheHelper {
       return TimeOfDay(hour: hour, minute: minute);
     } else {
       return const TimeOfDay(hour: 20, minute: 0);
+    }
+  }
+
+  Future<void> cacheIdsList(List<int> notificationsIdsList) async {
+    final sharedPreferences = await SharedPreferences.getInstance();
+    await sharedPreferences.setString(
+        'NOTIFICATIONS_IDS_LIST', notificationsIdsList.join(','));
+  }
+
+  Future<List<int>> getCachedIdsList() async {
+    final sharedPreferences = await SharedPreferences.getInstance();
+    final stringList = sharedPreferences.getString('NOTIFICATIONS_IDS_LIST');
+    if (stringList != null) {
+      return stringList.split(',').map((item) => int.parse(item)).toList();
+    } else {
+      return [];
     }
   }
 }

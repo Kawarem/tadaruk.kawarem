@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:tadarok/constants/components.dart';
 import 'package:tadarok/modules/home_screen/animated_gradiant_container.dart';
 import 'package:tadarok/modules/home_screen/expandable_app_bar/fade_animation.dart';
 import 'package:tadarok/modules/home_screen/home_screen.dart';
@@ -84,56 +83,56 @@ class ExpandableAppBar extends StatelessWidget {
                           animation: animation,
                           isExpandedWidget: true,
                           child: expandedWidget!)),
-                FadeAnimation(
-                  animation: animation,
-                  isExpandedWidget: true,
-                  child: Align(
-                    alignment: Alignment.bottomCenter,
-                    child: Container(
-                      width: double.infinity,
-                      // TODO: change color to adapt to Theme
-                      color: const Color(0xff02786A),
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                                horizontal: 16.0, vertical: 4)
-                            .r,
-                        child: BlocBuilder<AppBloc, AppState>(
-                          builder: (context, state) {
-                            return Row(
-                              children: [
-                                Text(
-                                  'عرض:',
-                                  style:
-                                      Theme.of(context).textTheme.displaySmall,
-                                ),
-                                SizedBox(
-                                  width: 8.w,
-                                ),
-                                buttonInHomeScreen(context,
-                                    title: 'السور', index: 0),
-                                SizedBox(
-                                  width: 8.w,
-                                ),
-                                buttonInHomeScreen(context,
-                                    title: 'الصفحات', index: 1),
-                                SizedBox(
-                                  width: 8.w,
-                                ),
-                                buttonInHomeScreen(context,
-                                    title: 'الأجزاء', index: 2),
-                                SizedBox(
-                                  width: 8.w,
-                                ),
-                                buttonInHomeScreen(context,
-                                    title: 'تكرار الخطأ', index: 3),
-                              ],
-                            );
-                          },
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
+                // FadeAnimation(
+                //   animation: animation,
+                //   isExpandedWidget: true,
+                //   child: Align(
+                //     alignment: Alignment.bottomCenter,
+                //     child: Container(
+                //       width: double.infinity,
+                //       // TODO: change color to adapt to Theme
+                //       color: const Color(0xff02786A),
+                //       child: Padding(
+                //         padding: const EdgeInsets.symmetric(
+                //                 horizontal: 16.0, vertical: 4)
+                //             .r,
+                //         child: BlocBuilder<AppBloc, AppState>(
+                //           builder: (context, state) {
+                //             return Row(
+                //               children: [
+                //                 Text(
+                //                   'عرض:',
+                //                   style:
+                //                       Theme.of(context).textTheme.displaySmall,
+                //                 ),
+                //                 SizedBox(
+                //                   width: 8.w,
+                //                 ),
+                //                 buttonInHomeScreen(context,
+                //                     title: 'السور', index: 0),
+                //                 SizedBox(
+                //                   width: 8.w,
+                //                 ),
+                //                 buttonInHomeScreen(context,
+                //                     title: 'الصفحات', index: 1),
+                //                 SizedBox(
+                //                   width: 8.w,
+                //                 ),
+                //                 buttonInHomeScreen(context,
+                //                     title: 'الأجزاء', index: 2),
+                //                 SizedBox(
+                //                   width: 8.w,
+                //                 ),
+                //                 buttonInHomeScreen(context,
+                //                     title: 'تكرار الخطأ', index: 3),
+                //               ],
+                //             );
+                //           },
+                //         ),
+                //       ),
+                //     ),
+                //   ),
+                // ),
                 SafeArea(
                   child: Align(
                     alignment: Alignment.topCenter,
@@ -189,8 +188,8 @@ class ExpandableAppBar extends StatelessWidget {
             final isCollapsed = appBarState.pixels >
                 (appBarState.maxScrollExtent) - kToolbarHeight;
             if (isCollapsed !=
-                BlocProvider.of<AppBloc>(context).appBarIsCollapsed) {
-              BlocProvider.of<AppBloc>(context).appBarIsCollapsed = isCollapsed;
+                BlocProvider.of<AppBloc>(context).isAppBarCollapsed) {
+              BlocProvider.of<AppBloc>(context).isAppBarCollapsed = isCollapsed;
               BlocProvider.of<AppBloc>(context).add(AppBarCollapsedEvent());
             }
             return false;

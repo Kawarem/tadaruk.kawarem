@@ -3,6 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:quran/quran.dart' as quran;
 import 'package:sqflite/sqflite.dart';
 import 'package:tadarok/constants/data.dart';
+import 'package:tadarok/helpers/app_cash_helper.dart';
+import 'package:tadarok/state_management/app_bloc/app_bloc.dart';
 
 part 'sql_state.dart';
 
@@ -16,6 +18,9 @@ class SqlCubit extends Cubit<SqlState> {
   List<List<Map<String, dynamic>>> homeScreenPageNumberData = [];
   List<List<Map<String, dynamic>>> homeScreenJuzNumberData = [];
   List<List<Map<String, dynamic>>> homeScreenMistakeRepetitionSurahData = [];
+  static Map<int, Map<String, dynamic>> idData = {};
+  static List<int> notificationsIdsList = [];
+  static int counter = 0;
 
   Future<void> ensureDatabaseInitialized() async {
     await createDatabase();
@@ -180,6 +185,20 @@ class SqlCubit extends Cubit<SqlState> {
       }
       juzGroupedData[juzNumber]!.add(row);
     }
+    // Group the raw data by mistake_id
+    notificationsIdsList.clear();
+    Map<int, Map<String, dynamic>> idGroupedData = {};
+    for (final row in rawData) {
+      final id = row['mistake_id'] as int;
+      idGroupedData[id] = row;
+      for (int i = 0; i < row['mistake_repetition']; i++) {
+        notificationsIdsList.add(row['mistake_id']);
+        counter++;
+      }
+      if (kDebugMode) {
+        print(notificationsIdsList);
+      }
+    }
     // Reorder data according to mistake_repetition
     rawData = await db.rawQuery('''
     SELECT 
@@ -222,6 +241,9 @@ class SqlCubit extends Cubit<SqlState> {
         mistakeRepetitionGroupedData.entries.map((entry) {
       return entry.value;
     }).toList();
+    idData = idGroupedData;
+    AppBloc.notificationsIdsList = notificationsIdsList;
+    await AppCacheHelper().cacheIdsList(notificationsIdsList);
     emit(GetDatabaseState());
     displayDatabase();
   }

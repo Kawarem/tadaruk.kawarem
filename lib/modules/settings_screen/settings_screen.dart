@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart' as bloc;
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:tadarok/constants/data.dart';
-import 'package:tadarok/modules/themes_screen/themes_screen.dart';
+import 'package:tadarok/helpers/local_notifications_helper.dart';
 import 'package:tadarok/state_management/app_bloc/app_bloc.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:vibration/vibration.dart';
 
 class SettingsScreen extends StatelessWidget {
   SettingsScreen({super.key});
@@ -38,35 +40,35 @@ class SettingsScreen extends StatelessWidget {
                 children: [
                   Column(
                     children: [
-                      InkWell(
-                        onTap: () {
-                          Get.to(() => const ThemesScreen(),
-                              transition: Transition.leftToRightWithFade);
-                        },
-                        child: Container(
-                          padding: const EdgeInsets.all(16).r,
-                          child: Row(
-                            children: [
-                              const Icon(Icons.storefront),
-                              SizedBox(
-                                width: 16.w,
-                              ),
-                              Text(
-                                'الثيمات',
-                                style: Theme.of(context).textTheme.bodyLarge,
-                              ),
-                              const Expanded(
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.end,
-                                  children: [
-                                    Icon(Icons.arrow_forward_ios_rounded),
-                                  ],
-                                ),
-                              )
-                            ],
-                          ),
-                        ),
-                      ),
+                      // InkWell(
+                      //   onTap: () {
+                      //     Get.to(() => const ThemesScreen(),
+                      //         transition: Transition.leftToRightWithFade);
+                      //   },
+                      //   child: Container(
+                      //     padding: const EdgeInsets.all(16).r,
+                      //     child: Row(
+                      //       children: [
+                      //         const Icon(Icons.storefront),
+                      //         SizedBox(
+                      //           width: 16.w,
+                      //         ),
+                      //         Text(
+                      //           'الثيمات',
+                      //           style: Theme.of(context).textTheme.bodyLarge,
+                      //         ),
+                      //         const Expanded(
+                      //           child: Row(
+                      //             mainAxisAlignment: MainAxisAlignment.end,
+                      //             children: [
+                      //               Icon(Icons.arrow_forward_ios_rounded),
+                      //             ],
+                      //           ),
+                      //         )
+                      //       ],
+                      //     ),
+                      //   ),
+                      // ),
                       Padding(
                         padding: const EdgeInsets.symmetric(
                                 horizontal: 16.0, vertical: 8)
@@ -96,11 +98,41 @@ class SettingsScreen extends StatelessWidget {
                                   children: [
                                     Switch(
                                       value: appBloc.isNotificationsActivated,
-                                      onChanged: (isNotificationsActivated) {
-                                        appBloc.add(
-                                            ChangeNotificationsActivationEvent(
-                                                isNotificationsActivated:
-                                                    isNotificationsActivated));
+                                      onChanged:
+                                          (isNotificationsActivated) async {
+                                        if (isNotificationsActivated) {
+                                          bool areNotificationsEnabled =
+                                              await LocalNotificationsHelper
+                                                  .isAndroidPermissionGranted();
+                                          if (areNotificationsEnabled) {
+                                            if (AppBloc
+                                                .notificationsIdsList.isEmpty) {
+                                              Fluttertoast.showToast(
+                                                  msg:
+                                                      'يرجى إضافة خطأ لتفعيل الإشعارات');
+                                            } else {
+                                              appBloc.add(
+                                                  ChangeNotificationsActivationEvent(
+                                                      isNotificationsActivated:
+                                                          isNotificationsActivated));
+                                              Fluttertoast.showToast(
+                                                  msg: 'تم تفعيل الإشعارات');
+                                            }
+                                          } else {
+                                            Vibration.vibrate(duration: 50);
+                                            Fluttertoast.showToast(
+                                                msg: 'يرجى تفعيل الإشعارات');
+                                            LocalNotificationsHelper
+                                                .requestPermissions();
+                                          }
+                                        } else {
+                                          appBloc.add(
+                                              ChangeNotificationsActivationEvent(
+                                                  isNotificationsActivated:
+                                                      isNotificationsActivated));
+                                          Fluttertoast.showToast(
+                                              msg: 'تم إلغاء تفعيل الإشعارات');
+                                        }
                                       },
                                     ),
                                   ],
@@ -137,14 +169,14 @@ class SettingsScreen extends StatelessWidget {
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 Text(
-                                  appBloc.notificationsNumber.toString(),
+                                  AppBloc.notificationsNumber.toString(),
                                   style:
                                       Theme.of(context).textTheme.displayLarge,
                                 ),
                               ],
                             ),
                             Slider(
-                              value: appBloc.notificationsNumber.toDouble(),
+                              value: AppBloc.notificationsNumber.toDouble(),
                               onChanged: (value) {
                                 if (appBloc.isNotificationsActivated) {
                                   appBloc.add(ChangeNotificationsNumberEvent(
@@ -192,7 +224,7 @@ class SettingsScreen extends StatelessWidget {
                                               .isNotificationsActivated) {
                                             showTimePicker(
                                                     context: context,
-                                                    initialTime: appBloc
+                                                    initialTime: AppBloc
                                                         .notificationStartTime)
                                                 .then((value) {
                                               appBloc.add(
@@ -213,10 +245,10 @@ class SettingsScreen extends StatelessWidget {
                                             child: Center(
                                               child: Text(
                                                   appBloc.convertTimeToString(
-                                                      hour: appBloc
+                                                      hour: AppBloc
                                                           .notificationStartTime
                                                           .hour,
-                                                      minute: appBloc
+                                                      minute: AppBloc
                                                           .notificationStartTime
                                                           .minute),
                                                   style: Theme.of(context)
@@ -244,7 +276,7 @@ class SettingsScreen extends StatelessWidget {
                                             showTimePicker(
                                               context: context,
                                               initialTime:
-                                                  appBloc.notificationEndTime,
+                                                  AppBloc.notificationEndTime,
                                             ).then((value) {
                                               appBloc.add(
                                                   ChangeNotificationsEndTimeEvent(
@@ -264,10 +296,10 @@ class SettingsScreen extends StatelessWidget {
                                             child: Center(
                                               child: Text(
                                                   appBloc.convertTimeToString(
-                                                      hour: appBloc
+                                                      hour: AppBloc
                                                           .notificationEndTime
                                                           .hour,
-                                                      minute: appBloc
+                                                      minute: AppBloc
                                                           .notificationEndTime
                                                           .minute),
                                                   style: Theme.of(context)
@@ -285,7 +317,15 @@ class SettingsScreen extends StatelessWidget {
                       ),
                       InkWell(
                         onTap: () async {
-                          await Share.share(TELEGRAM_CHANNEL_LINK);
+                          await Share.share(
+                              '''تطبيق تدارُك - الحل الأمثل لإدارة عملية المراجعة الذاتية\n
+هل تواجه صعوبة في تتبع أخطائك أثناء حفظ القرآن الكريم والاحتفاظ بها لإعادة المراجعة؟ تطبيق تدارُك هو الحل الذي تحتاجه!\n
+تطبيق تدارُك يمنحك تجربة مراجعة ذاتية فريدة من نوعها، حيث يمكنك بسهولة تسجيل وتخزين أخطاءك لمراجعتها لاحقًا. ما عليك سوى إدخال الأخطاء في التطبيق، وسيقوم بتنظيمها وحفظها بشكل آمن.\n
+لكن الأمر لا ينتهي هنا! تطبيق تدارُك يذهب إلى أبعد من ذلك بدعمه لإشعارات تذكرك بأخطائك لمراجعتها. ما عليك سوى ضبط الفترات الزمنية التي تناسبك، والتطبيق سيرسل إشعارات في الوقت المناسب لتذكيرك بمراجعة أخطائك.\n
+وللمزيد من التخصيص، يمكنك اختيار ألوان التطبيق بما يتناسب مع ذوقك الشخصي. كما يوفر لك إمكانية عمل نسخة احتياطية لأخطائك، لضمان عدم فقدانها.\n
+كل هذه الميزات مدمجة في تصميم جميل وسهل التفاعل، ليمنحك تجربة مراجعة ذاتية سلسة وممتعة.\n
+قم بتنزيل تطبيق تدارُك الآن واكتشف الفرق الذي سيحدثه في عملية مراجعتك الذاتية!\n
+لتحميل التطبيق اضغط على الرابط التالي: $TELEGRAM_CHANNEL_LINK''');
                         },
                         child: Container(
                           padding: const EdgeInsets.all(16).r,
@@ -372,7 +412,7 @@ class SettingsScreen extends StatelessWidget {
                           duration: const Duration(milliseconds: 250),
                           child: Center(
                             child: Text(
-                                'سيتم عرض إشعار كل ${appBloc.timeBetweenEachNotifications} دقيقة تقريباً',
+                                'سيتم عرض إشعار كل ${AppBloc.timeBetweenEachNotifications} دقيقة تقريباً',
                                 style:
                                     Theme.of(context).textTheme.displaySmall),
                           ),

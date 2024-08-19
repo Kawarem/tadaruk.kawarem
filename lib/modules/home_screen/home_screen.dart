@@ -1,8 +1,10 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart' as bloc;
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:tadarok/constants/components.dart';
+import 'package:tadarok/helpers/local_notifications_helper.dart';
 import 'package:tadarok/modules/add_mistake_screen/add_mistake_screen.dart';
 import 'package:tadarok/modules/home_screen/expandable_app_bar/expandable_app_bar.dart';
 import 'package:tadarok/modules/home_screen/scroll_to_hide_widget.dart';
@@ -12,8 +14,31 @@ import 'package:tadarok/state_management/sql_cubit/sql_cubit.dart';
 
 ScrollController scrollController = ScrollController();
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  @override
+  void initState() {
+    super.initState();
+
+//  to listen to any notification clicked
+    listenToNotificationStream();
+  }
+
+  void listenToNotificationStream() {
+    LocalNotificationsHelper.streamController.stream
+        .listen((notificationResponse) async {
+      if (kDebugMode) {
+        print(notificationResponse.payload!.toString());
+      }
+      showMistakeDialog(context, notificationResponse.payload!);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -40,7 +65,7 @@ class HomeScreen extends StatelessWidget {
                           Get.to(() => SettingsScreen(),
                               transition: Transition.leftToRightWithFade);
                         },
-                        icon: const Icon(Icons.settings))
+                        icon: const Icon(Icons.settings)),
                   ],
                   sliverList: SliverList(
                     delegate: SliverChildBuilderDelegate((context, index) {

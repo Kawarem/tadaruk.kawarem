@@ -4,7 +4,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart' as Get;
 import 'package:tadarok/constants/data.dart';
-import 'package:tadarok/modules/home_screen/home_screen.dart';
 import 'package:tadarok/state_management/app_bloc/app_bloc.dart';
 import 'package:tadarok/state_management/sql_cubit/sql_cubit.dart';
 import 'package:vibration/vibration.dart';
@@ -12,23 +11,11 @@ import 'package:vibration/vibration.dart';
 class AddMistakeScreen extends StatefulWidget {
   final bool isEdit;
   final int? id;
-  final int? surahNumber;
-  final int? verseNumber;
-  final int? mistakeKind;
-  final String? mistake;
-  final String? note;
-  final double? mistakeRepetition;
 
   const AddMistakeScreen({
     super.key,
     required this.isEdit,
     this.id,
-    this.surahNumber,
-    this.verseNumber,
-    this.mistakeKind,
-    this.mistake,
-    this.note,
-    this.mistakeRepetition,
   });
 
   @override
@@ -68,25 +55,28 @@ class _AddMistakeScreenState extends State<AddMistakeScreen> {
   void initState() {
     super.initState();
     if (widget.isEdit) {
+      BlocProvider.of<AppBloc>(context).add(ChangeSurahInAddMistakeScreenEvent(
+          surahNumber: SqlCubit.idData[widget.id]!['surah_number']! - 1));
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        // _listWheelScrollSurahController.jumpToItem(3);
-        _listWheelScrollSurahController.animateToItem(widget.surahNumber! - 1,
+        _listWheelScrollSurahController.animateToItem(
+            SqlCubit.idData[widget.id]!['surah_number']! - 1,
             duration: const Duration(milliseconds: 1000),
             curve: Curves.easeInOut);
-        // _listWheelScrollVerseController.jumpToItem(5);
-        _listWheelScrollVerseController.animateToItem(widget.verseNumber! - 1,
+        _listWheelScrollVerseController.animateToItem(
+            SqlCubit.idData[widget.id]!['verse_number']! - 1,
             duration: const Duration(milliseconds: 1000),
             curve: Curves.easeInOut);
         _listWheelScrollMistakeKindController.animateToItem(
-            widget.mistakeKind! - 1,
+            SqlCubit.idData[widget.id]!['mistake_kind']! - 1,
             duration: const Duration(milliseconds: 1000),
             curve: Curves.easeInOut);
         BlocProvider.of<AppBloc>(context).add(ChangeMistakeRepetitionEvent(
-            mistakeRepetition: widget.mistakeRepetition!));
-        BlocProvider.of<AppBloc>(context)
-            .add(ChangeMistakeKindEvent(mistakeKind: widget.mistakeKind! - 1));
-        _mistakeController.text = widget.mistake!;
-        _noteController.text = widget.note!;
+            mistakeRepetition:
+                SqlCubit.idData[widget.id]!['mistake_repetition']!));
+        BlocProvider.of<AppBloc>(context).add(ChangeMistakeKindEvent(
+            mistakeKind: SqlCubit.idData[widget.id]!['mistake_kind']! - 1));
+        _mistakeController.text = SqlCubit.idData[widget.id]!['mistake']!;
+        _noteController.text = SqlCubit.idData[widget.id]!['note']!;
       });
     } else {
       WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -115,13 +105,14 @@ class _AddMistakeScreenState extends State<AddMistakeScreen> {
   @override
   Widget build(BuildContext context) {
     int? id = widget.id;
+    bool isEdit = widget.isEdit;
     return BlocBuilder<AppBloc, AppState>(
       builder: (context, state) {
         var appBloc = AppBloc.get(context);
         return Scaffold(
           appBar: AppBar(
-            title: const Text(
-              'إضافة خطأ',
+            title: Text(
+              (widget.isEdit) ? 'تعديل الخطأ' : 'إضافة خطأ',
             ),
             leading: IconButton(
               onPressed: () {
@@ -180,8 +171,9 @@ class _AddMistakeScreenState extends State<AddMistakeScreen> {
                                                         context)
                                                     .deleteFromDatabase(
                                                         id: id!);
-                                                Get.Get.offAll(
-                                                    () => const HomeScreen());
+                                                Get.Get.back();
+                                                Get.Get.back();
+                                                Get.Get.back();
                                               },
                                               style: ElevatedButton.styleFrom(
                                                 minimumSize: Size(170.w, 43.h),
@@ -309,20 +301,28 @@ class _AddMistakeScreenState extends State<AddMistakeScreen> {
                                       controller:
                                           _listWheelScrollSurahController,
                                       onSelectedItemChanged: (index) async {
-                                        if (_listWheelScrollVerseController
+                                        if (!isEdit) {
+                                          if (_listWheelScrollVerseController
+                                                      .selectedItem +
+                                                  1 >
+                                              quranSurahVerses[index]) {
+                                            await _listWheelScrollVerseController
+                                                .animateToItem(
+                                                    quranSurahVerses[index] - 1,
+                                                    duration: const Duration(
+                                                        milliseconds: 1000),
+                                                    curve: Curves.easeInOut);
+                                          }
+                                          appBloc.add(
+                                              ChangeSurahInAddMistakeScreenEvent(
+                                                  surahNumber: index));
+                                        } else if (_listWheelScrollSurahController
                                                     .selectedItem +
-                                                1 >
-                                            quranSurahVerses[index]) {
-                                          await _listWheelScrollVerseController
-                                              .animateToItem(
-                                                  quranSurahVerses[index] - 1,
-                                                  duration: const Duration(
-                                                      milliseconds: 1000),
-                                                  curve: Curves.easeInOut);
+                                                1 ==
+                                            SqlCubit.idData[widget.id]![
+                                                'surah_number']) {
+                                          isEdit = false;
                                         }
-                                        appBloc.add(
-                                            ChangeSurahInAddMistakeScreenEvent(
-                                                surahNumber: index));
                                       },
                                       itemExtent: 20.h,
                                       perspective: 0.0001,

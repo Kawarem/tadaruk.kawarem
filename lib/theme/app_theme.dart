@@ -16,20 +16,18 @@ enum AppTheme {
 final appThemeData = {
   AppTheme.greenDark: ThemeData(
     appBarTheme: AppBarTheme(
-      backgroundColor: theme0.appBarColor,
-      titleTextStyle: TextStyle(
-          color: theme0.textColor,
-          fontSize: 18.sp,
-          fontWeight: FontWeight.bold,
-          fontFamily: 'Rubik'),
-      iconTheme: IconThemeData(color: theme0.textColor),
-      // systemOverlayStyle: SystemUiOverlayStyle(
-      //   statusBarBrightness: Brightness.light,
-      // systemNavigationBarColor: theme0.backgroundColor,
-      // systemNavigationBarIconBrightness: Brightness.light,
-      //   //statusBarColor: greenDark.appBarColor
-      // )
-    ),
+        backgroundColor: theme0.appBarColor,
+        titleTextStyle: TextStyle(
+            color: theme0.textColor,
+            fontSize: 18.sp,
+            fontWeight: FontWeight.bold,
+            fontFamily: 'Rubik'),
+        iconTheme: IconThemeData(color: theme0.textColor),
+        systemOverlayStyle: SystemUiOverlayStyle(
+            statusBarColor: Colors.transparent,
+            statusBarBrightness: Brightness.light,
+            systemNavigationBarColor: theme0.backgroundColor,
+            statusBarIconBrightness: Brightness.light)),
     primaryColor: theme0.primaryColor,
     canvasColor: theme0.primaryColor,
     scaffoldBackgroundColor: theme0.backgroundColor,
@@ -57,6 +55,8 @@ final appThemeData = {
           TextStyle(color: Colors.white, fontSize: 24.sp, fontFamily: 'Rubik'),
       titleMedium:
           TextStyle(color: Colors.white, fontSize: 14.sp, fontFamily: 'Rubik'),
+      headlineMedium: TextStyle(
+          color: const Color(0xffCACACE), fontSize: 14.sp, fontFamily: 'Rubik'),
     ),
     sliderTheme: SliderThemeData(
       activeTrackColor: theme0.primaryColor,

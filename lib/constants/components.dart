@@ -3,12 +3,14 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart' as bloc;
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:marqueer/marqueer.dart';
 import 'package:quran/quran.dart' as quran;
 import 'package:tadarok/constants/data.dart';
 import 'package:tadarok/modules/add_mistake_screen/add_mistake_screen.dart';
 import 'package:tadarok/state_management/app_bloc/app_bloc.dart';
+import 'package:tadarok/state_management/sql_cubit/sql_cubit.dart';
 
 Widget buttonInHomeScreen(context,
         {required String title, required int index}) =>
@@ -42,10 +44,17 @@ Widget buttonInHomeScreen(context,
 
 Widget expansionTiles(context, List<Map<String, dynamic>> model) =>
     ExpansionTile(
-      title: Text(
-        'سورة ${model[0]['surah']}',
-        style: Theme.of(context).textTheme.displayLarge,
+      collapsedIconColor: Theme.of(context).textTheme.headlineMedium!.color,
+      title: SvgPicture.asset(
+        'assets/svgs/surah_names/Surah_${model[0]['surah_number']}_of_114_(modified).svg',
+        width: 100,
+        alignment: AlignmentDirectional.topStart,
+        color: Theme.of(context).textTheme.headlineMedium!.color,
       ),
+      // Text(
+      //   'سورة ${model[0]['surah']}',
+      //   style: Theme.of(context).textTheme.displayLarge,
+      // ),
       children: [
         Container(
           color: Theme.of(context).scaffoldBackgroundColor,
@@ -58,14 +67,7 @@ Widget expansionTiles(context, List<Map<String, dynamic>> model) =>
                   (context, index) {
                     if (index.isEven) {
                       return mistakeCard(context,
-                          id: model[index ~/ 2]['mistake_id'],
-                          surahNumber: model[index ~/ 2]['surah_number'],
-                          mistake: model[index ~/ 2]['mistake'],
-                          mistakeKind: model[index ~/ 2]['mistake_kind'],
-                          verseNumber: model[index ~/ 2]['verse_number'],
-                          mistakeRepetition: model[index ~/ 2]
-                              ['mistake_repetition'],
-                          note: model[index ~/ 2]['note']);
+                          id: model[index ~/ 2]['mistake_id']);
                     }
                     return Container(
                       width: double.infinity,
@@ -86,13 +88,14 @@ Widget expansionTiles(context, List<Map<String, dynamic>> model) =>
 Widget mistakeCard(
   context, {
   required int id,
-  required int surahNumber,
-  required String mistake,
-  required int mistakeKind,
-  required int verseNumber,
-  required int mistakeRepetition,
-  required String note,
 }) {
+  final int surahNumber = SqlCubit.idData[id]!['surah_number'];
+  final String mistake = SqlCubit.idData[id]!['mistake'];
+  final int mistakeKind = SqlCubit.idData[id]!['mistake_kind'];
+  final int verseNumber = SqlCubit.idData[id]!['verse_number'];
+  final int mistakeRepetition = SqlCubit.idData[id]!['mistake_repetition'];
+  final String note = SqlCubit.idData[id]!['note'];
+
   String mistakeKindText;
   switch (mistakeKind) {
     case 1:
@@ -154,26 +157,19 @@ Widget mistakeCard(
                             children: [
                               IconButton(
                                   onPressed: () {
+                                    Navigator.pop(context);
+                                  },
+                                  icon: const Icon(Icons.close)),
+                              IconButton(
+                                  onPressed: () {
                                     Get.to(
                                         () => AddMistakeScreen(
                                               isEdit: true,
                                               id: id,
-                                              surahNumber: surahNumber,
-                                              verseNumber: verseNumber,
-                                              mistakeKind: mistakeKind,
-                                              mistake: mistake,
-                                              note: note,
-                                              mistakeRepetition:
-                                                  mistakeRepetition.toDouble(),
                                             ),
                                         transition: Transition.fadeIn);
                                   },
                                   icon: const Icon(Icons.edit)),
-                              IconButton(
-                                  onPressed: () {
-                                    Navigator.pop(context);
-                                  },
-                                  icon: const Icon(Icons.close)),
                             ],
                           ),
                           Row(
@@ -189,7 +185,7 @@ Widget mistakeCard(
                                     Column(
                                       children: [
                                         SizedBox(
-                                          width: 60.w,
+                                          width: 70.w,
                                           height: 22.h,
                                           child: Center(
                                             child: Text(
@@ -295,7 +291,8 @@ Widget mistakeCard(
                           ),
                           if (mistake.isNotEmpty || note.isNotEmpty)
                             Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 8).r,
+                              padding:
+                                  const EdgeInsets.symmetric(vertical: 8).r,
                               child: const Divider(),
                             ),
                           // SizedBox(
@@ -468,4 +465,259 @@ Widget mistakeCard(
       ),
     ),
   );
+}
+
+Future showMistakeDialog(context, String payload) async {
+  final parts = payload.split(',');
+  final int id = int.parse(parts[0].trim());
+  final int surahNumber = int.parse(parts[1].trim());
+  final int verseNumber = int.parse(parts[2].trim());
+  final int mistakeKind = int.parse(parts[3].trim());
+  final int mistakeRepetition = int.parse(parts[4].trim());
+  final String mistake = parts[5].trim();
+  final String note = parts[6].trim();
+  // final int surahNumber = SqlCubit.idData[id]!['surah_number'];
+  // final int verseNumber = SqlCubit.idData[id]!['verse_number'];
+  // final int mistakeKind = SqlCubit.idData[id]!['mistake_kind'];
+  // final int mistakeRepetition = SqlCubit.idData[id]!['mistake_repetition'];
+  // final String mistake = SqlCubit.idData[id]!['mistake'];
+  // final String note = SqlCubit.idData[id]!['note'];
+  return await showGeneralDialog(
+      context: context,
+      pageBuilder: (context, animation1, animation2) {
+        return Container();
+      },
+      barrierDismissible: true,
+      barrierLabel: '',
+//transitionDuration: const Duration(microseconds: 400),
+      transitionBuilder: (context, a1, a2, widget) {
+        return ScaleTransition(
+          scale: Tween<double>(begin: 0.5, end: 1).animate(a1),
+          child: FadeTransition(
+            opacity: Tween<double>(begin: 0.5, end: 1).animate(a1),
+            child: AlertDialog(
+              backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+              shape: OutlineInputBorder(
+                borderSide: BorderSide.none,
+                borderRadius: BorderRadius.circular(8).r,
+              ),
+              content: Container(
+                constraints: BoxConstraints(
+                  maxHeight: 450.h,
+                ),
+                width: 300.w,
+                child: SingleChildScrollView(
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          IconButton(
+                              onPressed: () {
+                                Navigator.pop(context);
+                              },
+                              icon: const Icon(Icons.close)),
+                          IconButton(
+                              onPressed: () {
+                                Get.to(
+                                    () => AddMistakeScreen(
+                                          isEdit: true,
+                                          id: id,
+                                        ),
+                                    transition: Transition.fadeIn);
+                              },
+                              icon: const Icon(Icons.edit)),
+                        ],
+                      ),
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Column(
+                            children: [
+                              SizedBox(
+                                height: 3.h,
+                              ),
+                              Stack(children: [
+                                Column(
+                                  children: [
+                                    SizedBox(
+                                      width: 70.w,
+                                      height: 22.h,
+                                      child: Center(
+                                        child: Text(
+                                          quranSurahNames[surahNumber - 1],
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .displayMedium,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                Column(
+                                  children: [
+                                    Container(
+                                      height: 1.h,
+                                      width: 60.w,
+                                      color: Theme.of(context).primaryColor,
+                                    ),
+                                    SizedBox(
+                                      height: 20.h,
+                                    ),
+                                    Container(
+                                      height: 1.h,
+                                      width: 60.w,
+                                      color: Theme.of(context).primaryColor,
+                                    ),
+                                  ],
+                                )
+                              ])
+                            ],
+                          ),
+                          SizedBox(
+                            width: 8.w,
+                          ),
+                          Text(
+                            ":",
+                            style: TextStyle(
+                                color: Theme.of(context).primaryColor,
+                                fontSize: 18.sp,
+                                fontWeight: FontWeight.bold),
+                          ),
+                          SizedBox(
+                            width: 8.w,
+                          ),
+                          Column(
+                            children: [
+                              SizedBox(
+                                height: 3.h,
+                              ),
+                              Stack(children: [
+                                SizedBox(
+                                  height: 22.h,
+                                  width: 30.w,
+                                  child: Center(
+                                    child: Text(
+                                      '$verseNumber',
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .titleMedium,
+                                    ),
+                                  ),
+                                ),
+                                Column(
+                                  children: [
+                                    Container(
+                                      height: 1.h,
+                                      width: 30.w,
+                                      color: Theme.of(context).primaryColor,
+                                    ),
+                                    SizedBox(
+                                      height: 20.h,
+                                    ),
+                                    Container(
+                                      height: 1.h,
+                                      width: 30.w,
+                                      color: Theme.of(context).primaryColor,
+                                    ),
+                                  ],
+                                )
+                              ])
+                            ],
+                          ),
+                        ],
+                      ),
+                      SizedBox(
+                        height: 12.h,
+                      ),
+                      Center(
+                        child: Text(
+                          quran.getVerse(surahNumber, verseNumber),
+                          style: TextStyle(
+                              fontFamily: 'Uthmani',
+                              fontSize: Theme.of(context)
+                                  .textTheme
+                                  .bodyLarge!
+                                  .fontSize,
+                              color:
+                                  Theme.of(context).textTheme.bodyLarge!.color),
+                        ),
+                      ),
+                      if (mistake.isNotEmpty || note.isNotEmpty)
+                        Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 8).r,
+                          child: const Divider(),
+                        ),
+// SizedBox(
+//   height: 16.h,
+// ),
+                      if (mistake.isNotEmpty)
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'الخطأ: ',
+                              style: TextStyle(
+                                color: const Color(0xffe53835),
+                                fontFamily: Theme.of(context)
+                                    .textTheme
+                                    .bodyMedium!
+                                    .fontFamily,
+                                fontSize: Theme.of(context)
+                                    .textTheme
+                                    .bodyMedium!
+                                    .fontSize,
+                              ),
+                            ),
+                            Expanded(
+                              child: Text(mistake,
+                                  style:
+                                      Theme.of(context).textTheme.bodyMedium),
+                            ),
+                          ],
+                        ),
+                      if (note.isNotEmpty)
+                        Column(
+                          children: [
+                            SizedBox(
+                              height: 8.h,
+                            ),
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'ملاحظة: ',
+                                  style: TextStyle(
+                                    color: const Color(0xff469e4a),
+                                    fontFamily: Theme.of(context)
+                                        .textTheme
+                                        .bodyMedium!
+                                        .fontFamily,
+                                    fontSize: Theme.of(context)
+                                        .textTheme
+                                        .bodyMedium!
+                                        .fontSize,
+                                  ),
+                                ),
+                                Expanded(
+                                  child: Text(note,
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodyMedium),
+                                ),
+                              ],
+                            )
+                          ],
+                        )
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+        );
+      });
 }

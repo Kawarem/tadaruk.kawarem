@@ -1,6 +1,9 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tadarok/helpers/app_cash_helper.dart';
+import 'package:tadarok/helpers/local_notifications_helper.dart';
 
 part 'app_event.dart';
 part 'app_state.dart';
@@ -8,10 +11,10 @@ part 'app_state.dart';
 class AppBloc extends Bloc<AppEvent, AppState> {
   static AppBloc get(context) => BlocProvider.of(context);
 
-  int notificationsNumber = 20;
-  TimeOfDay notificationStartTime = const TimeOfDay(hour: 8, minute: 0);
-  TimeOfDay notificationEndTime = const TimeOfDay(hour: 20, minute: 0);
-  String timeBetweenEachNotifications = '36';
+  static int notificationsNumber = 20;
+  static TimeOfDay notificationStartTime = const TimeOfDay(hour: 8, minute: 0);
+  static TimeOfDay notificationEndTime = const TimeOfDay(hour: 20, minute: 0);
+  static int timeBetweenEachNotifications = 36;
   int mistakeKind = 0;
   int mistakeRepetition = 1;
   Color circleColor0 = const Color(0xffb5e742);
@@ -19,8 +22,10 @@ class AppBloc extends Bloc<AppEvent, AppState> {
   bool validatorInAddMistakeScreen = false;
   int surahNumber = 0;
   int categoryInHomeScreen = 0;
-  bool appBarIsCollapsed = false;
-  bool isNotificationsActivated = true;
+  bool isAppBarCollapsed = false;
+  bool isNotificationsActivated = false;
+  static List<int> notificationsIdsList = [];
+  Timer? _sliderValueChangeDebounceTimer;
 
   AppBloc() : super(AppInitial()) {
     on<AppEvent>((event, emit) async {
@@ -28,19 +33,27 @@ class AppBloc extends Bloc<AppEvent, AppState> {
         notificationsNumber = event.notificationsNumber.toInt();
         timeBetweenEachNotifications = calculateTimeBetweenEachNotifications();
         await AppCacheHelper().cacheNotificationsNumber(notificationsNumber);
+
+        // Cancel the previous debounce timer, if any
+        _sliderValueChangeDebounceTimer?.cancel();
+        // Set a new debounce timer to call scheduleRecurringNotifications after 2 second
+        _sliderValueChangeDebounceTimer = Timer(
+          const Duration(seconds: 2),
+          () => LocalNotificationsHelper.scheduleRecurringNotifications(),
+        );
         emit(ChangeNotificationsNumberState());
       } else if (event is ChangeNotificationsStartTimeEvent) {
         notificationStartTime = event.notificationStartTime;
         timeBetweenEachNotifications = calculateTimeBetweenEachNotifications();
         await AppCacheHelper()
             .cacheNotificationStartTime(notificationStartTime);
+        await LocalNotificationsHelper.scheduleRecurringNotifications();
         emit(ChangeNotificationsTimeState());
       } else if (event is ChangeNotificationsEndTimeEvent) {
         notificationEndTime = event.notificationEndTime;
         timeBetweenEachNotifications = calculateTimeBetweenEachNotifications();
         await AppCacheHelper().cacheNotificationEndTime(notificationEndTime);
-
-        await AppCacheHelper().cacheNotificationsNumber(notificationsNumber);
+        await LocalNotificationsHelper.scheduleRecurringNotifications();
         emit(ChangeNotificationsTimeState());
       } else if (event is ChangeMistakeRepetitionEvent) {
         mistakeRepetition = event.mistakeRepetition.toInt();
@@ -60,7 +73,7 @@ class AppBloc extends Bloc<AppEvent, AppState> {
         categoryInHomeScreen = event.displayTypeInHomeScreen;
         emit(ChangeDisplayTypeInHomeScreenState());
       } else if (event is AppBarCollapsedEvent) {
-        emit(AppBarCollapsedState(isCollapsed: appBarIsCollapsed));
+        emit(AppBarCollapsedState(isCollapsed: isAppBarCollapsed));
       } else if (event is GetSettingsDataFromSharedPreferencesEvent) {
         notificationsNumber =
             await AppCacheHelper().getCachedNotificationsNumber();
@@ -70,11 +83,17 @@ class AppBloc extends Bloc<AppEvent, AppState> {
         timeBetweenEachNotifications = calculateTimeBetweenEachNotifications();
         isNotificationsActivated =
             await AppCacheHelper().getCachedIsNotificationsActivated();
+        notificationsIdsList = await AppCacheHelper().getCachedIdsList();
         emit(GetSettingsDataFromSharedPreferencesState());
       } else if (event is ChangeNotificationsActivationEvent) {
         isNotificationsActivated = event.isNotificationsActivated;
         await AppCacheHelper()
             .cacheIsNotificationsActivated(isNotificationsActivated);
+        if (isNotificationsActivated) {
+          LocalNotificationsHelper.scheduleRecurringNotifications();
+        } else {
+          await LocalNotificationsHelper.cancelAll();
+        }
         emit(ChangeNotificationsActivationState());
       }
     });
@@ -84,7 +103,7 @@ class AppBloc extends Bloc<AppEvent, AppState> {
     return '${(hour == 0) ? '12' : (hour > 12) ? hour - 12 : hour}:${minute.toString().padLeft(2, '0')} ${(hour > 11) ? 'م' : 'ص'}';
   }
 
-  String calculateTimeBetweenEachNotifications() {
+  int calculateTimeBetweenEachNotifications() {
     DateTime endDateTime;
     DateTime startDateTime = DateTime(
         2024, 6, 12, notificationStartTime.hour, notificationStartTime.minute);
@@ -98,11 +117,9 @@ class AppBloc extends Bloc<AppEvent, AppState> {
 
     Duration difference = endDateTime.difference(startDateTime);
     if (difference.inMinutes > 0) {
-      return (difference.inMinutes / notificationsNumber).round().toString();
+      return (difference.inMinutes / notificationsNumber).round();
     } else {
-      return ((1440 + difference.inMinutes) / notificationsNumber)
-          .round()
-          .toString();
+      return ((1440 + difference.inMinutes) / notificationsNumber).round();
     }
   }
 
