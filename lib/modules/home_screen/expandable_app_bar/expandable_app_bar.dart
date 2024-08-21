@@ -79,10 +79,14 @@ class ExpandableAppBar extends StatelessWidget {
                 // center big title
                 if (expandedWidget != null)
                   Center(
-                      child: FadeAnimation(
-                          animation: animation,
-                          isExpandedWidget: true,
-                          child: expandedWidget!)),
+                    child: FadeAnimation(
+                      animation: animation,
+                      isExpandedWidget: true,
+                      child: SafeArea(
+                        child: expandedWidget!,
+                      ),
+                    ),
+                  ),
                 // FadeAnimation(
                 //   animation: animation,
                 //   isExpandedWidget: true,
@@ -90,7 +94,7 @@ class ExpandableAppBar extends StatelessWidget {
                 //     alignment: Alignment.bottomCenter,
                 //     child: Container(
                 //       width: double.infinity,
-                //       // TODO: change color to adapt to Theme
+                // TODO: change color to adapt to Theme
                 //       color: const Color(0xff02786A),
                 //       child: Padding(
                 //         padding: const EdgeInsets.symmetric(
@@ -215,7 +219,7 @@ class ExpandableAppBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     _expandedHeight =
-        expandedHeight ?? MediaQuery.of(context).size.height * 3 / 8;
+        expandedHeight ?? MediaQuery.of(context).size.height * 2 / 8;
     _toolbarHeight = toolbarHeight ?? kToolbarHeight;
 
     return NestedScrollView(

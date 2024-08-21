@@ -4,6 +4,7 @@ import 'package:quran/quran.dart' as quran;
 import 'package:sqflite/sqflite.dart';
 import 'package:tadarok/constants/data.dart';
 import 'package:tadarok/helpers/app_cash_helper.dart';
+import 'package:tadarok/helpers/local_notifications_helper.dart';
 import 'package:tadarok/state_management/app_bloc/app_bloc.dart';
 
 part 'sql_state.dart';
@@ -322,9 +323,12 @@ class SqlCubit extends Cubit<SqlState> {
       note,
       mistakeRepetition,
       id
-    ]).then((value) {
+    ]).then((value) async {
       emit(UpdateDatabaseState());
-      getDatabase(database);
+      await getDatabase(database);
+      if (AppBloc.isNotificationsActivated) {
+        LocalNotificationsHelper.scheduleRecurringNotifications();
+      }
       debugPrint('database updated: $value');
     });
   }

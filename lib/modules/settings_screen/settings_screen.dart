@@ -75,14 +75,13 @@ class SettingsScreen extends StatelessWidget {
                             .r,
                         child: GestureDetector(
                           behavior: HitTestBehavior.opaque,
-                          onTap: () {
-                            appBloc.add(ChangeNotificationsActivationEvent(
-                                isNotificationsActivated:
-                                    !appBloc.isNotificationsActivated));
+                          onTap: () async {
+                            _activateNotificationsLogic(
+                                !AppBloc.isNotificationsActivated, appBloc);
                           },
                           child: Row(
                             children: [
-                              Icon(appBloc.isNotificationsActivated
+                              Icon(AppBloc.isNotificationsActivated
                                   ? Icons.notifications_active_outlined
                                   : Icons.notifications_off_outlined),
                               SizedBox(
@@ -97,42 +96,11 @@ class SettingsScreen extends StatelessWidget {
                                   mainAxisAlignment: MainAxisAlignment.end,
                                   children: [
                                     Switch(
-                                      value: appBloc.isNotificationsActivated,
+                                      value: AppBloc.isNotificationsActivated,
                                       onChanged:
                                           (isNotificationsActivated) async {
-                                        if (isNotificationsActivated) {
-                                          bool areNotificationsEnabled =
-                                              await LocalNotificationsHelper
-                                                  .isAndroidPermissionGranted();
-                                          if (areNotificationsEnabled) {
-                                            if (AppBloc
-                                                .notificationsIdsList.isEmpty) {
-                                              Fluttertoast.showToast(
-                                                  msg:
-                                                      'يرجى إضافة خطأ لتفعيل الإشعارات');
-                                            } else {
-                                              appBloc.add(
-                                                  ChangeNotificationsActivationEvent(
-                                                      isNotificationsActivated:
-                                                          isNotificationsActivated));
-                                              Fluttertoast.showToast(
-                                                  msg: 'تم تفعيل الإشعارات');
-                                            }
-                                          } else {
-                                            Vibration.vibrate(duration: 50);
-                                            Fluttertoast.showToast(
-                                                msg: 'يرجى تفعيل الإشعارات');
-                                            LocalNotificationsHelper
-                                                .requestPermissions();
-                                          }
-                                        } else {
-                                          appBloc.add(
-                                              ChangeNotificationsActivationEvent(
-                                                  isNotificationsActivated:
-                                                      isNotificationsActivated));
-                                          Fluttertoast.showToast(
-                                              msg: 'تم إلغاء تفعيل الإشعارات');
-                                        }
+                                        await _activateNotificationsLogic(
+                                            isNotificationsActivated, appBloc);
                                       },
                                     ),
                                   ],
@@ -143,7 +111,7 @@ class SettingsScreen extends StatelessWidget {
                         ),
                       ),
                       AnimatedOpacity(
-                        opacity: appBloc.isNotificationsActivated ? 1 : 0.5,
+                        opacity: AppBloc.isNotificationsActivated ? 1 : 0.5,
                         duration: const Duration(milliseconds: 250),
                         child: Column(
                           children: [
@@ -178,7 +146,7 @@ class SettingsScreen extends StatelessWidget {
                             Slider(
                               value: AppBloc.notificationsNumber.toDouble(),
                               onChanged: (value) {
-                                if (appBloc.isNotificationsActivated) {
+                                if (AppBloc.isNotificationsActivated) {
                                   appBloc.add(ChangeNotificationsNumberEvent(
                                       notificationsNumber: value));
                                 }
@@ -220,7 +188,7 @@ class SettingsScreen extends StatelessWidget {
                                               .bodyLarge),
                                       GestureDetector(
                                         onTap: () {
-                                          if (appBloc
+                                          if (AppBloc
                                               .isNotificationsActivated) {
                                             showTimePicker(
                                                     context: context,
@@ -271,7 +239,7 @@ class SettingsScreen extends StatelessWidget {
                                               .bodyLarge),
                                       GestureDetector(
                                         onTap: () {
-                                          if (appBloc
+                                          if (AppBloc
                                               .isNotificationsActivated) {
                                             showTimePicker(
                                               context: context,
@@ -324,7 +292,7 @@ class SettingsScreen extends StatelessWidget {
 لكن الأمر لا ينتهي هنا! تطبيق تدارُك يذهب إلى أبعد من ذلك بدعمه لإشعارات تذكرك بأخطائك لمراجعتها. ما عليك سوى ضبط الفترات الزمنية التي تناسبك، والتطبيق سيرسل إشعارات في الوقت المناسب لتذكيرك بمراجعة أخطائك.\n
 وللمزيد من التخصيص، يمكنك اختيار ألوان التطبيق بما يتناسب مع ذوقك الشخصي. كما يوفر لك إمكانية عمل نسخة احتياطية لأخطائك، لضمان عدم فقدانها.\n
 كل هذه الميزات مدمجة في تصميم جميل وسهل التفاعل، ليمنحك تجربة مراجعة ذاتية سلسة وممتعة.\n
-قم بتنزيل تطبيق تدارُك الآن واكتشف الفرق الذي سيحدثه في عملية مراجعتك الذاتية!\n
+قم بتنزيل تطبيق تدارُك الآن واكتشف الفرق الذي سيحدثه في عملية مراجعتك الذاتية!
 لتحميل التطبيق اضغط على الرابط التالي: $TELEGRAM_CHANNEL_LINK''');
                         },
                         child: Container(
@@ -408,11 +376,11 @@ class SettingsScreen extends StatelessWidget {
                           height: 16.h,
                         ),
                         AnimatedOpacity(
-                          opacity: appBloc.isNotificationsActivated ? 1 : 0,
+                          opacity: AppBloc.isNotificationsActivated ? 1 : 0,
                           duration: const Duration(milliseconds: 250),
                           child: Center(
                             child: Text(
-                                'سيتم عرض إشعار كل ${AppBloc.timeBetweenEachNotifications} دقيقة تقريباً',
+                                'سيتم عرض إشعار كل ${AppBloc.timeBetweenEachNotifications} دقيقة',
                                 style:
                                     Theme.of(context).textTheme.displaySmall),
                           ),
@@ -427,5 +395,35 @@ class SettingsScreen extends StatelessWidget {
         );
       },
     );
+  }
+
+  Future<void> _activateNotificationsLogic(
+      bool isNotificationsActivated, AppBloc appBloc) async {
+    if (isNotificationsActivated) {
+      bool areNotificationsEnabled =
+          await LocalNotificationsHelper.isAndroidPermissionGranted();
+      if (areNotificationsEnabled) {
+        if (AppBloc.notificationsIdsList.isEmpty) {
+          Vibration.vibrate(duration: 50);
+          Fluttertoast.cancel();
+          Fluttertoast.showToast(msg: 'يرجى إضافة خطأ لتفعيل الإشعارات');
+        } else {
+          appBloc.add(ChangeNotificationsActivationEvent(
+              isNotificationsActivated: isNotificationsActivated));
+          Fluttertoast.cancel();
+          Fluttertoast.showToast(msg: 'تم تفعيل الإشعارات');
+        }
+      } else {
+        Vibration.vibrate(duration: 50);
+        Fluttertoast.cancel();
+        Fluttertoast.showToast(msg: 'يرجى تفعيل الإشعارات');
+        LocalNotificationsHelper.requestPermissions();
+      }
+    } else {
+      appBloc.add(ChangeNotificationsActivationEvent(
+          isNotificationsActivated: isNotificationsActivated));
+      Fluttertoast.cancel();
+      Fluttertoast.showToast(msg: 'تم إلغاء تفعيل الإشعارات');
+    }
   }
 }

@@ -23,7 +23,7 @@ class AppBloc extends Bloc<AppEvent, AppState> {
   int surahNumber = 0;
   int categoryInHomeScreen = 0;
   bool isAppBarCollapsed = false;
-  bool isNotificationsActivated = false;
+  static bool isNotificationsActivated = false;
   static List<int> notificationsIdsList = [];
   Timer? _sliderValueChangeDebounceTimer;
 

@@ -7,47 +7,26 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get_navigation/src/root/get_material_app.dart';
+import 'package:tadarok/helpers/image_utils.dart';
 import 'package:tadarok/helpers/local_notifications_helper.dart';
 import 'package:tadarok/modules/home_screen/home_screen.dart';
 import 'package:tadarok/state_management/app_bloc/app_bloc.dart';
 import 'package:tadarok/state_management/sql_cubit/sql_cubit.dart';
 import 'package:tadarok/theme/theme_bloc/theme_bloc.dart';
-import 'package:workmanager/workmanager.dart';
 
 import 'helpers/my_bloc_observer.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await ScreenUtil.ensureScreenSize();
-  await LocalNotificationsHelper.init();
   await SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
   ]);
-  Workmanager().initialize(
-    callbackDispatcher,
-    isInDebugMode: true,
-  );
-  Workmanager().registerPeriodicTask(
-    "scheduleRecurringNotifications",
-    "scheduleRecurringNotifications",
-    frequency: const Duration(days: 1),
-    initialDelay: Duration(
-        hours: AppBloc.notificationEndTime.hour,
-        minutes: AppBloc.notificationEndTime.minute),
-  );
+  await ScreenUtil.ensureScreenSize();
+  ImageUtils.svgPrecacheImage();
+  await LocalNotificationsHelper.init();
   Bloc.observer = MyBlocObserver();
   runApp(const MyApp());
-}
-
-void callbackDispatcher() {
-  Workmanager().executeTask((task, inputData) async {
-    if (task == "scheduleRecurringNotifications") {
-      await LocalNotificationsHelper.scheduleRecurringNotifications();
-      return Future.value(true);
-    }
-    return Future.value(true);
-  });
 }
 
 class MyApp extends StatelessWidget {

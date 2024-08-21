@@ -47,78 +47,116 @@ class LocalNotificationsHelper {
   }
 
   static Future scheduleRecurringNotifications() async {
-    // cancel previous notifications
-    await cancelAll();
-    // set new notifications
-    if (AppBloc.notificationsIdsList.isEmpty) {
-      debugPrint('ID list is empty. Cannot schedule notifications.');
-      return;
-    }
-    List<int> idList = List.from(AppBloc.notificationsIdsList);
-    tz.initializeTimeZones();
-
-    final notificationsNumber = AppBloc.notificationsNumber;
-    DateTime startTime = _getStartDateTime(AppBloc.notificationStartTime);
-    final endTime = _getEndDateTime(
-        AppBloc.notificationStartTime, AppBloc.notificationEndTime);
-
-    for (int i = 1; i <= notificationsNumber; i++) {
-      startTime = startTime
-          .add(Duration(minutes: AppBloc.timeBetweenEachNotifications));
-      if (startTime.isAfter(endTime)) {
-        break;
+    if (AppBloc.isNotificationsActivated) {
+      // cancel previous notifications
+      await cancelAll();
+      // set new notifications
+      if (AppBloc.notificationsIdsList.isEmpty) {
+        debugPrint('ID list is empty. Cannot schedule notifications.');
+        return;
       }
-      final scheduledNotificationDateTime = tz.TZDateTime.from(
-        startTime,
-        tz.local,
-      );
-      if (kDebugMode) {
-        print('$startTime, $i');
+      List<int> idList = List.from(AppBloc.notificationsIdsList);
+      tz.initializeTimeZones();
+
+      final notificationsNumber = AppBloc.notificationsNumber;
+      DateTime startTime = _getStartDateTime(AppBloc.notificationStartTime);
+      final endTime = _getEndDateTime(
+          AppBloc.notificationStartTime, AppBloc.notificationEndTime);
+
+      for (int i = 1; i <= notificationsNumber; i++) {
+        startTime = startTime
+            .add(Duration(minutes: AppBloc.timeBetweenEachNotifications));
+        if (startTime.isAfter(endTime)) {
+          debugPrint('break');
+          break;
+        }
+        final scheduledNotificationDateTime = tz.TZDateTime.from(
+          startTime,
+          tz.local,
+        );
+        debugPrint('$startTime, $i');
+        if (idList.isEmpty) {
+          idList = List.from(AppBloc.notificationsIdsList);
+        }
+        final randomIndex = Random().nextInt(idList.length);
+        final randomId = idList[randomIndex];
+        // remove the id we got from the idList to ensure equal chances for other ids
+        idList.removeAt(randomIndex);
+        final notificationTitle =
+            '${quranSurahNames[SqlCubit.idData[randomId]!['surah_number'] - 1]} الآية ${SqlCubit.idData[randomId]!['verse_number']}';
+        String mistake = SqlCubit.idData[randomId]!['mistake'];
+        String note = SqlCubit.idData[randomId]!['note'];
+        final notificationBody =
+            '${(mistake.isNotEmpty) ? 'الخطأ: $mistake\n' : ''}${(note.isNotEmpty) ? 'ملاحظة: $note' : ''}';
+        // payload = id, surahNumber, verseNumber, mistakeKind, mistakeRepetition, mistake, note
+        final payload =
+            '$randomId, ${SqlCubit.idData[randomId]!['surah_number']}, ${SqlCubit.idData[randomId]!['verse_number']}, ${SqlCubit.idData[randomId]!['mistake_kind']}, ${SqlCubit.idData[randomId]!['mistake_repetition']}, ${SqlCubit.idData[randomId]!['mistake']}, ${SqlCubit.idData[randomId]!['note']}';
+
+        const notificationDetails = NotificationDetails(
+            android: AndroidNotificationDetails(
+          'channel_1',
+          'Tadaruk Recurring Notifications',
+          channelDescription: 'Tadaruk Recurring Notifications per One Day',
+          importance: Importance.defaultImportance,
+          priority: Priority.defaultPriority,
+        ));
+
+        await _flutterLocalNotificationsPlugin.zonedSchedule(
+          i,
+          notificationTitle,
+          notificationBody,
+          scheduledNotificationDateTime,
+          notificationDetails,
+          payload: payload,
+          androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
+          uiLocalNotificationDateInterpretation:
+              UILocalNotificationDateInterpretation.absoluteTime,
+          matchDateTimeComponents: DateTimeComponents.time,
+        );
       }
-      if (idList.isEmpty) {
-        idList = List.from(AppBloc.notificationsIdsList);
-      }
-      final randomIndex = Random().nextInt(idList.length);
-      final randomId = idList[randomIndex];
-      // remove the id we got from the idList to ensure equal chances for other ids
-      idList.removeAt(randomIndex);
-      final notificationTitle =
-          '${quranSurahNames[SqlCubit.idData[randomId]!['surah_number'] - 1]} الآية ${SqlCubit.idData[randomId]!['verse_number']}';
-      String mistake = SqlCubit.idData[randomId]!['mistake'];
-      String note = SqlCubit.idData[randomId]!['note'];
-      final notificationBody =
-          '${(mistake.isNotEmpty) ? 'الخطأ: $mistake\n' : ''}${(note.isNotEmpty) ? 'ملاحظة: $note' : ''}';
-      // payload = id, surahNumber, verseNumber, mistakeKind, mistakeRepetition, mistake, note
-      final payload =
-          '$randomId, ${SqlCubit.idData[randomId]!['surah_number']}, ${SqlCubit.idData[randomId]!['verse_number']}, ${SqlCubit.idData[randomId]!['mistake_kind']}, ${SqlCubit.idData[randomId]!['mistake_repetition']}, ${SqlCubit.idData[randomId]!['mistake']}, ${SqlCubit.idData[randomId]!['note']}';
 
-      const notificationDetails = NotificationDetails(
-          android: AndroidNotificationDetails(
-        'channel_1',
-        'Tadaruk Recurring Notifications',
-        channelDescription: 'Tadaruk Recurring Notifications per One Day',
-        importance: Importance.defaultImportance,
-        priority: Priority.defaultPriority,
-      ));
-
-      await _flutterLocalNotificationsPlugin.zonedSchedule(
-        i,
-        notificationTitle,
-        notificationBody,
-        scheduledNotificationDateTime,
-        notificationDetails,
-        payload: payload,
-        androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
-        uiLocalNotificationDateInterpretation:
-            UILocalNotificationDateInterpretation.absoluteTime,
-        matchDateTimeComponents: DateTimeComponents.time,
-      );
-    }
-
-    if (kDebugMode) {
-      print(
+      debugPrint(
           'Recurring notifications scheduled between $startTime and $endTime');
+
+      // scheduleNewRecurringNotifications
+      DateTime scheduledTime = DateTime.now().copyWith(
+        hour: AppBloc.notificationEndTime.hour,
+        minute: AppBloc.notificationEndTime.minute,
+      );
+      final now = DateTime.now();
+      Duration delay = scheduledTime.difference(now);
+      if (delay.isNegative) {
+        scheduledTime = DateTime(
+            now.year,
+            now.month,
+            now.day + 1,
+            AppBloc.notificationEndTime.hour,
+            AppBloc.notificationEndTime.minute);
+        delay = scheduledTime.difference(now);
+      }
+      debugPrint('Timer: $delay');
+      Timer(delay, () {
+        scheduleRecurringNotifications();
+        showSimpleNotification();
+      });
     }
+  }
+
+  void scheduleNewRecurringNotifications() {
+    DateTime scheduledTime = DateTime.now().copyWith(
+      hour: AppBloc.notificationEndTime.hour,
+      minute: AppBloc.notificationEndTime.minute,
+    );
+    Duration delay = scheduledTime.difference(DateTime.now());
+    if (delay.inMinutes < 0) {
+      scheduledTime.add(const Duration(days: 1));
+      delay = scheduledTime.difference(DateTime.now());
+    }
+    Timer(delay, () {
+      scheduleRecurringNotifications();
+      showSimpleNotification();
+      scheduleNewRecurringNotifications();
+    });
   }
 
   // close a specific channel notification
@@ -230,16 +268,19 @@ class LocalNotificationsHelper {
     }
   }
 
-// static Future showSimpleNotification() async {
-//   const AndroidNotificationDetails androidNotificationDetails =
-//       AndroidNotificationDetails('your channel id', 'your channel name',
-//           channelDescription: 'your channel description',
-//           importance: Importance.high,
-//           priority: Priority.max,);
-//   const NotificationDetails notificationDetails =
-//       NotificationDetails(android: androidNotificationDetails);
-//   await _flutterLocalNotificationsPlugin.show(
-//       0, 'Simple notification', 'testing', notificationDetails,
-//       payload: '2, 1, 1, 1, 1, خطأ, ملاحظة');
-// }
+  static Future showSimpleNotification() async {
+    const AndroidNotificationDetails androidNotificationDetails =
+        AndroidNotificationDetails(
+      'your channel id',
+      'your channel name',
+      channelDescription: 'your channel description',
+      importance: Importance.high,
+      priority: Priority.max,
+    );
+    const NotificationDetails notificationDetails =
+        NotificationDetails(android: androidNotificationDetails);
+    await _flutterLocalNotificationsPlugin.show(
+        0, 'Notifications rescheduled', 'testing', notificationDetails,
+        payload: '2, 1, 1, 1, 1, خطأ, ملاحظة');
+  }
 }
