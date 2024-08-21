@@ -22,7 +22,7 @@ class ChangeNotificationsEndTimeEvent extends AppEvent {
 }
 
 class ChangeMistakeRepetitionEvent extends AppEvent {
-  final double mistakeRepetition;
+  final int mistakeRepetition;
 
   ChangeMistakeRepetitionEvent({required this.mistakeRepetition});
 }

@@ -780,7 +780,7 @@ class _AddMistakeScreenState extends State<AddMistakeScreen> {
                       value: appBloc.mistakeRepetition.toDouble(),
                       onChanged: (value) {
                         appBloc.add(ChangeMistakeRepetitionEvent(
-                            mistakeRepetition: value));
+                            mistakeRepetition: value.toInt()));
                       },
                       min: 1,
                       max: 4,
