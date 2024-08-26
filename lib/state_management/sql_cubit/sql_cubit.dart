@@ -1,9 +1,17 @@
+import 'dart:io';
+
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:get/get.dart';
+import 'package:intl/intl.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:quran/quran.dart' as quran;
 import 'package:sqflite/sqflite.dart';
 import 'package:tadarok/constants/data.dart';
-import 'package:tadarok/helpers/app_cash_helper.dart';
+import 'package:tadarok/helpers/app_cache_helper.dart';
 import 'package:tadarok/helpers/local_notifications_helper.dart';
 import 'package:tadarok/state_management/app_bloc/app_bloc.dart';
 
@@ -28,7 +36,7 @@ class SqlCubit extends Cubit<SqlState> {
   }
 
   Future<void> createDatabase() async {
-    await openDatabase('kawarem.tadarok.db', version: 1,
+    await openDatabase('kawarem.tadaruk.db', version: 1,
         onCreate: (database, version) {
       _onCreate(database);
       if (kDebugMode) {
@@ -345,4 +353,175 @@ class SqlCubit extends Cubit<SqlState> {
       getDatabase(database);
     });
   }
+
+  String? databasePath;
+  Directory? externalStoragePath;
+
+  getDatabasePath() async {
+    databasePath = await getDatabasesPath();
+    debugPrint('database path: $databasePath');
+    externalStoragePath = await getExternalStorageDirectory();
+    debugPrint('external storage path: $externalStoragePath');
+  }
+
+  backupDatabase() async {
+    if (await Permission.manageExternalStorage.request().isGranted) {
+      try {
+        final String databasePath = await getDatabasesPath();
+        File ourDBFile = File('$databasePath/kawarem.tadaruk.db');
+        Directory? folderPathForDBFile =
+            Directory('/storage/emulated/0/Tadaruk Backups/');
+        await folderPathForDBFile.create();
+
+        final formattedDateTime =
+            DateFormat('yyyy-MM-dd_HH-mm').format(DateTime.now());
+        await ourDBFile.copy(
+            '/storage/emulated/0/Tadaruk Backups/Tadaruk_backup_$formattedDateTime.db');
+        Get.back();
+        Get.back();
+        debugPrint('Database backup successfully :)');
+        Fluttertoast.showToast(
+            msg:
+                'تم إنشاء نسخة احتياطية بنجاح 😊\n يمكنك إيجادها في ملفاتك ضمن مجلد اسمه Tadaruk backups');
+      } catch (e) {
+        debugPrint('Database backup failed :( ${e.toString()}');
+        Fluttertoast.showToast(msg: 'فشلت عملبة النسخ الاحتياطي 😢');
+      }
+    } else {
+      debugPrint('Permission not granted');
+      Fluttertoast.showToast(
+          msg: 'فشلت عملية النسخ الاحتياطي: لا يوجد إذن بالوصول');
+    }
+  }
+
+  // void restoreDatabase() async {
+  //   if (await Permission.manageExternalStorage.request().isGranted) {
+  //     try {
+  //       File savedDBFile = File(
+  //           '/storage/emulated/0/Tadaruk Backup/backup_formattedDateTime.db');
+  //       final String databasePath = await getDatabasesPath();
+  //       await savedDBFile.copy('$databasePath/kawarem.tadaruk.db');
+  //       debugPrint('Database restore successfully :)');
+  //     } catch (e) {
+  //       debugPrint('Database restore failed :( ${e.toString()}');
+  //     }
+  //   } else {
+  //     debugPrint('Permission not granted');
+  //   }
+  // }
+
+  void restoreDatabase2() async {
+    if (await Permission.manageExternalStorage.request().isGranted) {
+      try {
+        // Open file picker dialog
+        // await FilePicker.platform.getDirectoryPath(
+        //   initialDirectory: '/storage/emulated/0/Tadaruk Backups/',
+        //   dialogTitle: 'Select the backup file',
+        // );
+        FilePickerResult? result = await FilePicker.platform.pickFiles(
+          initialDirectory: '/storage/emulated/0/Tadaruk Backups/',
+          // type: FileType.custom,
+          // allowedExtensions: ['db'],
+        );
+
+        if (result != null) {
+          // Get the selected backup file
+          File selectedBackupFile = File(result.files.single.path!);
+
+          // Check if the selected file is the correct database file
+          String? fileExtension = result.files.single.extension;
+          if (fileExtension == 'db') {
+            final newDatabase = await openDatabase(result.files.single.path!);
+            final isDatabaseMine = await newDatabase.rawQuery(
+              "SELECT name FROM sqlite_master WHERE type='table' AND name='surah_names'",
+            );
+            if (isDatabaseMine.isNotEmpty) {
+              final String databasePath = await getDatabasesPath();
+              await selectedBackupFile.copy('$databasePath/kawarem.tadaruk.db');
+              getDatabase(database);
+              Get.back();
+              Get.back();
+              debugPrint('Database restored successfully :)');
+              Fluttertoast.showToast(
+                  msg: 'تم استعادة النسخة الاحتياطية بنجاح 😊');
+            } else {
+              debugPrint('Selected file is not my db file');
+              Fluttertoast.showToast(
+                  msg:
+                      'فشلت عملية استعادة النسخة الاحتياطية: الملف المختار غير مدعوم');
+            }
+          } else {
+            debugPrint('Selected file is not a .db file');
+            Fluttertoast.showToast(
+                msg:
+                    'فشلت عملية استعادة النسخة الاحتياطية: الملف المختار غير مدعوم');
+          }
+        } else {
+          debugPrint('No file selected');
+          Fluttertoast.showToast(
+              msg: 'فشلت عملية استعادة النسخة الاحتياطية: لم يتم اختبار ملف');
+        }
+      } catch (e) {
+        debugPrint('Database restore failed :( ${e.toString()}');
+        Fluttertoast.showToast(msg: 'فشلت عملية استعادة النسخة الاحتياطية 😢');
+      }
+    } else {
+      debugPrint('Permission not granted');
+      Fluttertoast.showToast(
+          msg: 'فشلت عملية استعادة النسخة الاحتياطية: لا يوجد إذن بالوصول');
+    }
+  }
+
+// Future<bool> isDatabaseValid(String databasePath) async {
+//   try {
+//     // Open the database
+//     Database database = await openDatabase(databasePath, version: 1);
+//
+//     // Check if the expected table exists
+//     bool tableExists = await database.isTableExists('your_table_name');
+//
+//     // Close the database
+//     await database.close();
+//
+//     return tableExists;
+//   } catch (e) {
+//     // Handle any errors that occurred during the check
+//     return false;
+//   }
+// }
+
+// Future<String> get _localPath async {
+//   final directory = await getApplicationDocumentsDirectory();
+//   return directory.path;
+// }
+//
+// Future<File> _getBackupFile() async {
+//   final path = await _localPath;
+//   final now = DateTime.now();
+//   final formattedDateTime = DateFormat('yyyy-MM-dd_HH-mm').format(now);
+//   return File('$path/database_backup_$formattedDateTime.db');
+// }
+//
+// Future<void> backupDatabase() async {
+//   final file = await _getBackupFile();
+//   final bytes = await database
+//       .query('sqlite_master')
+//       .then((value) => value.map((e) => e.toString()).toList().join('\n'));
+//   await file.writeAsString(bytes);
+// }
+//
+// void backupDatabaseLocally() async {
+//   if (
+//       // await Permission.storage.request().isGranted &&
+//       //     await Permission.accessMediaLocation.request().isGranted &&
+//       await Permission.manageExternalStorage.request().isGranted) {
+//     backupDatabase().then((_) {
+//       debugPrint('backup database successfully :)');
+//     }).catchError((error) {
+//       debugPrint('backup database failed :( $error');
+//     });
+//   } else {
+//     debugPrint("No Permission Granted");
+//   }
+// }
 }

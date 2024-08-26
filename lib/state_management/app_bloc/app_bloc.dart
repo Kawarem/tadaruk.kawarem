@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:tadarok/helpers/app_cash_helper.dart';
+import 'package:tadarok/helpers/app_cache_helper.dart';
 import 'package:tadarok/helpers/local_notifications_helper.dart';
 
 part 'app_event.dart';
@@ -47,14 +47,14 @@ class AppBloc extends Bloc<AppEvent, AppState> {
         timeBetweenEachNotifications = calculateTimeBetweenEachNotifications();
         await AppCacheHelper()
             .cacheNotificationStartTime(notificationStartTime);
-        await LocalNotificationsHelper.scheduleRecurringNotifications();
         emit(ChangeNotificationsTimeState());
+        await LocalNotificationsHelper.scheduleRecurringNotifications();
       } else if (event is ChangeNotificationsEndTimeEvent) {
         notificationEndTime = event.notificationEndTime;
         timeBetweenEachNotifications = calculateTimeBetweenEachNotifications();
         await AppCacheHelper().cacheNotificationEndTime(notificationEndTime);
-        await LocalNotificationsHelper.scheduleRecurringNotifications();
         emit(ChangeNotificationsTimeState());
+        await LocalNotificationsHelper.scheduleRecurringNotifications();
       } else if (event is ChangeMistakeRepetitionEvent) {
         mistakeRepetition = event.mistakeRepetition.toInt();
         circleColor0 = circleColor1;
@@ -117,7 +117,8 @@ class AppBloc extends Bloc<AppEvent, AppState> {
 
     Duration difference = endDateTime.difference(startDateTime);
     if (difference.inMinutes > 0) {
-      return (difference.inMinutes / notificationsNumber).round();
+      final num = (difference.inMinutes / notificationsNumber).round();
+      return (num != 0) ? num : 1;
     } else {
       return ((1440 + difference.inMinutes) / notificationsNumber).round();
     }

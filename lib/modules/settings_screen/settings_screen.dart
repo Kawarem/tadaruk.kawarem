@@ -6,7 +6,9 @@ import 'package:get/get.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:tadarok/constants/data.dart';
 import 'package:tadarok/helpers/local_notifications_helper.dart';
+import 'package:tadarok/modules/backup_and_restore_screen/backup_and_restore_screen.dart';
 import 'package:tadarok/state_management/app_bloc/app_bloc.dart';
+import 'package:tadarok/state_management/sql_cubit/sql_cubit.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:vibration/vibration.dart';
 
@@ -20,7 +22,7 @@ class SettingsScreen extends StatelessWidget {
     return bloc.BlocBuilder<AppBloc, AppState>(
       builder: (context, state) {
         var appBloc = AppBloc.get(context);
-
+        var sqlCubit = SqlCubit.get(context);
         return Scaffold(
           appBar: AppBar(
             title: const Text('الإعدادات'),
@@ -152,7 +154,7 @@ class SettingsScreen extends StatelessWidget {
                                 }
                               },
                               min: 1,
-                              max: 100,
+                              max: 50,
                             ),
                             Padding(
                               padding: const EdgeInsets.symmetric(
@@ -327,6 +329,27 @@ class SettingsScreen extends StatelessWidget {
                               ),
                               Text(
                                 'التحقق من وجود تحديثات',
+                                style: Theme.of(context).textTheme.bodyLarge,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      InkWell(
+                        onTap: () async {
+                          Get.to(() => BackupAndRestoreScreen(),
+                              transition: Transition.leftToRightWithFade);
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.all(16).r,
+                          child: Row(
+                            children: [
+                              const Icon(Icons.backup_outlined),
+                              SizedBox(
+                                width: 16.w,
+                              ),
+                              Text(
+                                'النسخ الاحتياطي والاستعادة',
                                 style: Theme.of(context).textTheme.bodyLarge,
                               ),
                             ],

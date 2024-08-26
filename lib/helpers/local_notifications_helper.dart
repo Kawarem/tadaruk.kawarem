@@ -6,6 +6,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:tadarok/constants/data.dart';
+import 'package:tadarok/helpers/app_cache_helper.dart';
 import 'package:tadarok/state_management/app_bloc/app_bloc.dart';
 import 'package:tadarok/state_management/sql_cubit/sql_cubit.dart';
 import 'package:timezone/data/latest.dart' as tz;
@@ -47,7 +48,9 @@ class LocalNotificationsHelper {
   }
 
   static Future scheduleRecurringNotifications() async {
-    if (AppBloc.isNotificationsActivated) {
+    final isNotificationsActivated =
+        await AppCacheHelper().getCachedIsNotificationsActivated();
+    if (isNotificationsActivated) {
       // cancel previous notifications
       await cancelAll();
       // set new notifications
@@ -64,8 +67,6 @@ class LocalNotificationsHelper {
           AppBloc.notificationStartTime, AppBloc.notificationEndTime);
 
       for (int i = 1; i <= notificationsNumber; i++) {
-        startTime = startTime
-            .add(Duration(minutes: AppBloc.timeBetweenEachNotifications));
         if (startTime.isAfter(endTime)) {
           debugPrint('break');
           break;
@@ -74,12 +75,12 @@ class LocalNotificationsHelper {
           startTime,
           tz.local,
         );
-        debugPrint('$startTime, $i');
         if (idList.isEmpty) {
           idList = List.from(AppBloc.notificationsIdsList);
         }
         final randomIndex = Random().nextInt(idList.length);
         final randomId = idList[randomIndex];
+        debugPrint('$startTime, $i, id: $randomIndex');
         // remove the id we got from the idList to ensure equal chances for other ids
         idList.removeAt(randomIndex);
         final notificationTitle =
@@ -108,11 +109,13 @@ class LocalNotificationsHelper {
           scheduledNotificationDateTime,
           notificationDetails,
           payload: payload,
-          androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
+          androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
           uiLocalNotificationDateInterpretation:
               UILocalNotificationDateInterpretation.absoluteTime,
           matchDateTimeComponents: DateTimeComponents.time,
         );
+        startTime = startTime
+            .add(Duration(minutes: AppBloc.timeBetweenEachNotifications));
       }
 
       debugPrint(
@@ -135,29 +138,28 @@ class LocalNotificationsHelper {
         delay = scheduledTime.difference(now);
       }
       debugPrint('Timer: $delay');
-      Timer(delay, () {
+      Timer(delay, () async {
+        await showSimpleNotification();
         scheduleRecurringNotifications();
-        showSimpleNotification();
       });
     }
   }
 
-  void scheduleNewRecurringNotifications() {
-    DateTime scheduledTime = DateTime.now().copyWith(
-      hour: AppBloc.notificationEndTime.hour,
-      minute: AppBloc.notificationEndTime.minute,
-    );
-    Duration delay = scheduledTime.difference(DateTime.now());
-    if (delay.inMinutes < 0) {
-      scheduledTime.add(const Duration(days: 1));
-      delay = scheduledTime.difference(DateTime.now());
-    }
-    Timer(delay, () {
-      scheduleRecurringNotifications();
-      showSimpleNotification();
-      scheduleNewRecurringNotifications();
-    });
-  }
+  // void scheduleNewRecurringNotifications() {
+  //   DateTime scheduledTime = DateTime.now().copyWith(
+  //     hour: AppBloc.notificationEndTime.hour,
+  //     minute: AppBloc.notificationEndTime.minute,
+  //   );
+  //   Duration delay = scheduledTime.difference(DateTime.now());
+  //   if (delay.inMinutes < 0) {
+  //     scheduledTime.add(const Duration(days: 1));
+  //     delay = scheduledTime.difference(DateTime.now());
+  //   }
+  //   Timer(delay, () {
+  //     showSimpleNotification();
+  //     scheduleRecurringNotifications();
+  //   });
+  // }
 
   // close a specific channel notification
   // static Future cancel(int id) async {
@@ -271,8 +273,8 @@ class LocalNotificationsHelper {
   static Future showSimpleNotification() async {
     const AndroidNotificationDetails androidNotificationDetails =
         AndroidNotificationDetails(
-      'your channel id',
-      'your channel name',
+      'your channel id2',
+      'your channel name2',
       channelDescription: 'your channel description',
       importance: Importance.high,
       priority: Priority.max,
