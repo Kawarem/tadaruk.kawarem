@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+Color TOAST_BACKGROUND_COLOR = const Color(0xff373737).withOpacity(0.5);
+
 class AppColors {
   Color primaryColor;
   Color secondaryColor;

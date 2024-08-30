@@ -2,8 +2,8 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:tadarok/helpers/app_cache_helper.dart';
-import 'package:tadarok/helpers/local_notifications_helper.dart';
+import 'package:tadaruk/helpers/app_cache_helper.dart';
+import 'package:tadaruk/helpers/local_notifications_helper.dart';
 
 part 'app_event.dart';
 part 'app_state.dart';
@@ -11,7 +11,7 @@ part 'app_state.dart';
 class AppBloc extends Bloc<AppEvent, AppState> {
   static AppBloc get(context) => BlocProvider.of(context);
 
-  static int notificationsNumber = 20;
+  static int notificationsNumber = 5;
   static TimeOfDay notificationStartTime = const TimeOfDay(hour: 8, minute: 0);
   static TimeOfDay notificationEndTime = const TimeOfDay(hour: 20, minute: 0);
   static int timeBetweenEachNotifications = 36;
@@ -24,7 +24,8 @@ class AppBloc extends Bloc<AppEvent, AppState> {
   int categoryInHomeScreen = 0;
   bool isAppBarCollapsed = false;
   static bool isNotificationsActivated = false;
-  static List<int> notificationsIdsList = [];
+
+  // static List<int> notificationsIdsList = [];
   Timer? _sliderValueChangeDebounceTimer;
 
   AppBloc() : super(AppInitial()) {
@@ -39,7 +40,10 @@ class AppBloc extends Bloc<AppEvent, AppState> {
         // Set a new debounce timer to call scheduleRecurringNotifications after 2 second
         _sliderValueChangeDebounceTimer = Timer(
           const Duration(seconds: 2),
-          () => LocalNotificationsHelper.scheduleRecurringNotifications(),
+          () {
+            LocalNotificationsHelper.cancelAll();
+            LocalNotificationsHelper.scheduleRecurringNotifications();
+          },
         );
         emit(ChangeNotificationsNumberState());
       } else if (event is ChangeNotificationsStartTimeEvent) {
@@ -48,12 +52,14 @@ class AppBloc extends Bloc<AppEvent, AppState> {
         await AppCacheHelper()
             .cacheNotificationStartTime(notificationStartTime);
         emit(ChangeNotificationsTimeState());
+        await LocalNotificationsHelper.cancelAll();
         await LocalNotificationsHelper.scheduleRecurringNotifications();
       } else if (event is ChangeNotificationsEndTimeEvent) {
         notificationEndTime = event.notificationEndTime;
         timeBetweenEachNotifications = calculateTimeBetweenEachNotifications();
         await AppCacheHelper().cacheNotificationEndTime(notificationEndTime);
         emit(ChangeNotificationsTimeState());
+        await LocalNotificationsHelper.cancelAll();
         await LocalNotificationsHelper.scheduleRecurringNotifications();
       } else if (event is ChangeMistakeRepetitionEvent) {
         mistakeRepetition = event.mistakeRepetition.toInt();
@@ -83,18 +89,19 @@ class AppBloc extends Bloc<AppEvent, AppState> {
         timeBetweenEachNotifications = calculateTimeBetweenEachNotifications();
         isNotificationsActivated =
             await AppCacheHelper().getCachedIsNotificationsActivated();
-        notificationsIdsList = await AppCacheHelper().getCachedIdsList();
+        // notificationsIdsList = await AppCacheHelper().getCachedIdsList();
         emit(GetSettingsDataFromSharedPreferencesState());
       } else if (event is ChangeNotificationsActivationEvent) {
         isNotificationsActivated = event.isNotificationsActivated;
         await AppCacheHelper()
             .cacheIsNotificationsActivated(isNotificationsActivated);
+        emit(ChangeNotificationsActivationState());
         if (isNotificationsActivated) {
-          LocalNotificationsHelper.scheduleRecurringNotifications();
+          await LocalNotificationsHelper.cancelAll();
+          await LocalNotificationsHelper.scheduleRecurringNotifications();
         } else {
           await LocalNotificationsHelper.cancelAll();
         }
-        emit(ChangeNotificationsActivationState());
       }
     });
   }
@@ -116,11 +123,18 @@ class AppBloc extends Bloc<AppEvent, AppState> {
     }
 
     Duration difference = endDateTime.difference(startDateTime);
+    int notificationNumber;
+    if (notificationsNumber != 1) {
+      notificationNumber = notificationsNumber - 1;
+    } else {
+      notificationNumber = notificationsNumber;
+    }
+
     if (difference.inMinutes > 0) {
-      final num = (difference.inMinutes / notificationsNumber).round();
+      final num = (difference.inMinutes / notificationNumber).floor();
       return (num != 0) ? num : 1;
     } else {
-      return ((1440 + difference.inMinutes) / notificationsNumber).round();
+      return ((1440 + difference.inMinutes) / notificationNumber).floor();
     }
   }
 

@@ -5,12 +5,13 @@ import 'dart:math';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:tadarok/constants/data.dart';
-import 'package:tadarok/helpers/app_cache_helper.dart';
-import 'package:tadarok/state_management/app_bloc/app_bloc.dart';
-import 'package:tadarok/state_management/sql_cubit/sql_cubit.dart';
+import 'package:tadaruk/constants/data.dart';
+import 'package:tadaruk/state_management/app_bloc/app_bloc.dart';
+import 'package:tadaruk/state_management/sql_cubit/sql_cubit.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
+
+bool haha = false;
 
 class LocalNotificationsHelper {
   static final FlutterLocalNotificationsPlugin
@@ -48,17 +49,23 @@ class LocalNotificationsHelper {
   }
 
   static Future scheduleRecurringNotifications() async {
-    final isNotificationsActivated =
-        await AppCacheHelper().getCachedIsNotificationsActivated();
-    if (isNotificationsActivated) {
+    // await showSimpleNotification(
+    //     title: 'scheduleRecurringNotifications has been called');
+    // debugPrint('scheduleRecurringNotifications called');
+    if (AppBloc.isNotificationsActivated) {
+      // await showSimpleNotification(title: 'isNotificationsActivated is true');
       // cancel previous notifications
-      await cancelAll();
+      // await cancelAll();
       // set new notifications
-      if (AppBloc.notificationsIdsList.isEmpty) {
+      // List<int> notificationsIdsList =
+      //     await AppCacheHelper().getCachedIdsList();
+      debugPrint('ids: ${SqlCubit.notificationsIdsList}');
+      if (SqlCubit.notificationsIdsList.isEmpty) {
         debugPrint('ID list is empty. Cannot schedule notifications.');
         return;
       }
-      List<int> idList = List.from(AppBloc.notificationsIdsList);
+      // await showSimpleNotification(title: 'notificationsIdsList is not empty');
+      List<int> idList = List.from(SqlCubit.notificationsIdsList);
       tz.initializeTimeZones();
 
       final notificationsNumber = AppBloc.notificationsNumber;
@@ -76,11 +83,11 @@ class LocalNotificationsHelper {
           tz.local,
         );
         if (idList.isEmpty) {
-          idList = List.from(AppBloc.notificationsIdsList);
+          idList = List.from(SqlCubit.notificationsIdsList);
         }
         final randomIndex = Random().nextInt(idList.length);
         final randomId = idList[randomIndex];
-        debugPrint('$startTime, $i, id: $randomIndex');
+        debugPrint('$startTime, $i, id: $randomId');
         // remove the id we got from the idList to ensure equal chances for other ids
         idList.removeAt(randomIndex);
         final notificationTitle =
@@ -96,8 +103,8 @@ class LocalNotificationsHelper {
         const notificationDetails = NotificationDetails(
             android: AndroidNotificationDetails(
           'channel_1',
-          'Tadaruk Recurring Notifications',
-          channelDescription: 'Tadaruk Recurring Notifications per One Day',
+          'Reminding Notifications',
+          channelDescription: '',
           importance: Importance.defaultImportance,
           priority: Priority.defaultPriority,
         ));
@@ -120,51 +127,11 @@ class LocalNotificationsHelper {
 
       debugPrint(
           'Recurring notifications scheduled between $startTime and $endTime');
-
-      // scheduleNewRecurringNotifications
-      DateTime scheduledTime = DateTime.now().copyWith(
-        hour: AppBloc.notificationEndTime.hour,
-        minute: AppBloc.notificationEndTime.minute,
-      );
-      final now = DateTime.now();
-      Duration delay = scheduledTime.difference(now);
-      if (delay.isNegative) {
-        scheduledTime = DateTime(
-            now.year,
-            now.month,
-            now.day + 1,
-            AppBloc.notificationEndTime.hour,
-            AppBloc.notificationEndTime.minute);
-        delay = scheduledTime.difference(now);
-      }
-      debugPrint('Timer: $delay');
-      Timer(delay, () async {
-        await showSimpleNotification();
-        scheduleRecurringNotifications();
-      });
+      // await showSimpleNotification(title: 'You can smile');
+    } else {
+      debugPrint('Notifications are inactive');
     }
   }
-
-  // void scheduleNewRecurringNotifications() {
-  //   DateTime scheduledTime = DateTime.now().copyWith(
-  //     hour: AppBloc.notificationEndTime.hour,
-  //     minute: AppBloc.notificationEndTime.minute,
-  //   );
-  //   Duration delay = scheduledTime.difference(DateTime.now());
-  //   if (delay.inMinutes < 0) {
-  //     scheduledTime.add(const Duration(days: 1));
-  //     delay = scheduledTime.difference(DateTime.now());
-  //   }
-  //   Timer(delay, () {
-  //     showSimpleNotification();
-  //     scheduleRecurringNotifications();
-  //   });
-  // }
-
-  // close a specific channel notification
-  // static Future cancel(int id) async {
-  //   await _flutterLocalNotificationsPlugin.cancel(id);
-  // }
 
   // close all the notifications available
   static Future cancelAll() async {
@@ -233,6 +200,7 @@ class LocalNotificationsHelper {
       }
       streamController.add(notificationAppLaunchDetails.notificationResponse!);
     }
+    haha = true;
   }
 
   static _onNotificationTap(NotificationResponse notificationResponse) {
@@ -270,19 +238,20 @@ class LocalNotificationsHelper {
     }
   }
 
-  static Future showSimpleNotification() async {
-    const AndroidNotificationDetails androidNotificationDetails =
-        AndroidNotificationDetails(
-      'your channel id2',
-      'your channel name2',
-      channelDescription: 'your channel description',
-      importance: Importance.high,
-      priority: Priority.max,
-    );
-    const NotificationDetails notificationDetails =
-        NotificationDetails(android: androidNotificationDetails);
-    await _flutterLocalNotificationsPlugin.show(
-        0, 'Notifications rescheduled', 'testing', notificationDetails,
-        payload: '2, 1, 1, 1, 1, خطأ, ملاحظة');
-  }
+// static Future showSimpleNotification(
+//     {String title = 'Notifications rescheduled'}) async {
+//   const AndroidNotificationDetails androidNotificationDetails =
+//       AndroidNotificationDetails(
+//     'your channel id2',
+//     'your channel name2',
+//     channelDescription: 'your channel description',
+//     importance: Importance.high,
+//     priority: Priority.max,
+//   );
+//   const NotificationDetails notificationDetails =
+//       NotificationDetails(android: androidNotificationDetails);
+//   await _flutterLocalNotificationsPlugin.show(
+//       0, title, 'testing', notificationDetails,
+//       payload: '2, 1, 1, 1, 1, خطأ, ملاحظة');
+// }
 }

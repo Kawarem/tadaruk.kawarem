@@ -1,14 +1,17 @@
+// import 'package:android_alarm_manager_plus/android_alarm_manager_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart' as bloc;
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:share_plus/share_plus.dart';
-import 'package:tadarok/constants/data.dart';
-import 'package:tadarok/helpers/local_notifications_helper.dart';
-import 'package:tadarok/modules/backup_and_restore_screen/backup_and_restore_screen.dart';
-import 'package:tadarok/state_management/app_bloc/app_bloc.dart';
-import 'package:tadarok/state_management/sql_cubit/sql_cubit.dart';
+import 'package:tadaruk/constants/colors.dart';
+import 'package:tadaruk/constants/data.dart';
+import 'package:tadaruk/helpers/local_notifications_helper.dart';
+import 'package:tadaruk/modules/backup_and_restore_screen/backup_and_restore_screen.dart';
+import 'package:tadaruk/state_management/app_bloc/app_bloc.dart';
+import 'package:tadaruk/state_management/sql_cubit/sql_cubit.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:vibration/vibration.dart';
 
@@ -103,6 +106,16 @@ class SettingsScreen extends StatelessWidget {
                                           (isNotificationsActivated) async {
                                         await _activateNotificationsLogic(
                                             isNotificationsActivated, appBloc);
+                                        if (isNotificationsActivated) {
+                                          await Permission.scheduleExactAlarm
+                                              .request();
+                                          // await AndroidAlarmManager.periodic(
+                                          //     const Duration(seconds: 1),
+                                          //     0,
+                                          //     callback);
+                                        } else {
+                                          // await AndroidAlarmManager.cancel(0);
+                                        }
                                       },
                                     ),
                                   ],
@@ -154,7 +167,7 @@ class SettingsScreen extends StatelessWidget {
                                 }
                               },
                               min: 1,
-                              max: 50,
+                              max: 30,
                             ),
                             Padding(
                               padding: const EdgeInsets.symmetric(
@@ -337,7 +350,7 @@ class SettingsScreen extends StatelessWidget {
                       ),
                       InkWell(
                         onTap: () async {
-                          Get.to(() => BackupAndRestoreScreen(),
+                          Get.to(() => const BackupAndRestoreScreen(),
                               transition: Transition.leftToRightWithFade);
                         },
                         child: Container(
@@ -426,27 +439,40 @@ class SettingsScreen extends StatelessWidget {
       bool areNotificationsEnabled =
           await LocalNotificationsHelper.isAndroidPermissionGranted();
       if (areNotificationsEnabled) {
-        if (AppBloc.notificationsIdsList.isEmpty) {
+        if (SqlCubit.notificationsIdsList.isEmpty) {
           Vibration.vibrate(duration: 50);
           Fluttertoast.cancel();
-          Fluttertoast.showToast(msg: 'يرجى إضافة خطأ لتفعيل الإشعارات');
+          Fluttertoast.showToast(
+              msg: 'يرجى إضافة خطأ لتفعيل الإشعارات',
+              backgroundColor: TOAST_BACKGROUND_COLOR);
         } else {
           appBloc.add(ChangeNotificationsActivationEvent(
               isNotificationsActivated: isNotificationsActivated));
           Fluttertoast.cancel();
-          Fluttertoast.showToast(msg: 'تم تفعيل الإشعارات');
+          Fluttertoast.showToast(
+              msg: 'تم تفعيل الإشعارات',
+              backgroundColor: TOAST_BACKGROUND_COLOR);
         }
       } else {
         Vibration.vibrate(duration: 50);
         Fluttertoast.cancel();
-        Fluttertoast.showToast(msg: 'يرجى تفعيل الإشعارات');
+        Fluttertoast.showToast(
+            msg: 'يرجى تفعيل الإشعارات',
+            backgroundColor: TOAST_BACKGROUND_COLOR);
         LocalNotificationsHelper.requestPermissions();
       }
     } else {
       appBloc.add(ChangeNotificationsActivationEvent(
           isNotificationsActivated: isNotificationsActivated));
       Fluttertoast.cancel();
-      Fluttertoast.showToast(msg: 'تم إلغاء تفعيل الإشعارات');
+      Fluttertoast.showToast(
+          msg: 'تم إلغاء تفعيل الإشعارات',
+          backgroundColor: TOAST_BACKGROUND_COLOR);
     }
   }
 }
+
+// @pragma('vm:entry-point')
+// void callback() async {
+//   await LocalNotificationsHelper.scheduleRecurringNotifications();
+// }

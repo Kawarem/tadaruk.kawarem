@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:tadarok/state_management/sql_cubit/sql_cubit.dart';
+import 'package:tadaruk/state_management/sql_cubit/sql_cubit.dart';
 
 class BackupAndRestoreScreen extends StatelessWidget {
   const BackupAndRestoreScreen({super.key});
@@ -11,7 +11,7 @@ class BackupAndRestoreScreen extends StatelessWidget {
     var sqlCubit = SqlCubit.get(context);
     return Scaffold(
       appBar: AppBar(
-        title: Text('النسخ الاحتياطي والاستعادة'),
+        title: const Text('النسخ الاحتياطي والاستعادة'),
         leading: IconButton(
           onPressed: () {
             Get.back();
@@ -23,7 +23,6 @@ class BackupAndRestoreScreen extends StatelessWidget {
         children: [
           InkWell(
             onTap: () async {
-              await sqlCubit.getDatabasePath();
               sqlCubit.backupDatabase();
             },
             child: Container(
@@ -44,7 +43,7 @@ class BackupAndRestoreScreen extends StatelessWidget {
           ),
           InkWell(
             onTap: () async {
-              sqlCubit.restoreDatabase2();
+              sqlCubit.restoreDatabase();
             },
             child: Container(
               padding: const EdgeInsets.all(16).r,

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:tadarok/state_management/app_bloc/app_bloc.dart';
+import 'package:tadaruk/state_management/app_bloc/app_bloc.dart';
 
 class ScrollToHideWidget extends StatelessWidget {
   final Widget child;

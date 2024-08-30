@@ -3,14 +3,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart' as bloc;
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:tadarok/constants/components.dart';
-import 'package:tadarok/helpers/local_notifications_helper.dart';
-import 'package:tadarok/modules/add_mistake_screen/add_mistake_screen.dart';
-import 'package:tadarok/modules/home_screen/expandable_app_bar/expandable_app_bar.dart';
-import 'package:tadarok/modules/home_screen/scroll_to_hide_widget.dart';
-import 'package:tadarok/modules/settings_screen/settings_screen.dart';
-import 'package:tadarok/state_management/app_bloc/app_bloc.dart';
-import 'package:tadarok/state_management/sql_cubit/sql_cubit.dart';
+import 'package:tadaruk/constants/components.dart';
+import 'package:tadaruk/helpers/local_notifications_helper.dart';
+import 'package:tadaruk/modules/add_mistake_screen/add_mistake_screen.dart';
+import 'package:tadaruk/modules/home_screen/expandable_app_bar/expandable_app_bar.dart';
+import 'package:tadaruk/modules/home_screen/scroll_to_hide_widget.dart';
+import 'package:tadaruk/modules/settings_screen/settings_screen.dart';
+import 'package:tadaruk/state_management/app_bloc/app_bloc.dart';
+import 'package:tadaruk/state_management/sql_cubit/sql_cubit.dart';
 
 ScrollController scrollController = ScrollController();
 

@@ -3,9 +3,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart' as Get;
-import 'package:tadarok/constants/data.dart';
-import 'package:tadarok/state_management/app_bloc/app_bloc.dart';
-import 'package:tadarok/state_management/sql_cubit/sql_cubit.dart';
+import 'package:tadaruk/constants/data.dart';
+import 'package:tadaruk/state_management/app_bloc/app_bloc.dart';
+import 'package:tadaruk/state_management/sql_cubit/sql_cubit.dart';
 import 'package:vibration/vibration.dart';
 
 class AddMistakeScreen extends StatefulWidget {
@@ -501,7 +501,7 @@ class _AddMistakeScreenState extends State<AddMistakeScreen> {
                     child: Row(
                       children: [
                         Text(
-                          'حيث أن نوعية الخطأ:',
+                          'نوعية الخطأ:',
                           style: Theme.of(context).textTheme.displayLarge,
                         ),
                       ],

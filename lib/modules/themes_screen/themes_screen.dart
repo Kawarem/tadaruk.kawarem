@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
-import 'package:tadarok/theme/theme_bloc/theme_bloc.dart';
+import 'package:tadaruk/theme/theme_bloc/theme_bloc.dart';
 
 import '../../theme/app_theme.dart';
 

@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:tadarok/modules/home_screen/animated_gradiant_container.dart';
-import 'package:tadarok/modules/home_screen/expandable_app_bar/fade_animation.dart';
-import 'package:tadarok/modules/home_screen/home_screen.dart';
-import 'package:tadarok/state_management/app_bloc/app_bloc.dart';
+import 'package:tadaruk/modules/home_screen/animated_gradiant_container.dart';
+import 'package:tadaruk/modules/home_screen/expandable_app_bar/fade_animation.dart';
+import 'package:tadaruk/modules/home_screen/home_screen.dart';
+import 'package:tadaruk/state_management/app_bloc/app_bloc.dart';
 
 final sliverAppBarKey = GlobalKey();
 

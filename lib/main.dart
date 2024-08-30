@@ -1,18 +1,19 @@
 /// بِسۡمِ ٱللَّهِ ٱلرَّحۡمَٰنِ ٱلرَّحِيمِ
 library;
 
+// import 'package:android_alarm_manager_plus/android_alarm_manager_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get_navigation/src/root/get_material_app.dart';
-import 'package:tadarok/helpers/image_utils.dart';
-import 'package:tadarok/helpers/local_notifications_helper.dart';
-import 'package:tadarok/modules/home_screen/home_screen.dart';
-import 'package:tadarok/state_management/app_bloc/app_bloc.dart';
-import 'package:tadarok/state_management/sql_cubit/sql_cubit.dart';
-import 'package:tadarok/theme/theme_bloc/theme_bloc.dart';
+import 'package:tadaruk/helpers/image_utils.dart';
+import 'package:tadaruk/helpers/local_notifications_helper.dart';
+import 'package:tadaruk/modules/home_screen/home_screen.dart';
+import 'package:tadaruk/state_management/app_bloc/app_bloc.dart';
+import 'package:tadaruk/state_management/sql_cubit/sql_cubit.dart';
+import 'package:tadaruk/theme/theme_bloc/theme_bloc.dart';
 
 import 'helpers/my_bloc_observer.dart';
 
@@ -25,6 +26,7 @@ void main() async {
   await ScreenUtil.ensureScreenSize();
   ImageUtils.svgPrecacheImage();
   await LocalNotificationsHelper.init();
+  // await AndroidAlarmManager.initialize();
   Bloc.observer = MyBlocObserver();
   runApp(const MyApp());
 }
@@ -46,10 +48,10 @@ class MyApp extends StatelessWidget {
                   create: (context) =>
                       ThemeBloc()..add(GetCurrentThemeEvent())),
               BlocProvider(
+                  create: (create) => SqlCubit()..ensureDatabaseInitialized()),
+              BlocProvider(
                   create: (create) => AppBloc()
                     ..add(GetSettingsDataFromSharedPreferencesEvent())),
-              BlocProvider(
-                  create: (create) => SqlCubit()..ensureDatabaseInitialized()),
             ],
             child: BlocBuilder<ThemeBloc, ThemeState>(
               builder: (context, state) {

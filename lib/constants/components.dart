@@ -7,10 +7,10 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:marqueer/marqueer.dart';
 import 'package:quran/quran.dart' as quran;
-import 'package:tadarok/constants/data.dart';
-import 'package:tadarok/modules/add_mistake_screen/add_mistake_screen.dart';
-import 'package:tadarok/state_management/app_bloc/app_bloc.dart';
-import 'package:tadarok/state_management/sql_cubit/sql_cubit.dart';
+import 'package:tadaruk/constants/data.dart';
+import 'package:tadaruk/modules/add_mistake_screen/add_mistake_screen.dart';
+import 'package:tadaruk/state_management/app_bloc/app_bloc.dart';
+import 'package:tadaruk/state_management/sql_cubit/sql_cubit.dart';
 
 Widget buttonInHomeScreen(context,
         {required String title, required int index}) =>
@@ -103,11 +103,11 @@ Widget mistakeCard(
     case 2:
       mistakeKindText = 'هي نقص في الآية:  ';
     case 3:
-      mistakeKindText = 'هي إبدال في الآية:  ';
-    case 4:
       mistakeKindText = 'هي زيادة في الآية:  ';
-    default:
+    case 4:
       mistakeKindText = 'خطأ تشكيلي في الآية:  ';
+    default:
+      mistakeKindText = 'هي إبدال في الآية:  ';
   }
   Color containerColor;
   switch (mistakeRepetition) {
