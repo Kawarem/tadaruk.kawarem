@@ -37,19 +37,19 @@ class ThemesScreen extends StatelessWidget {
                         children: [
                           themeCard(
                             context,
-                            svg: 'assets/svgs/greenDarkTheme.svg',
+                            svg: 'assets/svgs/theme0.svg',
                             isSelected: (state.themeIndex == 0),
                             index: 0,
                           ),
                           themeCard(
                             context,
-                            svg: 'assets/svgs/theme2.svg',
+                            svg: 'assets/svgs/theme1.svg',
                             isSelected: (state.themeIndex == 1),
                             index: 1,
                           ),
                           themeCard(
                             context,
-                            svg: 'assets/svgs/theme3.svg',
+                            svg: 'assets/svgs/theme2.svg',
                             isSelected: (state.themeIndex == 2),
                             index: 2,
                           ),

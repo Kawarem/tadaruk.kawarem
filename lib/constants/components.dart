@@ -51,10 +51,6 @@ Widget expansionTiles(context, List<Map<String, dynamic>> model) =>
         alignment: AlignmentDirectional.topStart,
         color: Theme.of(context).textTheme.headlineMedium!.color,
       ),
-      // Text(
-      //   'سورة ${model[0]['surah']}',
-      //   style: Theme.of(context).textTheme.displayLarge,
-      // ),
       children: [
         Container(
           color: Theme.of(context).scaffoldBackgroundColor,
@@ -185,7 +181,7 @@ Widget mistakeCard(
                                     Column(
                                       children: [
                                         SizedBox(
-                                          width: 70.w,
+                                          width: 65.w,
                                           height: 22.h,
                                           child: Center(
                                             child: Text(
@@ -193,6 +189,7 @@ Widget mistakeCard(
                                               style: Theme.of(context)
                                                   .textTheme
                                                   .displayMedium,
+                                              overflow: TextOverflow.ellipsis,
                                             ),
                                           ),
                                         ),
@@ -202,7 +199,7 @@ Widget mistakeCard(
                                       children: [
                                         Container(
                                           height: 1.h,
-                                          width: 60.w,
+                                          width: 65.w,
                                           color: Theme.of(context).primaryColor,
                                         ),
                                         SizedBox(
@@ -210,7 +207,7 @@ Widget mistakeCard(
                                         ),
                                         Container(
                                           height: 1.h,
-                                          width: 60.w,
+                                          width: 65.w,
                                           color: Theme.of(context).primaryColor,
                                         ),
                                       ],
@@ -467,7 +464,8 @@ Widget mistakeCard(
   );
 }
 
-Future showMistakeDialog(context, String payload) async {
+Future showMistakeDialogWhenAppLunchedThroughNotification(
+    context, String payload) async {
   final parts = payload.split(',');
   final int id = int.parse(parts[0].trim());
   final int surahNumber = int.parse(parts[1].trim());
@@ -544,7 +542,7 @@ Future showMistakeDialog(context, String payload) async {
                                 Column(
                                   children: [
                                     SizedBox(
-                                      width: 70.w,
+                                      width: 65.w,
                                       height: 22.h,
                                       child: Center(
                                         child: Text(
@@ -552,6 +550,7 @@ Future showMistakeDialog(context, String payload) async {
                                           style: Theme.of(context)
                                               .textTheme
                                               .displayMedium,
+                                          overflow: TextOverflow.ellipsis,
                                         ),
                                       ),
                                     ),
@@ -561,7 +560,7 @@ Future showMistakeDialog(context, String payload) async {
                                   children: [
                                     Container(
                                       height: 1.h,
-                                      width: 60.w,
+                                      width: 65.w,
                                       color: Theme.of(context).primaryColor,
                                     ),
                                     SizedBox(
@@ -569,7 +568,7 @@ Future showMistakeDialog(context, String payload) async {
                                     ),
                                     Container(
                                       height: 1.h,
-                                      width: 60.w,
+                                      width: 65.w,
                                       color: Theme.of(context).primaryColor,
                                     ),
                                   ],
@@ -651,9 +650,6 @@ Future showMistakeDialog(context, String payload) async {
                           padding: const EdgeInsets.symmetric(vertical: 8).r,
                           child: const Divider(),
                         ),
-// SizedBox(
-//   height: 16.h,
-// ),
                       if (mistake.isNotEmpty)
                         Row(
                           crossAxisAlignment: CrossAxisAlignment.start,

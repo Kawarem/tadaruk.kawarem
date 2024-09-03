@@ -251,12 +251,11 @@ class SqlCubit extends Cubit<SqlState> {
       return entry.value;
     }).toList();
     idData = idGroupedData;
-    // todo: remove if unnecessary
-    // AppBloc.notificationsIdsList = notificationsIdsList;
-    // await AppCacheHelper().cacheIdsList(notificationsIdsList);
     emit(GetDatabaseState());
     displayDatabase();
-    await LocalNotificationsHelper.scheduleRecurringNotifications();
+    if (AppBloc.isNotificationsActivated) {
+      await LocalNotificationsHelper.scheduleRecurringNotifications();
+    }
   }
 
   Future<void> displayDatabase() async {
@@ -335,13 +334,9 @@ class SqlCubit extends Cubit<SqlState> {
       id
     ]).then((value) async {
       emit(UpdateDatabaseState());
-      await getDatabase(database);
-      if (AppBloc.isNotificationsActivated) {
-        LocalNotificationsHelper.scheduleRecurringNotifications();
-      }
       debugPrint('database updated: $value');
+      await getDatabase(database);
     });
-    await LocalNotificationsHelper.scheduleRecurringNotifications();
   }
 
   void deleteFromDatabase({
@@ -355,7 +350,6 @@ class SqlCubit extends Cubit<SqlState> {
       emit(DeleteDatabaseState());
       getDatabase(database);
     });
-    await LocalNotificationsHelper.scheduleRecurringNotifications();
   }
 
   String? databasePath;
@@ -386,12 +380,13 @@ class SqlCubit extends Cubit<SqlState> {
         debugPrint('Database backup successfully :)');
         Fluttertoast.showToast(
             msg:
-                'تم إنشاء نسخة احتياطية بنجاح 😊\n يمكنك إيجادها في ملفاتك ضمن مجلد اسمه Tadaruk backups',
-            backgroundColor: TOAST_BACKGROUND_COLOR);
+                'تم إنشاء نسخة احتياطية بنجاح\n يمكنك إيجادها في ملفاتك ضمن مجلد اسمه Tadaruk backups',
+            backgroundColor: TOAST_BACKGROUND_COLOR,
+            toastLength: Toast.LENGTH_LONG);
       } catch (e) {
         debugPrint('Database backup failed :( ${e.toString()}');
         Fluttertoast.showToast(
-            msg: 'فشلت عملبة النسخ الاحتياطي 😢',
+            msg: 'فشلت عملبة النسخ الاحتياطي',
             backgroundColor: TOAST_BACKGROUND_COLOR);
       }
     } else {
@@ -425,12 +420,12 @@ class SqlCubit extends Cubit<SqlState> {
             if (isDatabaseMine.isNotEmpty) {
               final String databasePath = await getDatabasesPath();
               await selectedBackupFile.copy('$databasePath/kawarem.tadaruk.db');
-              getDatabase(database);
+              await getDatabase(database);
               Get.back();
               Get.back();
               debugPrint('Database restored successfully :)');
               Fluttertoast.showToast(
-                  msg: 'تم استعادة النسخة الاحتياطية بنجاح 😊',
+                  msg: 'تم استعادة النسخة الاحتياطية بنجاح',
                   backgroundColor: TOAST_BACKGROUND_COLOR);
             } else {
               debugPrint('Selected file is not my db file');
@@ -455,7 +450,7 @@ class SqlCubit extends Cubit<SqlState> {
       } catch (e) {
         debugPrint('Database restore failed :( ${e.toString()}');
         Fluttertoast.showToast(
-            msg: 'فشلت عملية استعادة النسخة الاحتياطية 😢',
+            msg: 'فشلت عملية استعادة النسخة الاحتياطية',
             backgroundColor: TOAST_BACKGROUND_COLOR);
       }
     } else {

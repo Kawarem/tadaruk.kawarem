@@ -36,7 +36,8 @@ class _HomeScreenState extends State<HomeScreen> {
       if (kDebugMode) {
         print(notificationResponse.payload!.toString());
       }
-      showMistakeDialog(context, notificationResponse.payload!);
+      showMistakeDialogWhenAppLunchedThroughNotification(
+          context, notificationResponse.payload!);
     });
   }
 
@@ -54,7 +55,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     'مساعدك في المراجعة',
                     style: Theme.of(context).textTheme.headlineLarge,
                   ),
-                  colors: const [Color(0xff75BCD1), Color(0xff70C42F)],
+                  colors: const [Color(0xff656176), Color(0xff534D56)],
                   collapsedWidget: Text(
                     'تدارُك',
                     style: Theme.of(context).appBarTheme.titleTextStyle,
@@ -65,7 +66,10 @@ class _HomeScreenState extends State<HomeScreen> {
                           Get.to(() => SettingsScreen(),
                               transition: Transition.leftToRightWithFade);
                         },
-                        icon: const Icon(Icons.settings)),
+                        icon: Icon(
+                          Icons.settings,
+                          color: Theme.of(context).appBarTheme.iconTheme!.color,
+                        )),
                   ],
                   sliverList: SliverList(
                     delegate: SliverChildBuilderDelegate((context, index) {

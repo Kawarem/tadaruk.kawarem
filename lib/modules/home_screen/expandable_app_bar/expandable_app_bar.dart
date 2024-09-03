@@ -198,19 +198,22 @@ class ExpandableAppBar extends StatelessWidget {
             }
             return false;
           },
-          child: CustomScrollView(controller: scrollController, slivers: [
-            SliverOverlapInjector(
-                handle:
-                    NestedScrollView.sliverOverlapAbsorberHandleFor(context)),
-            sliverList,
-            // SliverFillRemaining(
-            //     child: Column(
-            //   children: [
-            //     Expanded(child: SizedBox()),
-            //     ElevatedButton(onPressed: () {}, child: Text('data')),
-            //   ],
-            // ))
-          ]),
+          child: CustomScrollView(
+              controller: scrollController,
+              // physics: AlwaysScrollableScrollPhysics(),
+              slivers: [
+                SliverOverlapInjector(
+                    handle: NestedScrollView.sliverOverlapAbsorberHandleFor(
+                        context)),
+                sliverList,
+                // SliverFillRemaining(
+                //     child: Column(
+                //   children: [
+                //     Expanded(child: SizedBox()),
+                //     ElevatedButton(onPressed: () {}, child: Text('data')),
+                //   ],
+                // ))
+              ]),
         );
       }),
     );

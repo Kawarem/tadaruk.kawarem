@@ -19,50 +19,55 @@ class BackupAndRestoreScreen extends StatelessWidget {
           icon: const Icon(Icons.arrow_back_ios_rounded),
         ),
       ),
-      body: Column(
-        children: [
-          InkWell(
-            onTap: () async {
-              sqlCubit.backupDatabase();
-            },
-            child: Container(
-              padding: const EdgeInsets.all(16).r,
-              child: Row(
-                children: [
-                  const Icon(Icons.backup_outlined),
-                  SizedBox(
-                    width: 16.w,
+      body: CustomScrollView(slivers: [
+        SliverFillRemaining(
+          hasScrollBody: false,
+          child: Column(
+            children: [
+              InkWell(
+                onTap: () async {
+                  sqlCubit.backupDatabase();
+                },
+                child: Container(
+                  padding: const EdgeInsets.all(16).r,
+                  child: Row(
+                    children: [
+                      const Icon(Icons.file_copy_outlined),
+                      SizedBox(
+                        width: 16.w,
+                      ),
+                      Text(
+                        'إنشاء نسخة احتياطية محلياً',
+                        style: Theme.of(context).textTheme.bodyLarge,
+                      ),
+                    ],
                   ),
-                  Text(
-                    'إنشاء نسخة احتياطية',
-                    style: Theme.of(context).textTheme.bodyLarge,
-                  ),
-                ],
+                ),
               ),
-            ),
-          ),
-          InkWell(
-            onTap: () async {
-              sqlCubit.restoreDatabase();
-            },
-            child: Container(
-              padding: const EdgeInsets.all(16).r,
-              child: Row(
-                children: [
-                  const Icon(Icons.restore_page_outlined),
-                  SizedBox(
-                    width: 16.w,
+              InkWell(
+                onTap: () async {
+                  sqlCubit.restoreDatabase();
+                },
+                child: Container(
+                  padding: const EdgeInsets.all(16).r,
+                  child: Row(
+                    children: [
+                      const Icon(Icons.restore_page_outlined),
+                      SizedBox(
+                        width: 16.w,
+                      ),
+                      Text(
+                        'استعادة نسخة احتياطية محلية',
+                        style: Theme.of(context).textTheme.bodyLarge,
+                      ),
+                    ],
                   ),
-                  Text(
-                    'استعادة نسخة احتياطية',
-                    style: Theme.of(context).textTheme.bodyLarge,
-                  ),
-                ],
+                ),
               ),
-            ),
+            ],
           ),
-        ],
-      ),
+        ),
+      ]),
     );
   }
 }
