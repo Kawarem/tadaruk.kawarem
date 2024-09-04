@@ -11,6 +11,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:quran/quran.dart' as quran;
 import 'package:sqflite/sqflite.dart';
 import 'package:tadaruk/constants/colors.dart';
+import 'package:tadaruk/constants/components.dart';
 import 'package:tadaruk/constants/data.dart';
 import 'package:tadaruk/helpers/local_notifications_helper.dart';
 import 'package:tadaruk/state_management/app_bloc/app_bloc.dart';
@@ -335,11 +336,13 @@ class SqlCubit extends Cubit<SqlState> {
     ]).then((value) async {
       emit(UpdateDatabaseState());
       debugPrint('database updated: $value');
+      await LocalNotificationsHelper.cancelAll();
       await getDatabase(database);
     });
   }
 
-  void deleteFromDatabase({
+  void deleteFromDatabase(
+    context, {
     required int id,
   }) async {
     database.rawDelete('DELETE FROM surah_mistakes WHERE id = ?', [id]).then(
@@ -348,7 +351,24 @@ class SqlCubit extends Cubit<SqlState> {
         print('$value deleted successfully');
       }
       emit(DeleteDatabaseState());
-      getDatabase(database);
+      await LocalNotificationsHelper.cancelAll();
+      await getDatabase(database);
+      validateNotificationsActivation(context);
+    });
+  }
+
+  Future<void> deleteAllMistakesForOneSurah(context,
+      {required int surahNumber}) async {
+    database.rawDelete('DELETE FROM surah_mistakes WHERE surah_number = ?',
+        [surahNumber]).then((value) async {
+      if (kDebugMode) {
+        print(
+            '$value mistakes from surah $surahNumber were deleted successfully');
+      }
+      emit(DeleteDatabaseState());
+      await LocalNotificationsHelper.cancelAll();
+      await getDatabase(database);
+      validateNotificationsActivation(context);
     });
   }
 
@@ -420,6 +440,7 @@ class SqlCubit extends Cubit<SqlState> {
             if (isDatabaseMine.isNotEmpty) {
               final String databasePath = await getDatabasesPath();
               await selectedBackupFile.copy('$databasePath/kawarem.tadaruk.db');
+              await LocalNotificationsHelper.cancelAll();
               await getDatabase(database);
               Get.back();
               Get.back();
@@ -444,7 +465,7 @@ class SqlCubit extends Cubit<SqlState> {
         } else {
           debugPrint('No file selected');
           Fluttertoast.showToast(
-              msg: 'فشلت عملية استعادة النسخة الاحتياطية: لم يتم اختبار ملف',
+              msg: 'فشلت عملية استعادة النسخة الاحتياطية: لم يتم اختيار ملف',
               backgroundColor: TOAST_BACKGROUND_COLOR);
         }
       } catch (e) {

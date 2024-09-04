@@ -24,22 +24,22 @@ AppColors theme0 = AppColors(
     secondaryColor: const Color(0xff12a36c),
     backgroundColor: const Color(0xff0A2429),
     appBarColor: const Color(0xff12a36c),
-    textColor: Color(0xffFFFCFD),
+    textColor: const Color(0xffFFFCFD),
     textFormFieldColor: const Color(0xff484848));
 
 AppColors theme1 = AppColors(
     primaryColor: const Color(0xffCAE9FF),
     secondaryColor: const Color(0xffBEE9E8),
-    backgroundColor: Color(0xff1B4965),
+    backgroundColor: const Color(0xff1B4965),
     appBarColor: const Color(0xff62B6CB),
-    textColor: Color(0xffFFFCFD),
+    textColor: const Color(0xffFFFCFD),
     //todo: change
     textFormFieldColor: const Color(0xff484848));
 
 AppColors theme2 = AppColors(
     primaryColor: const Color(0xff656176),
     secondaryColor: const Color(0xff534D56),
-    backgroundColor: Color(0xffF8F1FF),
+    backgroundColor: const Color(0xffF8F1FF),
     appBarColor: const Color(0xff656176),
-    textColor: Color(0xff0F1515),
+    textColor: const Color(0xff0F1515),
     textFormFieldColor: const Color(0xff484848));

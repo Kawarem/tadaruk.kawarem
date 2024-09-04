@@ -4,9 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart' as bloc;
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:marqueer/marqueer.dart';
 import 'package:quran/quran.dart' as quran;
+import 'package:tadaruk/constants/colors.dart';
 import 'package:tadaruk/constants/data.dart';
 import 'package:tadaruk/modules/add_mistake_screen/add_mistake_screen.dart';
 import 'package:tadaruk/state_management/app_bloc/app_bloc.dart';
@@ -42,43 +44,60 @@ Widget buttonInHomeScreen(context,
       ),
     );
 
-Widget expansionTiles(context, List<Map<String, dynamic>> model) =>
-    ExpansionTile(
-      collapsedIconColor: Theme.of(context).textTheme.headlineMedium!.color,
-      title: SvgPicture.asset(
-        'assets/svgs/surah_names/Surah_${model[0]['surah_number']}_of_114_(modified).svg',
-        width: 100,
-        alignment: AlignmentDirectional.topStart,
-        color: Theme.of(context).textTheme.headlineMedium!.color,
-      ),
-      children: [
-        Container(
-          color: Theme.of(context).scaffoldBackgroundColor,
-          child: CustomScrollView(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            slivers: [
-              SliverList(
-                delegate: SliverChildBuilderDelegate(
-                  (context, index) {
-                    if (index.isEven) {
-                      return mistakeCard(context,
-                          id: model[index ~/ 2]['mistake_id']);
-                    }
-                    return Container(
-                      width: double.infinity,
-                      height: 1.h,
-                      color: const Color(0xffbdbdbd),
-                    );
-                  },
-                  childCount: math.max(0, model.length * 2 - 1),
-                ),
-              ),
-            ],
-          ),
+Widget expansionTiles(
+        context, List<Map<String, dynamic>> model, SqlCubit sqlCubit) =>
+    GestureDetector(
+      onLongPress: () {
+        showDeleteDialog(context,
+            sqlCubit: sqlCubit,
+            message:
+                'هل أنت متأكد أنك تريد حذف جميع أخطاء سورة ${model[0]['surah']}؟',
+            onDeleteFunction: () async {
+          await sqlCubit.deleteAllMistakesForOneSurah(context,
+              surahNumber: model[0]['surah_number']);
+          Get.back();
+          // validateNotificationsActivation(context);
+        }, onCancelFunction: () {
+          Get.back();
+        });
+      },
+      child: ExpansionTile(
+        collapsedIconColor: Theme.of(context).textTheme.headlineMedium!.color,
+        title: SvgPicture.asset(
+          'assets/svgs/surah_names/Surah_${model[0]['surah_number']}_of_114_(modified).svg',
+          width: 100,
+          alignment: AlignmentDirectional.topStart,
+          color: Theme.of(context).textTheme.headlineMedium!.color,
         ),
-        // ])
-      ],
+        children: [
+          Container(
+            color: Theme.of(context).scaffoldBackgroundColor,
+            child: CustomScrollView(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              slivers: [
+                SliverList(
+                  delegate: SliverChildBuilderDelegate(
+                    (context, index) {
+                      if (index.isEven) {
+                        return mistakeCard(context,
+                            id: model[index ~/ 2]['mistake_id']);
+                      }
+                      return Container(
+                        width: double.infinity,
+                        height: 1.h,
+                        color: const Color(0xffbdbdbd),
+                      );
+                    },
+                    childCount: math.max(0, model.length * 2 - 1),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          // ])
+        ],
+      ),
     );
 
 Widget mistakeCard(
@@ -181,7 +200,7 @@ Widget mistakeCard(
                                     Column(
                                       children: [
                                         SizedBox(
-                                          width: 65.w,
+                                          width: 70.w,
                                           height: 22.h,
                                           child: Center(
                                             child: Text(
@@ -189,7 +208,6 @@ Widget mistakeCard(
                                               style: Theme.of(context)
                                                   .textTheme
                                                   .displayMedium,
-                                              overflow: TextOverflow.ellipsis,
                                             ),
                                           ),
                                         ),
@@ -197,18 +215,34 @@ Widget mistakeCard(
                                     ),
                                     Column(
                                       children: [
-                                        Container(
-                                          height: 1.h,
-                                          width: 65.w,
-                                          color: Theme.of(context).primaryColor,
+                                        Row(
+                                          children: [
+                                            SizedBox(
+                                              width: 5.w,
+                                            ),
+                                            Container(
+                                              height: 1.h,
+                                              width: 60.w,
+                                              color: Theme.of(context)
+                                                  .primaryColor,
+                                            ),
+                                          ],
                                         ),
                                         SizedBox(
                                           height: 20.h,
                                         ),
-                                        Container(
-                                          height: 1.h,
-                                          width: 65.w,
-                                          color: Theme.of(context).primaryColor,
+                                        Row(
+                                          children: [
+                                            SizedBox(
+                                              width: 5.w,
+                                            ),
+                                            Container(
+                                              height: 1.h,
+                                              width: 60.w,
+                                              color: Theme.of(context)
+                                                  .primaryColor,
+                                            ),
+                                          ],
                                         ),
                                       ],
                                     )
@@ -542,7 +576,7 @@ Future showMistakeDialogWhenAppLunchedThroughNotification(
                                 Column(
                                   children: [
                                     SizedBox(
-                                      width: 65.w,
+                                      width: 70.w,
                                       height: 22.h,
                                       child: Center(
                                         child: Text(
@@ -558,18 +592,32 @@ Future showMistakeDialogWhenAppLunchedThroughNotification(
                                 ),
                                 Column(
                                   children: [
-                                    Container(
-                                      height: 1.h,
-                                      width: 65.w,
-                                      color: Theme.of(context).primaryColor,
+                                    Row(
+                                      children: [
+                                        SizedBox(
+                                          width: 5.w,
+                                        ),
+                                        Container(
+                                          height: 1.h,
+                                          width: 60.w,
+                                          color: Theme.of(context).primaryColor,
+                                        ),
+                                      ],
                                     ),
                                     SizedBox(
                                       height: 20.h,
                                     ),
-                                    Container(
-                                      height: 1.h,
-                                      width: 65.w,
-                                      color: Theme.of(context).primaryColor,
+                                    Row(
+                                      children: [
+                                        SizedBox(
+                                          width: 5.w,
+                                        ),
+                                        Container(
+                                          height: 1.h,
+                                          width: 60.w,
+                                          color: Theme.of(context).primaryColor,
+                                        ),
+                                      ],
                                     ),
                                   ],
                                 )
@@ -716,4 +764,110 @@ Future showMistakeDialogWhenAppLunchedThroughNotification(
           ),
         );
       });
+}
+
+Future<Object?> showDeleteDialog(context,
+        {SqlCubit? sqlCubit,
+        required String message,
+        required Function()? onDeleteFunction,
+        required Function()? onCancelFunction}) =>
+    showGeneralDialog(
+        context: context,
+        pageBuilder: (context, animation1, animation2) {
+          return Container();
+        },
+        barrierDismissible: true,
+        barrierLabel: '',
+        //transitionDuration: const Duration(microseconds: 400),
+        transitionBuilder: (context, a1, a2, widget) {
+          return ScaleTransition(
+              scale: Tween<double>(begin: 0.5, end: 1).animate(a1),
+              child: FadeTransition(
+                  opacity: Tween<double>(begin: 0.5, end: 1).animate(a1),
+                  child: AlertDialog(
+                    backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+                    shape: OutlineInputBorder(
+                      borderSide: BorderSide.none,
+                      borderRadius: BorderRadius.circular(8).r,
+                    ),
+                    content: SizedBox(
+                      width: 300.w,
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          SizedBox(
+                            height: 8.h,
+                          ),
+                          Text(
+                            message,
+                            style: Theme.of(context).textTheme.displayLarge,
+                            textAlign: TextAlign.center,
+                          ),
+                          SizedBox(
+                            height: 32.h,
+                          ),
+                          ElevatedButton(
+                            onPressed: onDeleteFunction,
+                            style: ElevatedButton.styleFrom(
+                              minimumSize: Size(170.w, 43.h),
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8).r),
+                            ),
+                            child: Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(vertical: 8).h,
+                              child: Text(
+                                'حذف',
+                                style: Theme.of(context).textTheme.displayLarge,
+                              ),
+                            ),
+                          ),
+                          SizedBox(
+                            height: 8.h,
+                          ),
+                          SizedBox(
+                            width: 170.w,
+                            height: 43.h,
+                            child: TextButton(
+                              onPressed: onCancelFunction,
+                              style: ButtonStyle(
+                                shape: WidgetStateProperty.all<
+                                    RoundedRectangleBorder>(
+                                  RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(8).r,
+                                  ),
+                                ),
+                                overlayColor:
+                                    WidgetStateProperty.resolveWith<Color>(
+                                  (Set<WidgetState> states) {
+                                    if (states.contains(WidgetState.pressed)) {
+                                      return Colors.grey.withOpacity(0.1);
+                                    }
+                                    return Colors.transparent;
+                                  },
+                                ),
+                              ),
+                              child: Text(
+                                'إلغاء',
+                                style: Theme.of(context).textTheme.displayLarge,
+                              ),
+                            ),
+                          )
+                        ],
+                      ),
+                    ),
+                  )));
+        });
+
+void validateNotificationsActivation(context) {
+  if (SqlCubit.notificationsIdsList.isEmpty) {
+    bloc.BlocProvider.of<AppBloc>(context).add(
+        ChangeNotificationsActivationEvent(isNotificationsActivated: false));
+    debugPrint('Notifications disabled');
+    Fluttertoast.showToast(
+        msg: 'تم إلغاء تفعيل الإشعارات',
+        backgroundColor: TOAST_BACKGROUND_COLOR);
+  } else {
+    debugPrint('meow');
+  }
 }

@@ -55,7 +55,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     'مساعدك في المراجعة',
                     style: Theme.of(context).textTheme.headlineLarge,
                   ),
-                  colors: const [Color(0xff656176), Color(0xff534D56)],
+                  colors: const [Color(0xff75BCD1), Color(0xff70C42F)],
                   collapsedWidget: Text(
                     'تدارُك',
                     style: Theme.of(context).appBarTheme.titleTextStyle,
@@ -73,8 +73,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   ],
                   sliverList: SliverList(
                     delegate: SliverChildBuilderDelegate((context, index) {
-                      return expansionTiles(
-                          context, sqlCubit.homeScreenSurahData[index]);
+                      return expansionTiles(context,
+                          sqlCubit.homeScreenSurahData[index], sqlCubit);
                     }, childCount: sqlCubit.homeScreenSurahData.length),
                   ),
                 ),

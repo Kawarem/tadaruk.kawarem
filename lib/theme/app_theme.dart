@@ -112,6 +112,17 @@ final appThemeData = {
           }
         },
       ),
+      // trackOutlineColor:
+      // WidgetStateProperty.resolveWith(
+      //       (final Set<WidgetState> states) {
+      //     if (states
+      //         .contains(WidgetState.selected)) {
+      //       return theme0.primaryColor;
+      //     } else {
+      //       return null;
+      //     }
+      //   },
+      // ),
     ),
     timePickerTheme: TimePickerThemeData(
       dayPeriodTextColor: WidgetStateColor.resolveWith((states) {
@@ -150,24 +161,51 @@ final appThemeData = {
       color: Colors.white, // Set the desired icon color
     ),
     textTheme: TextTheme(
-      bodyLarge:
-          TextStyle(color: Colors.white, fontSize: 16.sp, fontFamily: 'Rubik'),
+      bodyLarge: TextStyle(
+          color: Colors.white,
+          fontSize: 16.sp,
+          fontFamily: 'Rubik',
+          overflow: TextOverflow.ellipsis),
       bodyMedium: TextStyle(
-          color: const Color(0xffC9C9C9), fontSize: 14.sp, fontFamily: 'Rubik'),
+          color: const Color(0xffC9C9C9),
+          fontSize: 14.sp,
+          fontFamily: 'Rubik',
+          overflow: TextOverflow.ellipsis),
       bodySmall: TextStyle(
-          color: const Color(0xffC9C9C9), fontSize: 12.sp, fontFamily: 'Rubik'),
-      displayLarge:
-          TextStyle(color: Colors.white, fontSize: 18.sp, fontFamily: 'Rubik'),
-      displayMedium:
-          TextStyle(color: Colors.white, fontSize: 16.sp, fontFamily: 'Rubik'),
-      displaySmall:
-          TextStyle(color: Colors.white, fontSize: 12.sp, fontFamily: 'Rubik'),
-      headlineLarge:
-          TextStyle(color: Colors.white, fontSize: 24.sp, fontFamily: 'Rubik'),
-      titleMedium:
-          TextStyle(color: Colors.white, fontSize: 14.sp, fontFamily: 'Rubik'),
+          color: const Color(0xffC9C9C9),
+          fontSize: 12.sp,
+          fontFamily: 'Rubik',
+          overflow: TextOverflow.ellipsis),
+      displayLarge: TextStyle(
+          color: Colors.white,
+          fontSize: 18.sp,
+          fontFamily: 'Rubik',
+          overflow: TextOverflow.ellipsis),
+      displayMedium: TextStyle(
+          color: Colors.white,
+          fontSize: 16.sp,
+          fontFamily: 'Rubik',
+          overflow: TextOverflow.ellipsis),
+      displaySmall: TextStyle(
+          color: Colors.white,
+          fontSize: 12.sp,
+          fontFamily: 'Rubik',
+          overflow: TextOverflow.ellipsis),
+      headlineLarge: TextStyle(
+          color: Colors.white,
+          fontSize: 24.sp,
+          fontFamily: 'Rubik',
+          overflow: TextOverflow.ellipsis),
+      titleMedium: TextStyle(
+          color: Colors.white,
+          fontSize: 14.sp,
+          fontFamily: 'Rubik',
+          overflow: TextOverflow.ellipsis),
       headlineMedium: TextStyle(
-          color: const Color(0xffCACACE), fontSize: 14.sp, fontFamily: 'Rubik'),
+          color: const Color(0xffCACACE),
+          fontSize: 14.sp,
+          fontFamily: 'Rubik',
+          overflow: TextOverflow.ellipsis),
     ),
     sliderTheme: SliderThemeData(
       activeTrackColor: theme1.primaryColor,
@@ -260,21 +298,21 @@ final appThemeData = {
     ),
     textTheme: TextTheme(
       bodyLarge: TextStyle(
-          color: Color(0xff0F1515), fontSize: 16.sp, fontFamily: 'Rubik'),
+          color: const Color(0xff0F1515), fontSize: 16.sp, fontFamily: 'Rubik'),
       bodyMedium: TextStyle(
           color: const Color(0xffC9C9C9), fontSize: 14.sp, fontFamily: 'Rubik'),
       bodySmall: TextStyle(
           color: const Color(0xffC9C9C9), fontSize: 12.sp, fontFamily: 'Rubik'),
       displayLarge: TextStyle(
-          color: Color(0xff0F1515), fontSize: 18.sp, fontFamily: 'Rubik'),
+          color: const Color(0xff0F1515), fontSize: 18.sp, fontFamily: 'Rubik'),
       displayMedium: TextStyle(
-          color: Color(0xff0F1515), fontSize: 16.sp, fontFamily: 'Rubik'),
+          color: const Color(0xff0F1515), fontSize: 16.sp, fontFamily: 'Rubik'),
       displaySmall: TextStyle(
-          color: Color(0xff0F1515), fontSize: 12.sp, fontFamily: 'Rubik'),
+          color: const Color(0xff0F1515), fontSize: 12.sp, fontFamily: 'Rubik'),
       headlineLarge: TextStyle(
-          color: Color(0xffFFFCFD), fontSize: 24.sp, fontFamily: 'Rubik'),
+          color: const Color(0xffFFFCFD), fontSize: 24.sp, fontFamily: 'Rubik'),
       titleMedium: TextStyle(
-          color: Color(0xff0F1515), fontSize: 14.sp, fontFamily: 'Rubik'),
+          color: const Color(0xff0F1515), fontSize: 14.sp, fontFamily: 'Rubik'),
       headlineMedium: TextStyle(
           color: const Color(0xffCACACE), fontSize: 14.sp, fontFamily: 'Rubik'),
     ),

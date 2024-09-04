@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart' as Get;
+import 'package:tadaruk/constants/components.dart';
 import 'package:tadaruk/constants/data.dart';
 import 'package:tadaruk/state_management/app_bloc/app_bloc.dart';
 import 'package:tadaruk/state_management/sql_cubit/sql_cubit.dart';
@@ -109,6 +110,7 @@ class _AddMistakeScreenState extends State<AddMistakeScreen> {
     return BlocBuilder<AppBloc, AppState>(
       builder: (context, state) {
         var appBloc = AppBloc.get(context);
+        var sqlCubit = SqlCubit.get(context);
         return Scaffold(
           appBar: AppBar(
             title: Text(
@@ -124,124 +126,17 @@ class _AddMistakeScreenState extends State<AddMistakeScreen> {
               if (widget.isEdit)
                 IconButton(
                     onPressed: () {
-                      showGeneralDialog(
-                          context: context,
-                          pageBuilder: (context, animation1, animation2) {
-                            return Container();
-                          },
-                          barrierDismissible: true,
-                          barrierLabel: '',
-                          //transitionDuration: const Duration(microseconds: 400),
-                          transitionBuilder: (context, a1, a2, widget) {
-                            return ScaleTransition(
-                                scale: Tween<double>(begin: 0.5, end: 1)
-                                    .animate(a1),
-                                child: FadeTransition(
-                                    opacity: Tween<double>(begin: 0.5, end: 1)
-                                        .animate(a1),
-                                    child: AlertDialog(
-                                      backgroundColor: Theme.of(context)
-                                          .scaffoldBackgroundColor,
-                                      shape: OutlineInputBorder(
-                                        borderSide: BorderSide.none,
-                                        borderRadius:
-                                            BorderRadius.circular(8).r,
-                                      ),
-                                      content: SizedBox(
-                                        width: 300.w,
-                                        child: Column(
-                                          mainAxisSize: MainAxisSize.min,
-                                          children: [
-                                            SizedBox(
-                                              height: 8.h,
-                                            ),
-                                            Text(
-                                              'هل أنت متأكد أنك تريد حذف هذا الخطأ؟',
-                                              style: Theme.of(context)
-                                                  .textTheme
-                                                  .displayLarge,
-                                              textAlign: TextAlign.center,
-                                            ),
-                                            SizedBox(
-                                              height: 32.h,
-                                            ),
-                                            ElevatedButton(
-                                              onPressed: () {
-                                                BlocProvider.of<SqlCubit>(
-                                                        context)
-                                                    .deleteFromDatabase(
-                                                        id: id!);
-                                                Get.Get.back();
-                                                Get.Get.back();
-                                                Get.Get.back();
-                                              },
-                                              style: ElevatedButton.styleFrom(
-                                                minimumSize: Size(170.w, 43.h),
-                                                shape: RoundedRectangleBorder(
-                                                    borderRadius:
-                                                        BorderRadius.circular(8)
-                                                            .r),
-                                              ),
-                                              child: Padding(
-                                                padding:
-                                                    const EdgeInsets.symmetric(
-                                                            vertical: 8)
-                                                        .h,
-                                                child: Text(
-                                                  'حذف',
-                                                  style: Theme.of(context)
-                                                      .textTheme
-                                                      .displayLarge,
-                                                ),
-                                              ),
-                                            ),
-                                            SizedBox(
-                                              height: 8.h,
-                                            ),
-                                            SizedBox(
-                                              width: 170.w,
-                                              height: 43.h,
-                                              child: TextButton(
-                                                onPressed: () {
-                                                  Get.Get.back();
-                                                },
-                                                style: ButtonStyle(
-                                                  shape: WidgetStateProperty.all<
-                                                      RoundedRectangleBorder>(
-                                                    RoundedRectangleBorder(
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                                  8)
-                                                              .r,
-                                                    ),
-                                                  ),
-                                                  overlayColor:
-                                                      WidgetStateProperty
-                                                          .resolveWith<Color>(
-                                                    (Set<WidgetState> states) {
-                                                      if (states.contains(
-                                                          WidgetState
-                                                              .pressed)) {
-                                                        return Colors.grey
-                                                            .withOpacity(0.1);
-                                                      }
-                                                      return Colors.transparent;
-                                                    },
-                                                  ),
-                                                ),
-                                                child: Text(
-                                                  'تراجع',
-                                                  style: Theme.of(context)
-                                                      .textTheme
-                                                      .displayLarge,
-                                                ),
-                                              ),
-                                            )
-                                          ],
-                                        ),
-                                      ),
-                                    )));
-                          });
+                      showDeleteDialog(context,
+                          message: 'هل أنت متأكد أنك تريد حذف هذا الخطأ؟',
+                          onDeleteFunction: () {
+                        sqlCubit.deleteFromDatabase(context, id: id!);
+                        Get.Get.back();
+                        Get.Get.back();
+                        Get.Get.back();
+                        validateNotificationsActivation(context);
+                      }, onCancelFunction: () {
+                        Get.Get.back();
+                      });
                     },
                     icon: const Icon(Icons.delete_outline_rounded)),
               const SizedBox()
@@ -350,7 +245,7 @@ class _AddMistakeScreenState extends State<AddMistakeScreen> {
                                   Row(
                                     children: [
                                       SizedBox(
-                                        width: 4.w,
+                                        width: 5.w,
                                       ),
                                       Container(
                                         height: 1.h,
@@ -365,7 +260,7 @@ class _AddMistakeScreenState extends State<AddMistakeScreen> {
                                   Row(
                                     children: [
                                       SizedBox(
-                                        width: 4.w,
+                                        width: 5.w,
                                       ),
                                       Container(
                                         height: 1.h,
