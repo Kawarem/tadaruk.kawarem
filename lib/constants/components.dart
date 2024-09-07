@@ -861,12 +861,14 @@ Future<Object?> showDeleteDialog(context,
 
 void validateNotificationsActivation(context) {
   if (SqlCubit.notificationsIdsList.isEmpty) {
-    bloc.BlocProvider.of<AppBloc>(context).add(
-        ChangeNotificationsActivationEvent(isNotificationsActivated: false));
-    debugPrint('Notifications disabled');
-    Fluttertoast.showToast(
-        msg: 'تم إلغاء تفعيل الإشعارات',
-        backgroundColor: TOAST_BACKGROUND_COLOR);
+    if (AppBloc.isNotificationsActivated) {
+      bloc.BlocProvider.of<AppBloc>(context).add(
+          ChangeNotificationsActivationEvent(isNotificationsActivated: false));
+      debugPrint('Notifications disabled');
+      Fluttertoast.showToast(
+          msg: 'تم إلغاء تفعيل الإشعارات',
+          backgroundColor: TOAST_BACKGROUND_COLOR);
+    }
   } else {
     debugPrint('meow');
   }
