@@ -9,6 +9,7 @@ import 'package:share_plus/share_plus.dart';
 import 'package:tadaruk/constants/colors.dart';
 import 'package:tadaruk/constants/data.dart';
 import 'package:tadaruk/helpers/local_notifications_helper.dart';
+import 'package:tadaruk/modules/about_screen/about_screen.dart';
 import 'package:tadaruk/modules/backup_and_restore_screen/backup_and_restore_screen.dart';
 import 'package:tadaruk/state_management/app_bloc/app_bloc.dart';
 import 'package:tadaruk/state_management/sql_cubit/sql_cubit.dart';
@@ -369,37 +370,45 @@ class SettingsScreen extends StatelessWidget {
                           ),
                         ),
                       ),
-                      Container(
-                        padding: const EdgeInsets.all(16).r,
-                        child: Column(
-                          children: [
-                            Row(
-                              children: [
-                                const Icon(Icons.info_outline_rounded),
-                                SizedBox(
-                                  width: 16.w,
-                                ),
-                                Text(
-                                  'حول',
-                                  style: Theme.of(context).textTheme.bodyLarge,
-                                ),
-                              ],
-                            ),
-                            SizedBox(
-                              height: 8.h,
-                            ),
-                            Row(
-                              children: [
-                                SizedBox(
-                                  width: 36.w,
-                                ),
-                                Text(
-                                  'الإصدار $VERSION',
-                                  style: Theme.of(context).textTheme.bodySmall,
-                                ),
-                              ],
-                            ),
-                          ],
+                      InkWell(
+                        onTap: () {
+                          Get.to(() => AboutScreen(),
+                              transition: Transition.leftToRightWithFade);
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.all(16).r,
+                          child: Column(
+                            children: [
+                              Row(
+                                children: [
+                                  const Icon(Icons.info_outline_rounded),
+                                  SizedBox(
+                                    width: 16.w,
+                                  ),
+                                  Text(
+                                    'حول',
+                                    style:
+                                        Theme.of(context).textTheme.bodyLarge,
+                                  ),
+                                ],
+                              ),
+                              SizedBox(
+                                height: 8.h,
+                              ),
+                              Row(
+                                children: [
+                                  SizedBox(
+                                    width: 36.w,
+                                  ),
+                                  Text(
+                                    'الإصدار $VERSION',
+                                    style:
+                                        Theme.of(context).textTheme.bodySmall,
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     ],
