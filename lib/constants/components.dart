@@ -13,6 +13,7 @@ import 'package:tadaruk/constants/data.dart';
 import 'package:tadaruk/modules/add_mistake_screen/add_mistake_screen.dart';
 import 'package:tadaruk/state_management/app_bloc/app_bloc.dart';
 import 'package:tadaruk/state_management/sql_cubit/sql_cubit.dart';
+import 'package:vibration/vibration.dart';
 
 Widget buttonInHomeScreen(context,
         {required String title, required int index}) =>
@@ -60,6 +61,7 @@ Widget expansionTiles(
         }, onCancelFunction: () {
           Get.back();
         });
+        Vibration.vibrate(duration: 50);
       },
       child: ExpansionTile(
         collapsedIconColor: Theme.of(context).textTheme.headlineMedium!.color,

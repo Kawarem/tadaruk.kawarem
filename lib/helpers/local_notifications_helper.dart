@@ -101,13 +101,15 @@ class LocalNotificationsHelper {
             '$randomId, ${SqlCubit.idData[randomId]!['surah_number']}, ${SqlCubit.idData[randomId]!['verse_number']}, ${SqlCubit.idData[randomId]!['mistake_kind']}, ${SqlCubit.idData[randomId]!['mistake_repetition']}, ${SqlCubit.idData[randomId]!['mistake']}, ${SqlCubit.idData[randomId]!['note']}';
 
         const notificationDetails = NotificationDetails(
-            android: AndroidNotificationDetails(
-          'channel_1',
-          'Reminding Notifications',
-          channelDescription: '',
-          importance: Importance.defaultImportance,
-          priority: Priority.defaultPriority,
-        ));
+          android: AndroidNotificationDetails(
+            'channel_1',
+            'Reminding Notifications',
+            channelDescription: '',
+            importance: Importance.defaultImportance,
+            priority: Priority.defaultPriority,
+            color: Color(0xff005154),
+          ),
+        );
 
         await _flutterLocalNotificationsPlugin.zonedSchedule(
           i,

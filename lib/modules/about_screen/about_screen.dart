@@ -36,7 +36,7 @@ class AboutScreen extends StatelessWidget {
                   padding: const EdgeInsets.all(16).r,
                   child: Row(
                     children: [
-                      const Icon(Icons.phone_enabled_outlined),
+                      const Icon(Icons.chat_outlined),
                       SizedBox(
                         width: 16.w,
                       ),
