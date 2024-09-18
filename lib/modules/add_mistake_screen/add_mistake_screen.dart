@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -30,6 +32,8 @@ class _AddMistakeScreenState extends State<AddMistakeScreen> {
   final _listWheelScrollVerseController = FixedExtentScrollController();
   final _listWheelScrollSurahController = FixedExtentScrollController();
   final _listWheelScrollMistakeKindController = FixedExtentScrollController();
+  Timer? _listWheelScrollSurahControllerTimer;
+  bool _isListWheelScrollSurahControllerTimerOver = true;
 
   void _insertData(context) {
     BlocProvider.of<SqlCubit>(context).insertToDatabase(
@@ -197,20 +201,37 @@ class _AddMistakeScreenState extends State<AddMistakeScreen> {
                                           _listWheelScrollSurahController,
                                       onSelectedItemChanged: (index) async {
                                         if (!isEdit) {
-                                          if (_listWheelScrollVerseController
-                                                      .selectedItem +
-                                                  1 >
-                                              quranSurahVerses[index]) {
-                                            await _listWheelScrollVerseController
-                                                .animateToItem(
-                                                    quranSurahVerses[index] - 1,
-                                                    duration: const Duration(
-                                                        milliseconds: 1000),
-                                                    curve: Curves.easeInOut);
-                                          }
-                                          appBloc.add(
-                                              ChangeSurahInAddMistakeScreenEvent(
-                                                  surahNumber: index));
+                                          _isListWheelScrollSurahControllerTimerOver =
+                                              false;
+                                          _listWheelScrollSurahControllerTimer
+                                              ?.cancel();
+                                          _listWheelScrollSurahControllerTimer =
+                                              Timer(
+                                            const Duration(milliseconds: 400),
+                                            () async {
+                                              if (_listWheelScrollVerseController
+                                                          .selectedItem +
+                                                      1 >
+                                                  quranSurahVerses[index]) {
+                                                await _listWheelScrollVerseController
+                                                    .animateToItem(
+                                                        quranSurahVerses[
+                                                                index] -
+                                                            1,
+                                                        duration:
+                                                            const Duration(
+                                                                milliseconds:
+                                                                    1000),
+                                                        curve:
+                                                            Curves.easeInOut);
+                                              }
+                                              appBloc.add(
+                                                  ChangeSurahInAddMistakeScreenEvent(
+                                                      surahNumber: index));
+                                              _isListWheelScrollSurahControllerTimerOver =
+                                                  true;
+                                            },
+                                          );
                                         } else if (_listWheelScrollSurahController
                                                     .selectedItem +
                                                 1 ==
@@ -521,7 +542,7 @@ class _AddMistakeScreenState extends State<AddMistakeScreen> {
                                     height: 43.r,
                                     clipBehavior: Clip.antiAliasWithSaveLayer,
                                     decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(45),
+                                      borderRadius: BorderRadius.circular(90),
                                       color: Color.lerp(appBloc.circleColor0,
                                           appBloc.circleColor1, 1),
                                     ),
@@ -537,6 +558,8 @@ class _AddMistakeScreenState extends State<AddMistakeScreen> {
                                       },
                                       child: SvgPicture.asset(
                                         'assets/svgs/sign${appBloc.mistakeKind}.svg',
+                                        width: 37.r,
+                                        height: 37.r,
                                         key: ValueKey<int>(appBloc.mistakeKind),
                                       ),
                                     ),
@@ -577,11 +600,6 @@ class _AddMistakeScreenState extends State<AddMistakeScreen> {
                   ),
                   Form(
                     key: formKey,
-                    // autovalidateMode: (state is ValidateTextFormFieldState)
-                    //     ? (state.validator)
-                    //         ? AutovalidateMode.always
-                    //         : AutovalidateMode.disabled
-                    //     : AutovalidateMode.disabled,
                     child: Column(
                       children: [
                         Padding(
@@ -692,23 +710,26 @@ class _AddMistakeScreenState extends State<AddMistakeScreen> {
                       builder: (context, state) {
                         return ElevatedButton(
                           onPressed: () {
+                            // insert data
                             if (_listWheelScrollMistakeKindController
                                     .selectedItem ==
                                 0) {
-                              if (widget.isEdit) {
+                              if (widget.isEdit &&
+                                  _isListWheelScrollSurahControllerTimerOver) {
                                 _updateData(context);
                                 Get.Get.back();
                                 Get.Get.back();
-                              } else {
+                              } else if (_isListWheelScrollSurahControllerTimerOver) {
                                 _insertData(context);
                                 Get.Get.back();
                               }
                             } else if (formKey.currentState!.validate()) {
-                              if (widget.isEdit) {
+                              if (widget.isEdit &&
+                                  _isListWheelScrollSurahControllerTimerOver) {
                                 _updateData(context);
                                 Get.Get.back();
                                 Get.Get.back();
-                              } else {
+                              } else if (_isListWheelScrollSurahControllerTimerOver) {
                                 _insertData(context);
                                 Get.Get.back();
                               }

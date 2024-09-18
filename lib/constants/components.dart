@@ -66,7 +66,8 @@ Widget expansionTiles(
         collapsedIconColor: Theme.of(context).textTheme.headlineMedium!.color,
         title: SvgPicture.asset(
           'assets/svgs/surah_names/Surah_${model[0]['surah_number']}_of_114_(modified).svg',
-          width: 100,
+          width: 90.w,
+          height: 30.h,
           alignment: AlignmentDirectional.topStart,
           color: Theme.of(context).textTheme.headlineMedium!.color,
         ),
@@ -492,7 +493,7 @@ Widget mistakeCard(
 // ),
               ),
             ],
-          )
+          ),
         ],
       ),
     ),
