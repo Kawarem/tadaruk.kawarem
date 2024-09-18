@@ -57,7 +57,6 @@ Widget expansionTiles(
           await sqlCubit.deleteAllMistakesForOneSurah(context,
               surahNumber: model[0]['surah_number']);
           Get.back();
-          // validateNotificationsActivation(context);
         }, onCancelFunction: () {
           Get.back();
         });

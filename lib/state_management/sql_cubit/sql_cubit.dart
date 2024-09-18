@@ -253,13 +253,13 @@ class SqlCubit extends Cubit<SqlState> {
     }).toList();
     idData = idGroupedData;
     emit(GetDatabaseState());
-    displayDatabase();
+    printDatabase();
     if (AppBloc.isNotificationsActivated) {
       await LocalNotificationsHelper.scheduleRecurringNotifications();
     }
   }
 
-  Future<void> displayDatabase() async {
+  Future<void> printDatabase() async {
     // for (final row in homeScreenData) {
     //   if (kDebugMode) {
     //     print('Surah: ${row['surah']}');
@@ -368,6 +368,7 @@ class SqlCubit extends Cubit<SqlState> {
       emit(DeleteDatabaseState());
       await LocalNotificationsHelper.cancelAll();
       await getDatabase(database);
+      // await LocalNotificationsHelper.scheduleRecurringNotifications();
       validateNotificationsActivation(context);
     });
   }

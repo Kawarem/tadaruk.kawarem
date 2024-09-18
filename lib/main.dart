@@ -1,7 +1,6 @@
 /// بِسۡمِ ٱللَّهِ ٱلرَّحۡمَٰنِ ٱلرَّحِيمِ
 library;
 
-// import 'package:android_alarm_manager_plus/android_alarm_manager_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -26,7 +25,6 @@ void main() async {
   await ScreenUtil.ensureScreenSize();
   ImageUtils.svgPrecacheImage();
   await LocalNotificationsHelper.init();
-  // await AndroidAlarmManager.initialize();
   Bloc.observer = MyBlocObserver();
   runApp(const MyApp());
 }

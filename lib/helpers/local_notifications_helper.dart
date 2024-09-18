@@ -101,15 +101,14 @@ class LocalNotificationsHelper {
             '$randomId, ${SqlCubit.idData[randomId]!['surah_number']}, ${SqlCubit.idData[randomId]!['verse_number']}, ${SqlCubit.idData[randomId]!['mistake_kind']}, ${SqlCubit.idData[randomId]!['mistake_repetition']}, ${SqlCubit.idData[randomId]!['mistake']}, ${SqlCubit.idData[randomId]!['note']}';
 
         const notificationDetails = NotificationDetails(
-          android: AndroidNotificationDetails(
-            'channel_1',
-            'Reminding Notifications',
-            channelDescription: '',
-            importance: Importance.defaultImportance,
-            priority: Priority.defaultPriority,
-            color: Color(0xff005154),
-          ),
-        );
+            android: AndroidNotificationDetails(
+          'channel_1',
+          'Reminding Notifications',
+          channelDescription: '',
+          importance: Importance.defaultImportance,
+          priority: Priority.defaultPriority,
+          color: Color(0xff005154),
+        ));
 
         await _flutterLocalNotificationsPlugin.zonedSchedule(
           i,
@@ -138,9 +137,8 @@ class LocalNotificationsHelper {
   // close all the notifications available
   static Future cancelAll() async {
     await _flutterLocalNotificationsPlugin.cancelAll();
-    if (kDebugMode) {
-      print('canceled all notifications');
-    }
+      debugPrint('canceled all notifications');
+
   }
 
   static Future<bool> isAndroidPermissionGranted() async {
