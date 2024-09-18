@@ -42,3 +42,5 @@ app.*.map.json
 /android/app/profile
 /android/app/release
 buildc1fdc2f5
+desktop.ini
+tadaruk_app_icon.ico
