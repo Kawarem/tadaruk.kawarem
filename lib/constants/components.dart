@@ -60,7 +60,7 @@ Widget expansionTiles(
         }, onCancelFunction: () {
           Get.back();
         });
-        Vibration.vibrate(duration: 50);
+        Vibration.vibrate(duration: 40);
       },
       child: ExpansionTile(
         collapsedIconColor: Theme.of(context).textTheme.headlineMedium!.color,

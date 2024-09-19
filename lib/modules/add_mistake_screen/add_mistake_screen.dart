@@ -33,7 +33,7 @@ class _AddMistakeScreenState extends State<AddMistakeScreen> {
   final _listWheelScrollSurahController = FixedExtentScrollController();
   final _listWheelScrollMistakeKindController = FixedExtentScrollController();
   Timer? _listWheelScrollSurahControllerTimer;
-  bool _isListWheelScrollSurahControllerTimerOver = true;
+  bool _isListWheelScrollSurahControllerTimerOver = false;
 
   void _insertData(context) {
     BlocProvider.of<SqlCubit>(context).insertToDatabase(
@@ -78,8 +78,11 @@ class _AddMistakeScreenState extends State<AddMistakeScreen> {
         BlocProvider.of<AppBloc>(context).add(ChangeMistakeRepetitionEvent(
             mistakeRepetition:
                 SqlCubit.idData[widget.id]!['mistake_repetition']!));
-        BlocProvider.of<AppBloc>(context).add(ChangeMistakeKindEvent(
-            mistakeKind: SqlCubit.idData[widget.id]!['mistake_kind']! - 1));
+        // The real value will be applied inside the widget
+        BlocProvider.of<AppBloc>(context)
+            .add(ChangeMistakeKindEvent(mistakeKind: 0));
+        // BlocProvider.of<AppBloc>(context).add(ChangeMistakeKindEvent(
+        //     mistakeKind: SqlCubit.idData[widget.id]!['mistake_kind']! - 1));
         _mistakeController.text = SqlCubit.idData[widget.id]!['mistake']!;
         _noteController.text = SqlCubit.idData[widget.id]!['note']!;
       });
@@ -238,6 +241,8 @@ class _AddMistakeScreenState extends State<AddMistakeScreen> {
                                             SqlCubit.idData[widget.id]![
                                                 'surah_number']) {
                                           isEdit = false;
+                                          _isListWheelScrollSurahControllerTimerOver =
+                                              true;
                                         }
                                       },
                                       itemExtent: 20.h,
@@ -710,31 +715,34 @@ class _AddMistakeScreenState extends State<AddMistakeScreen> {
                       builder: (context, state) {
                         return ElevatedButton(
                           onPressed: () {
-                            // insert data
-                            if (_listWheelScrollMistakeKindController
-                                    .selectedItem ==
-                                0) {
-                              if (widget.isEdit &&
-                                  _isListWheelScrollSurahControllerTimerOver) {
-                                _updateData(context);
-                                Get.Get.back();
-                                Get.Get.back();
-                              } else if (_isListWheelScrollSurahControllerTimerOver) {
-                                _insertData(context);
-                                Get.Get.back();
-                              }
-                            } else if (formKey.currentState!.validate()) {
-                              if (widget.isEdit &&
-                                  _isListWheelScrollSurahControllerTimerOver) {
-                                _updateData(context);
-                                Get.Get.back();
-                                Get.Get.back();
-                              } else if (_isListWheelScrollSurahControllerTimerOver) {
-                                _insertData(context);
-                                Get.Get.back();
+                            if (_isListWheelScrollSurahControllerTimerOver) {
+                              // insert data
+                              if (_listWheelScrollMistakeKindController
+                                      .selectedItem ==
+                                  0) {
+                                if (widget.isEdit) {
+                                  _updateData(context);
+                                  Get.Get.back();
+                                  Get.Get.back();
+                                } else {
+                                  _insertData(context);
+                                  Get.Get.back();
+                                }
+                              } else if (formKey.currentState!.validate()) {
+                                if (widget.isEdit) {
+                                  _updateData(context);
+                                  Get.Get.back();
+                                  Get.Get.back();
+                                } else {
+                                  _insertData(context);
+                                  Get.Get.back();
+                                }
+                              } else {
+                                Vibration.vibrate(duration: 50);
                               }
                             } else {
-                              Vibration.vibrate(duration: 50);
+                              // if still scrolling
+                              debugPrint('CTA clicked while scrolling!');
                             }
                           },
                           child: Text(
