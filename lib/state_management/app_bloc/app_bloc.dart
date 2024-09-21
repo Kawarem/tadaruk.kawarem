@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tadaruk/helpers/app_cache_helper.dart';
 import 'package:tadaruk/helpers/local_notifications_helper.dart';
+import 'package:tadaruk/state_management/sql_cubit/sql_cubit.dart';
 
 part 'app_event.dart';
 part 'app_state.dart';
@@ -21,7 +22,8 @@ class AppBloc extends Bloc<AppEvent, AppState> {
   Color circleColor1 = const Color(0xffb5e742);
   bool validatorInAddMistakeScreen = false;
   int surahNumber = 0;
-  int categoryInHomeScreen = 0;
+  static int displayTypeInHomeScreen = 0;
+  static List<List<Map<String, dynamic>>> displayDataInHomeScreen = [];
   bool isAppBarCollapsed = false;
   static bool isNotificationsActivated = false;
 
@@ -76,7 +78,8 @@ class AppBloc extends Bloc<AppEvent, AppState> {
         emit(ChangeSurahInAddMistakeScreenState(
             versesNumber: event.surahNumber));
       } else if (event is ChangeDisplayTypeInHomeScreenEvent) {
-        categoryInHomeScreen = event.displayTypeInHomeScreen;
+        displayTypeInHomeScreen = event.displayTypeInHomeScreen;
+        SqlCubit.changerCategoryType();
         emit(ChangeDisplayTypeInHomeScreenState());
       } else if (event is AppBarCollapsedEvent) {
         emit(AppBarCollapsedState(isCollapsed: isAppBarCollapsed));

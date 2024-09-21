@@ -30,6 +30,12 @@ class _HomeScreenState extends State<HomeScreen> {
     listenToNotificationStream();
   }
 
+  @override
+  void dispose() {
+    scrollController.dispose();
+    super.dispose();
+  }
+
   void listenToNotificationStream() {
     LocalNotificationsHelper.streamController.stream
         .listen((notificationResponse) async {
@@ -48,6 +54,7 @@ class _HomeScreenState extends State<HomeScreen> {
         var sqlCubit = SqlCubit.get(context);
         return bloc.BlocBuilder<AppBloc, AppState>(
           builder: (context, state) {
+            var appBloc = AppBloc.get(context);
             return Scaffold(
               body: Stack(children: [
                 ExpandableAppBar(
@@ -74,8 +81,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   sliverList: SliverList(
                     delegate: SliverChildBuilderDelegate((context, index) {
                       return expansionTiles(context,
-                          sqlCubit.homeScreenSurahData[index], sqlCubit);
-                    }, childCount: sqlCubit.homeScreenSurahData.length),
+                          AppBloc.displayDataInHomeScreen[index], sqlCubit);
+                    }, childCount: AppBloc.displayDataInHomeScreen.length),
                   ),
                 ),
                 Align(

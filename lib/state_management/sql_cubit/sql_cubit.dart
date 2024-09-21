@@ -24,10 +24,12 @@ class SqlCubit extends Cubit<SqlState> {
   static SqlCubit get(context) => BlocProvider.of(context);
 
   late Database database;
-  List<List<Map<String, dynamic>>> homeScreenSurahData = [];
-  List<List<Map<String, dynamic>>> homeScreenPageNumberData = [];
-  List<List<Map<String, dynamic>>> homeScreenJuzNumberData = [];
-  List<List<Map<String, dynamic>>> homeScreenMistakeRepetitionSurahData = [];
+  static List<List<Map<String, dynamic>>> homeScreenSurahData = [];
+  static List<List<Map<String, dynamic>>> homeScreenPageNumberData = [];
+  static List<List<Map<String, dynamic>>> homeScreenJuzNumberData = [];
+  static List<List<Map<String, dynamic>>> homeScreenMistakeKindSurahData = [];
+  static List<List<Map<String, dynamic>>> homeScreenMistakeRepetitionSurahData =
+      [];
   static Map<int, Map<String, dynamic>> idData = {};
   static List<int> notificationsIdsList = [];
   static int counter = 0;
@@ -209,6 +211,33 @@ class SqlCubit extends Cubit<SqlState> {
         print(notificationsIdsList);
       }
     }
+    // Reorder data according to mistake_kind
+    rawData = await db.rawQuery('''
+      SELECT
+        s.id AS surah_number,
+        s.surah,
+        m.id AS mistake_id,
+        m.verse_number,
+        m.page_number,
+        m.juz_number,
+        m.mistake_kind,
+        m.mistake,
+        m.note,
+        m.mistake_repetition
+      FROM surah_names s
+      LEFT JOIN surah_mistakes m ON s.id = m.surah_number
+      WHERE m.id IS NOT NULL
+      ORDER BY m.mistake_kind, s.id, m.verse_number, m.id
+    ''');
+    // Group the raw data by mistake_kind
+    Map<int, List<Map<String, dynamic>>> mistakeKindGroupedData = {};
+    for (final row in rawData) {
+      final mistakeRepetition = row['mistake_kind'] as int;
+      if (!mistakeKindGroupedData.containsKey(mistakeRepetition)) {
+        mistakeKindGroupedData[mistakeRepetition] = [];
+      }
+      mistakeKindGroupedData[mistakeRepetition]!.add(row);
+    }
     // Reorder data according to mistake_repetition
     rawData = await db.rawQuery('''
     SELECT 
@@ -247,6 +276,10 @@ class SqlCubit extends Cubit<SqlState> {
     homeScreenJuzNumberData = juzGroupedData.entries.map((entry) {
       return entry.value;
     }).toList();
+    homeScreenMistakeKindSurahData =
+        mistakeKindGroupedData.entries.map((entry) {
+      return entry.value;
+    }).toList();
     homeScreenMistakeRepetitionSurahData =
         mistakeRepetitionGroupedData.entries.map((entry) {
       return entry.value;
@@ -254,8 +287,26 @@ class SqlCubit extends Cubit<SqlState> {
     idData = idGroupedData;
     emit(GetDatabaseState());
     printDatabase();
+    changerCategoryType();
     if (AppBloc.isNotificationsActivated) {
       await LocalNotificationsHelper.scheduleRecurringNotifications();
+    }
+  }
+
+  static void changerCategoryType() {
+    switch (AppBloc.displayTypeInHomeScreen) {
+      case 0:
+        AppBloc.displayDataInHomeScreen = homeScreenSurahData;
+      case 1:
+        AppBloc.displayDataInHomeScreen = homeScreenPageNumberData;
+      case 2:
+        AppBloc.displayDataInHomeScreen = homeScreenJuzNumberData;
+      case 3:
+        AppBloc.displayDataInHomeScreen = homeScreenMistakeKindSurahData;
+      case 4:
+        AppBloc.displayDataInHomeScreen = homeScreenMistakeRepetitionSurahData;
+      default:
+        AppBloc.displayDataInHomeScreen = homeScreenSurahData;
     }
   }
 
@@ -357,20 +408,68 @@ class SqlCubit extends Cubit<SqlState> {
     });
   }
 
-  Future<void> deleteAllMistakesForOneSurah(context,
-      {required int surahNumber}) async {
-    database.rawDelete('DELETE FROM surah_mistakes WHERE surah_number = ?',
-        [surahNumber]).then((value) async {
-      if (kDebugMode) {
-        print(
-            '$value mistakes from surah $surahNumber were deleted successfully');
-      }
-      emit(DeleteDatabaseState());
-      await LocalNotificationsHelper.cancelAll();
-      await getDatabase(database);
-      // await LocalNotificationsHelper.scheduleRecurringNotifications();
-      validateNotificationsActivation(context);
-    });
+  Future<void> deleteAllMistakesFor(context, {required int index}) async {
+    switch (AppBloc.displayTypeInHomeScreen) {
+      case 0:
+        database.rawDelete('DELETE FROM surah_mistakes WHERE surah_number = ?',
+            [index]).then((value) async {
+          if (kDebugMode) {
+            print(
+                '$value mistakes from surah $index were deleted successfully');
+          }
+          emit(DeleteDatabaseState());
+          await LocalNotificationsHelper.cancelAll();
+          await getDatabase(database);
+          validateNotificationsActivation(context);
+        });
+      case 1:
+        database.rawDelete('DELETE FROM surah_mistakes WHERE page_number = ?',
+            [index]).then((value) async {
+          if (kDebugMode) {
+            print('$value mistakes from page $index were deleted successfully');
+          }
+          emit(DeleteDatabaseState());
+          await LocalNotificationsHelper.cancelAll();
+          await getDatabase(database);
+          validateNotificationsActivation(context);
+        });
+      case 2:
+        database.rawDelete('DELETE FROM surah_mistakes WHERE juz_number = ?',
+            [index]).then((value) async {
+          if (kDebugMode) {
+            print('$value mistakes from juz $index were deleted successfully');
+          }
+          emit(DeleteDatabaseState());
+          await LocalNotificationsHelper.cancelAll();
+          await getDatabase(database);
+          validateNotificationsActivation(context);
+        });
+      case 3:
+        database.rawDelete('DELETE FROM surah_mistakes WHERE mistake_kind = ?',
+            [index]).then((value) async {
+          if (kDebugMode) {
+            print(
+                '$value mistakes from mistake_kind $index were deleted successfully');
+          }
+          emit(DeleteDatabaseState());
+          await LocalNotificationsHelper.cancelAll();
+          await getDatabase(database);
+          validateNotificationsActivation(context);
+        });
+      case 4:
+        database.rawDelete(
+            'DELETE FROM surah_mistakes WHERE mistake_repetition = ?',
+            [index]).then((value) async {
+          if (kDebugMode) {
+            print(
+                '$value mistakes from mistake_repetition $index were deleted successfully');
+          }
+          emit(DeleteDatabaseState());
+          await LocalNotificationsHelper.cancelAll();
+          await getDatabase(database);
+          validateNotificationsActivation(context);
+        });
+    }
   }
 
   String? databasePath;

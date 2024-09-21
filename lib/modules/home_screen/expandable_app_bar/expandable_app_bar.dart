@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:tadaruk/constants/components.dart';
 import 'package:tadaruk/modules/home_screen/animated_gradiant_container.dart';
 import 'package:tadaruk/modules/home_screen/expandable_app_bar/fade_animation.dart';
 import 'package:tadaruk/modules/home_screen/home_screen.dart';
@@ -82,61 +83,74 @@ class ExpandableAppBar extends StatelessWidget {
                     child: FadeAnimation(
                       animation: animation,
                       isExpandedWidget: true,
-                      child: SafeArea(
-                        child: expandedWidget!,
+                      child: expandedWidget!,
+                    ),
+                  ),
+                FadeAnimation(
+                  animation: animation,
+                  isExpandedWidget: true,
+                  child: Align(
+                    alignment: Alignment.bottomCenter,
+                    child: Container(
+                      width: double.infinity,
+                      // TODO: change color to adapt to Theme
+                      color: const Color(0xff02786A),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                                horizontal: 0, vertical: 5)
+                            .r,
+                        child: BlocBuilder<AppBloc, AppState>(
+                          builder: (context, state) {
+                            return SingleChildScrollView(
+                              scrollDirection: Axis.horizontal,
+                              child: Row(
+                                children: [
+                                  SizedBox(
+                                    width: 16.r,
+                                  ),
+                                  Text(
+                                    'عرض حسب:',
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .displaySmall,
+                                  ),
+                                  SizedBox(
+                                    width: 8.w,
+                                  ),
+                                  categoryButtonInHomeScreen(context,
+                                      title: 'السور', index: 0),
+                                  SizedBox(
+                                    width: 8.w,
+                                  ),
+                                  categoryButtonInHomeScreen(context,
+                                      title: 'الصفحات', index: 1),
+                                  SizedBox(
+                                    width: 8.w,
+                                  ),
+                                  categoryButtonInHomeScreen(context,
+                                      title: 'الأجزاء', index: 2),
+                                  SizedBox(
+                                    width: 8.w,
+                                  ),
+                                  categoryButtonInHomeScreen(context,
+                                      title: 'نوعية الخطأ', index: 3),
+                                  SizedBox(
+                                    width: 8.w,
+                                  ),
+                                  categoryButtonInHomeScreen(context,
+                                      title: 'تكرار الخطأ', index: 4),
+                                  SizedBox(
+                                    width: 16.r,
+                                  ),
+                                ],
+                              ),
+                            );
+                          },
+                        ),
                       ),
                     ),
                   ),
-                // FadeAnimation(
-                //   animation: animation,
-                //   isExpandedWidget: true,
-                //   child: Align(
-                //     alignment: Alignment.bottomCenter,
-                //     child: Container(
-                //       width: double.infinity,
-                // TODO: change color to adapt to Theme
-                //       color: const Color(0xff02786A),
-                //       child: Padding(
-                //         padding: const EdgeInsets.symmetric(
-                //                 horizontal: 16.0, vertical: 4)
-                //             .r,
-                //         child: BlocBuilder<AppBloc, AppState>(
-                //           builder: (context, state) {
-                //             return Row(
-                //               children: [
-                //                 Text(
-                //                   'عرض:',
-                //                   style:
-                //                       Theme.of(context).textTheme.displaySmall,
-                //                 ),
-                //                 SizedBox(
-                //                   width: 8.w,
-                //                 ),
-                //                 buttonInHomeScreen(context,
-                //                     title: 'السور', index: 0),
-                //                 SizedBox(
-                //                   width: 8.w,
-                //                 ),
-                //                 buttonInHomeScreen(context,
-                //                     title: 'الصفحات', index: 1),
-                //                 SizedBox(
-                //                   width: 8.w,
-                //                 ),
-                //                 buttonInHomeScreen(context,
-                //                     title: 'الأجزاء', index: 2),
-                //                 SizedBox(
-                //                   width: 8.w,
-                //                 ),
-                //                 buttonInHomeScreen(context,
-                //                     title: 'تكرار الخطأ', index: 3),
-                //               ],
-                //             );
-                //           },
-                //         ),
-                //       ),
-                //     ),
-                //   ),
-                // ),
+                ),
                 SafeArea(
                   child: Align(
                     alignment: Alignment.topCenter,
@@ -213,6 +227,11 @@ class ExpandableAppBar extends StatelessWidget {
                 //     ElevatedButton(onPressed: () {}, child: Text('data')),
                 //   ],
                 // ))
+                SliverToBoxAdapter(
+                  child: SizedBox(
+                    height: 43.h,
+                  ),
+                )
               ]),
         );
       }),

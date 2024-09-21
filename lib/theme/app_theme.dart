@@ -59,6 +59,10 @@ final appThemeData = {
           TextStyle(color: Colors.white, fontSize: 14.sp, fontFamily: 'Rubik'),
       headlineMedium: TextStyle(
           color: const Color(0xffCACACE), fontSize: 14.sp, fontFamily: 'Rubik'),
+      labelLarge: TextStyle(
+          color: const Color(0xffC9C9C9),
+          fontSize: 24.sp,
+          fontFamily: 'Uthmani'),
     ),
     sliderTheme: SliderThemeData(
       activeTrackColor: theme0.primaryColor,

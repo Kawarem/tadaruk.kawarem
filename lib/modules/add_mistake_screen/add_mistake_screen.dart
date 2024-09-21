@@ -522,8 +522,8 @@ class _AddMistakeScreenState extends State<AddMistakeScreen> {
                               // TODO: Change color
                               color: const Color(0xff005154),
                               borderRadius: const BorderRadius.only(
-                                topRight: Radius.circular(45),
-                                bottomRight: Radius.circular(45),
+                                topRight: Radius.circular(90),
+                                bottomRight: Radius.circular(90),
                               ),
                               border: Border(
                                 top: BorderSide(

@@ -15,96 +15,149 @@ import 'package:tadaruk/state_management/app_bloc/app_bloc.dart';
 import 'package:tadaruk/state_management/sql_cubit/sql_cubit.dart';
 import 'package:vibration/vibration.dart';
 
-Widget buttonInHomeScreen(context,
+Widget categoryButtonInHomeScreen(context,
         {required String title, required int index}) =>
     GestureDetector(
       onTap: () {
         bloc.BlocProvider.of<AppBloc>(context).add(
             ChangeDisplayTypeInHomeScreenEvent(displayTypeInHomeScreen: index));
       },
-      child: Container(
+      child: AnimatedContainer(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4).r,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(45).r,
-          color: (bloc.BlocProvider.of<AppBloc>(context).categoryInHomeScreen ==
-                  index)
-              ? Colors.white
-              : Theme.of(context).primaryColor,
+          color: Color.lerp(
+              !(AppBloc.displayTypeInHomeScreen == index)
+                  ? Colors.white
+                  : Theme.of(context).primaryColor,
+              (AppBloc.displayTypeInHomeScreen == index)
+                  ? Colors.white
+                  : Theme.of(context).primaryColor,
+              1),
         ),
-        child: Text(
-          title,
+        duration: const Duration(milliseconds: 250),
+        child: AnimatedDefaultTextStyle(
           style: TextStyle(
-              fontSize: Theme.of(context).textTheme.displaySmall!.fontSize,
-              fontFamily: Theme.of(context).textTheme.displaySmall!.fontFamily,
-              color: (bloc.BlocProvider.of<AppBloc>(context)
-                          .categoryInHomeScreen ==
-                      index)
-                  ? Theme.of(context).primaryColor
-                  : Colors.white),
+            fontSize: Theme.of(context).textTheme.displaySmall!.fontSize,
+            fontFamily: Theme.of(context).textTheme.displaySmall!.fontFamily,
+            color: Color.lerp(
+                !(AppBloc.displayTypeInHomeScreen == index)
+                    ? Theme.of(context).primaryColor
+                    : Colors.white,
+                (AppBloc.displayTypeInHomeScreen == index)
+                    ? Theme.of(context).primaryColor
+                    : Colors.white,
+                1),
+          ),
+          duration: const Duration(milliseconds: 250),
+          child: Text(title),
         ),
       ),
     );
 
 Widget expansionTiles(
-        context, List<Map<String, dynamic>> model, SqlCubit sqlCubit) =>
-    GestureDetector(
-      onLongPress: () {
-        showDeleteDialog(context,
-            sqlCubit: sqlCubit,
-            message:
-                'هل أنت متأكد أنك تريد حذف جميع أخطاء سورة ${model[0]['surah']}؟',
-            onDeleteFunction: () async {
-          await sqlCubit.deleteAllMistakesForOneSurah(context,
-              surahNumber: model[0]['surah_number']);
-          Get.back();
-        }, onCancelFunction: () {
-          Get.back();
-        });
-        Vibration.vibrate(duration: 40);
-      },
-      child: ExpansionTile(
-        collapsedIconColor: Theme.of(context).textTheme.headlineMedium!.color,
-        title: SvgPicture.asset(
-          'assets/svgs/surah_names/Surah_${model[0]['surah_number']}_of_114_(modified).svg',
-          width: 90.w,
-          height: 30.h,
-          alignment: AlignmentDirectional.topStart,
-          color: Theme.of(context).textTheme.headlineMedium!.color,
-        ),
-        children: [
-          Container(
-            color: Theme.of(context).scaffoldBackgroundColor,
-            child: CustomScrollView(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              slivers: [
-                SliverList(
-                  delegate: SliverChildBuilderDelegate(
-                    (context, index) {
-                      if (index.isEven) {
-                        return mistakeCard(context,
-                            id: model[index ~/ 2]['mistake_id']);
-                      }
-                      return Container(
-                        width: double.infinity,
-                        height: 1.h,
-                        color: const Color(0xffbdbdbd),
-                      );
-                    },
-                    childCount: math.max(0, model.length * 2 - 1),
-                  ),
-                ),
-              ],
+    context, List<Map<String, dynamic>> model, SqlCubit sqlCubit) {
+  String title = '';
+  String message = '';
+  int index = 0;
+  switch (AppBloc.displayTypeInHomeScreen) {
+    case 0:
+      title = 'سورة ${model[0]['surah']}';
+      message =
+          'هل أنت متأكد أنك تريد حذف جميع أخطاء سورة ${model[0]['surah']}؟';
+      index = model[0]['surah_number'];
+    case 1:
+      title = 'الصفحة ${model[0]['page_number']}';
+      message =
+          'هل أنت متأكد أنك تريد حذف جميع أخطاء الصفحة ${model[0]['page_number']}؟';
+      index = model[0]['page_number'];
+    case 2:
+      title = 'الجزء ${model[0]['juz_number']}';
+      message =
+          'هل أنت متأكد أنك تريد حذف جميع أخطاء الجزء ${model[0]['juz_number']}؟';
+      index = model[0]['juz_number'];
+    case 3:
+      title = mistakeKinds[model[0]['mistake_kind'] - 1];
+      message = 'هل أنت متأكد أنك تريد حذف جميع الأخطاء من النوع ($title)؟';
+      index = model[0]['mistake_kind'];
+    case 4:
+      switch (model[0]['mistake_repetition']) {
+        case 1:
+          title = 'الأقل تكراراً';
+        case 2:
+          title = 'قليل التكرار';
+        case 3:
+          title = 'كثير التكرار';
+        case 4:
+          title = 'الأكثر تكراراً';
+      }
+      message = 'هل أنت متأكد أنك تريد حذف جميع أخطاء نوع التكرار ($title)؟';
+      index = model[0]['mistake_repetition'];
+  }
+
+  return GestureDetector(
+    onLongPress: () {
+      showDeleteDialog(context, sqlCubit: sqlCubit, message: message,
+          onDeleteFunction: () async {
+        await sqlCubit.deleteAllMistakesFor(context, index: index);
+        Get.back();
+      }, onCancelFunction: () {
+        Get.back();
+      });
+      Vibration.vibrate(duration: 40);
+    },
+    child: ExpansionTile(
+      collapsedIconColor: Theme.of(context).textTheme.labelLarge!.color,
+      // Check whether to show svg or text based on the category chosen
+      title: (AppBloc.displayTypeInHomeScreen == 0)
+          ? SvgPicture.asset(
+              'assets/svgs/surah_names/Surah_${model[0]['surah_number']}_of_114_(modified).svg',
+              width: 90.w,
+              height: 30.h,
+              alignment: AlignmentDirectional.topStart,
+              color: Theme.of(context).textTheme.labelLarge!.color,
+            )
+          : Text(
+              title,
+              style: Theme.of(context).textTheme.labelLarge,
             ),
+      children: [
+        Container(
+          color: Theme.of(context).scaffoldBackgroundColor,
+          child: CustomScrollView(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            slivers: [
+              SliverList(
+                delegate: SliverChildBuilderDelegate(
+                  (context, index) {
+                    if (index.isEven) {
+                      return mistakeCard(context,
+                          id: model[index ~/ 2]['mistake_id'],
+                          category: AppBloc.displayTypeInHomeScreen);
+                    }
+                    return Container(
+                      width: double.infinity,
+                      height: 1.h,
+                      color: const Color(0xffbdbdbd),
+                    );
+                  },
+                  childCount: math.max(0, model.length * 2 - 1),
+                ),
+              ),
+            ],
           ),
-          // ])
-        ],
-      ),
-    );
+        ),
+        // ])
+      ],
+    ),
+  );
+}
 
 Widget mistakeCard(
   context, {
   required int id,
+  required int category,
 }) {
   final int surahNumber = SqlCubit.idData[id]!['surah_number'];
   final String mistake = SqlCubit.idData[id]!['mistake'];
@@ -403,79 +456,29 @@ Widget mistakeCard(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8).r,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        mainAxisSize: MainAxisSize.max,
         children: [
-          if (mistake.length > 10)
-            SizedBox(
-              width: 300.w,
-              height: 30.h,
-              child: Marqueer(
-                separatorBuilder: (context, index) => SizedBox(
-                  width: 64.w,
-                ),
-                child: Row(
-                  children: [
-                    Text(
-                      mistake,
-                      style: Theme.of(context).textTheme.bodyLarge,
-                      overflow: TextOverflow.ellipsis,
-                      maxLines: 1,
-                    ),
-                    SizedBox(
-                      width: 8.w,
-                    ),
-                    Text(
-                      '|',
-                      style: Theme.of(context).textTheme.displayLarge,
-                    ),
-                    SizedBox(
-                      width: 8.w,
-                    ),
-                    Text(
-                      mistakeKindText,
-                      style: Theme.of(context).textTheme.bodyMedium,
-                    ),
-                    Text(
-                      '$verseNumber',
-                      style: Theme.of(context).textTheme.bodyLarge,
-                    ),
-                  ],
-                ),
-              ),
-            )
+          if (mistake.length >= 5 && category != 0)
+            marqueerAnimation(context,
+                mistake: mistake,
+                mistakeKindText: mistakeKindText,
+                verseNumber: verseNumber,
+                category: category,
+                surahNumber: surahNumber)
+          else if (mistake.length >= 10)
+            marqueerAnimation(context,
+                mistake: mistake,
+                mistakeKindText: mistakeKindText,
+                verseNumber: verseNumber,
+                category: category,
+                surahNumber: surahNumber)
           else
-            Row(
-              children: [
-                if (mistake.isNotEmpty)
-                  Row(
-                    children: [
-                      Text(
-                        mistake,
-                        style: Theme.of(context).textTheme.bodyLarge,
-                        overflow: TextOverflow.ellipsis,
-                        maxLines: 1,
-                      ),
-                      SizedBox(
-                        width: 8.w,
-                      ),
-                      Text(
-                        '|',
-                        style: Theme.of(context).textTheme.displayLarge,
-                      ),
-                      SizedBox(
-                        width: 8.w,
-                      ),
-                    ],
-                  ),
-                Text(
-                  mistakeKindText,
-                  style: Theme.of(context).textTheme.bodyMedium,
-                ),
-                Text(
-                  '$verseNumber',
-                  style: Theme.of(context).textTheme.bodyLarge,
-                ),
-              ],
-            ),
+            textToShowInsideCard(context,
+                mistake: mistake,
+                mistakeKindText: mistakeKindText,
+                verseNumber: verseNumber,
+                category: category,
+                surahNumber: surahNumber),
           Row(
             children: [
               SizedBox(
@@ -488,9 +491,9 @@ Widget mistakeCard(
                   borderRadius: BorderRadius.circular(90).r,
                   color: containerColor,
                 ),
-// child: SvgPicture.asset(
-//   'assets/svgs/sign${1}.svg',
-// ),
+                // child: SvgPicture.asset(
+                //   'assets/svgs/sign${1}.svg',
+                // ),
               ),
             ],
           ),
@@ -499,6 +502,82 @@ Widget mistakeCard(
     ),
   );
 }
+
+Widget textToShowInsideCard(context,
+        {required String mistake,
+        required mistakeKindText,
+        required int verseNumber,
+        required int category,
+        required int surahNumber}) =>
+    Row(
+      children: [
+        if (mistake.isNotEmpty)
+          Row(
+            children: [
+              Text(
+                mistake,
+                style: Theme.of(context).textTheme.bodyLarge,
+                overflow: TextOverflow.ellipsis,
+                maxLines: 1,
+              ),
+              SizedBox(
+                width: 8.w,
+              ),
+              Text(
+                '|',
+                style: Theme.of(context).textTheme.displayLarge,
+              ),
+              SizedBox(
+                width: 8.w,
+              ),
+            ],
+          ),
+        Text(
+          mistakeKindText,
+          style: Theme.of(context).textTheme.bodyMedium,
+        ),
+        Text(
+          '$verseNumber',
+          style: Theme.of(context).textTheme.bodyLarge,
+        ),
+        if (category != 0)
+          Row(
+            children: [
+              Text(
+                '  في سورة  ',
+                style: Theme.of(context).textTheme.bodyMedium,
+              ),
+              Text(
+                quranSurahNames[surahNumber - 1],
+                style: TextStyle(
+                    color: Theme.of(context).textTheme.bodyLarge!.color,
+                    fontFamily: 'Uthmani'),
+              ),
+            ],
+          ),
+      ],
+    );
+
+Widget marqueerAnimation(context,
+        {required String mistake,
+        required mistakeKindText,
+        required int verseNumber,
+        required int category,
+        required int surahNumber}) =>
+    SizedBox(
+      width: 300.w,
+      height: 30.h,
+      child: Marqueer(
+          separatorBuilder: (context, index) => SizedBox(
+                width: 64.w,
+              ),
+          child: textToShowInsideCard(context,
+              mistake: mistake,
+              mistakeKindText: mistakeKindText,
+              verseNumber: verseNumber,
+              category: category,
+              surahNumber: surahNumber)),
+    );
 
 Future showMistakeDialogWhenAppLunchedThroughNotification(
     context, String payload) async {
