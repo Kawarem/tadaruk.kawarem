@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:tadaruk/constants/components.dart';
 import 'package:tadaruk/modules/home_screen/animated_gradiant_container.dart';
 import 'package:tadaruk/modules/home_screen/expandable_app_bar/fade_animation.dart';
@@ -220,13 +221,39 @@ class ExpandableAppBar extends StatelessWidget {
                     handle: NestedScrollView.sliverOverlapAbsorberHandleFor(
                         context)),
                 sliverList,
-                // SliverFillRemaining(
-                //     child: Column(
-                //   children: [
-                //     Expanded(child: SizedBox()),
-                //     ElevatedButton(onPressed: () {}, child: Text('data')),
-                //   ],
-                // ))
+                if (AppBloc.displayDataInHomeScreen.isEmpty)
+                  SliverToBoxAdapter(
+                    child: Column(
+                      children: [
+                        SizedBox(
+                          height: MediaQuery.of(context).size.height * 1.5 / 8,
+                        ),
+                        Column(
+                          children: [
+                            SvgPicture.asset(
+                              'assets/svgs/wondering.svg',
+                              width: 180.r,
+                              height: 180.r,
+                              color:
+                                  Theme.of(context).textTheme.labelLarge!.color,
+                            ),
+                            SizedBox(
+                              height: 16.h,
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                  'لا يوجد أخطاء بعد',
+                                  style: Theme.of(context).textTheme.labelLarge,
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
                 SliverToBoxAdapter(
                   child: SizedBox(
                     height: 43.h,
@@ -241,7 +268,7 @@ class ExpandableAppBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     _expandedHeight =
-        expandedHeight ?? MediaQuery.of(context).size.height * 2 / 8;
+        expandedHeight ?? MediaQuery.of(context).size.height * 2.2 / 8;
     _toolbarHeight = toolbarHeight ?? kToolbarHeight;
 
     return NestedScrollView(
