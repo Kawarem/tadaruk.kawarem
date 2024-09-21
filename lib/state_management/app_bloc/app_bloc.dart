@@ -80,6 +80,8 @@ class AppBloc extends Bloc<AppEvent, AppState> {
         emit(ChangeDisplayTypeInHomeScreenState());
       } else if (event is AppBarCollapsedEvent) {
         emit(AppBarCollapsedState(isCollapsed: isAppBarCollapsed));
+      } else if (event is ExpansionTileCollapsedEvent) {
+        emit(ExpansionTileCollapsedState());
       } else if (event is GetSettingsDataFromSharedPreferencesEvent) {
         notificationsNumber =
             await AppCacheHelper().getCachedNotificationsNumber();

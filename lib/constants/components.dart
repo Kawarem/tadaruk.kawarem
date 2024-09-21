@@ -71,6 +71,12 @@ Widget expansionTiles(
           alignment: AlignmentDirectional.topStart,
           color: Theme.of(context).textTheme.headlineMedium!.color,
         ),
+        onExpansionChanged: (isExpanded) {
+          if (!isExpanded) {
+            bloc.BlocProvider.of<AppBloc>(context)
+                .add(ExpansionTileCollapsedEvent());
+          }
+        },
         children: [
           Container(
             color: Theme.of(context).scaffoldBackgroundColor,

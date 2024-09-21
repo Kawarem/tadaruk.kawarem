@@ -53,6 +53,8 @@ class ChangeDisplayTypeInHomeScreenEvent extends AppEvent {
 
 class AppBarCollapsedEvent extends AppEvent {}
 
+class ExpansionTileCollapsedEvent extends AppEvent {}
+
 class GetSettingsDataFromSharedPreferencesEvent extends AppEvent {}
 
 class InsertDataToDatabaseEvent extends AppEvent {
