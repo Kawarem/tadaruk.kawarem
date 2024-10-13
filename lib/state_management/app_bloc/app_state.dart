@@ -38,3 +38,5 @@ class GetSettingsDataFromSharedPreferencesState extends AppState {}
 class InsertDataToDatabaseState extends AppState {}
 
 class ChangeNotificationsActivationState extends AppState {}
+
+class ChangeAyaInAddMistakeScreenState extends AppState {}

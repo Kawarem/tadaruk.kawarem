@@ -26,6 +26,8 @@ class AppBloc extends Bloc<AppEvent, AppState> {
   static List<List<Map<String, dynamic>>> displayDataInHomeScreen = [];
   bool isAppBarCollapsed = false;
   static bool isNotificationsActivated = false;
+  int selectedSurahInAddMistakeScreen = 1;
+  int selectedVerseInAddMistakeScreen = 1;
 
   // static List<int> notificationsIdsList = [];
   Timer? _sliderValueChangeDebounceTimer;
@@ -105,6 +107,10 @@ class AppBloc extends Bloc<AppEvent, AppState> {
         } else {
           await LocalNotificationsHelper.cancelAll();
         }
+      } else if (event is ChangeAyaInAddMistakeScreenEvent) {
+        selectedSurahInAddMistakeScreen = event.selectedSurahInAddMistakeScreen;
+        selectedVerseInAddMistakeScreen = event.selectedVerseInAddMistakeScreen;
+        emit(ChangeAyaInAddMistakeScreenState());
       }
     });
   }

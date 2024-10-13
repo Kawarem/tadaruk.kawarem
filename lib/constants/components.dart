@@ -169,7 +169,7 @@ Widget mistakeCard(
   String mistakeKindText;
   switch (mistakeKind) {
     case 1:
-      mistakeKindText = 'خطأ مجمل في الآية:  ';
+      mistakeKindText = 'خطأ كلي في الآية:  ';
     case 2:
       mistakeKindText = 'هي نقص في الآية:  ';
     case 3:

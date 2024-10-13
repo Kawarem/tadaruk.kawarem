@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart' as Get;
+import 'package:quran/quran.dart' as quran;
 import 'package:tadaruk/constants/components.dart';
 import 'package:tadaruk/constants/data.dart';
 import 'package:tadaruk/state_management/app_bloc/app_bloc.dart';
@@ -25,7 +26,8 @@ class AddMistakeScreen extends StatefulWidget {
   State<AddMistakeScreen> createState() => _AddMistakeScreenState();
 }
 
-class _AddMistakeScreenState extends State<AddMistakeScreen> {
+class _AddMistakeScreenState extends State<AddMistakeScreen>
+    with SingleTickerProviderStateMixin {
   final _mistakeController = TextEditingController();
   final _noteController = TextEditingController();
   final formKey = GlobalKey<FormState>();
@@ -33,7 +35,15 @@ class _AddMistakeScreenState extends State<AddMistakeScreen> {
   final _listWheelScrollSurahController = FixedExtentScrollController();
   final _listWheelScrollMistakeKindController = FixedExtentScrollController();
   Timer? _listWheelScrollSurahControllerTimer;
-  bool _isListWheelScrollSurahControllerTimerOver = false;
+  bool _isListWheelScrollSurahControllerTimerOver = true;
+  Timer? _fadeTimer;
+  bool _isFadeTimerOver = false;
+  Timer? _isSurahScrollingTimer;
+  bool _isSurahScrolling = true;
+  Timer? _isVerseScrollingTimer;
+  bool _isVerseScrolling = true;
+  late AnimationController _fadeTextAnimationController;
+  late Animation<double> _fadeTextAnimation;
 
   void _insertData(context) {
     BlocProvider.of<SqlCubit>(context).insertToDatabase(
@@ -59,6 +69,12 @@ class _AddMistakeScreenState extends State<AddMistakeScreen> {
   @override
   void initState() {
     super.initState();
+    _fadeTextAnimationController = AnimationController(
+      duration: const Duration(milliseconds: 250),
+      vsync: this,
+    );
+    _fadeTextAnimation = Tween<double>(begin: 1.0, end: 0.0)
+        .animate(_fadeTextAnimationController);
     if (widget.isEdit) {
       BlocProvider.of<AppBloc>(context).add(ChangeSurahInAddMistakeScreenEvent(
           surahNumber: SqlCubit.idData[widget.id]!['surah_number']! - 1));
@@ -85,8 +101,17 @@ class _AddMistakeScreenState extends State<AddMistakeScreen> {
         //     mistakeKind: SqlCubit.idData[widget.id]!['mistake_kind']! - 1));
         _mistakeController.text = SqlCubit.idData[widget.id]!['mistake']!;
         _noteController.text = SqlCubit.idData[widget.id]!['note']!;
+        BlocProvider.of<AppBloc>(context).add(ChangeAyaInAddMistakeScreenEvent(
+            selectedSurahInAddMistakeScreen:
+                SqlCubit.idData[widget.id]!['surah_number'],
+            selectedVerseInAddMistakeScreen:
+                SqlCubit.idData[widget.id]!['verse_number']));
+        _fadeTimer = Timer(const Duration(milliseconds: 1020), () async {
+          _isFadeTimerOver = true;
+        });
       });
     } else {
+      // Not edit
       WidgetsBinding.instance.addPostFrameCallback((_) {
         _listWheelScrollSurahController.jumpToItem(3);
         _listWheelScrollSurahController.animateToItem(0,
@@ -96,18 +121,25 @@ class _AddMistakeScreenState extends State<AddMistakeScreen> {
         _listWheelScrollVerseController.animateToItem(0,
             duration: const Duration(milliseconds: 1000),
             curve: Curves.easeInOut);
+        BlocProvider.of<AppBloc>(context).add(ChangeAyaInAddMistakeScreenEvent(
+            selectedSurahInAddMistakeScreen: 1,
+            selectedVerseInAddMistakeScreen: 1));
+        _fadeTimer = Timer(const Duration(milliseconds: 1020), () async {
+          _isFadeTimerOver = true;
+        });
       });
     }
   }
 
   @override
   void dispose() {
+    super.dispose();
+    _fadeTextAnimationController.dispose();
     _mistakeController.dispose();
     _noteController.dispose();
     _listWheelScrollVerseController.dispose();
     _listWheelScrollSurahController.dispose();
     _listWheelScrollMistakeKindController.dispose();
-    super.dispose();
   }
 
   @override
@@ -203,6 +235,8 @@ class _AddMistakeScreenState extends State<AddMistakeScreen> {
                                       controller:
                                           _listWheelScrollSurahController,
                                       onSelectedItemChanged: (index) async {
+                                        _isSurahScrolling = true;
+                                        _isSurahScrollingTimer?.cancel();
                                         if (!isEdit) {
                                           _isListWheelScrollSurahControllerTimerOver =
                                               false;
@@ -216,7 +250,7 @@ class _AddMistakeScreenState extends State<AddMistakeScreen> {
                                                           .selectedItem +
                                                       1 >
                                                   quranSurahVerses[index]) {
-                                                await _listWheelScrollVerseController
+                                                _listWheelScrollVerseController
                                                     .animateToItem(
                                                         quranSurahVerses[
                                                                 index] -
@@ -227,14 +261,72 @@ class _AddMistakeScreenState extends State<AddMistakeScreen> {
                                                                     1000),
                                                         curve:
                                                             Curves.easeInOut);
+                                                Timer(
+                                                    const Duration(
+                                                        milliseconds: 250),
+                                                    () async {
+                                                  if (!_isVerseScrolling) {
+                                                    _fadeTextAnimationController
+                                                        .forward()
+                                                        .then((_) {
+                                                      appBloc.add(ChangeAyaInAddMistakeScreenEvent(
+                                                          selectedSurahInAddMistakeScreen:
+                                                              _listWheelScrollSurahController
+                                                                      .selectedItem +
+                                                                  1,
+                                                          selectedVerseInAddMistakeScreen:
+                                                              quranSurahVerses[
+                                                                  index]));
+                                                      _fadeTextAnimationController
+                                                          .reverse();
+                                                    });
+                                                  }
+                                                });
+                                                Timer(
+                                                    const Duration(
+                                                        milliseconds: 1000),
+                                                    () async {
+                                                  appBloc.add(
+                                                      ChangeSurahInAddMistakeScreenEvent(
+                                                          surahNumber: index));
+                                                });
+                                              } else {
+                                                appBloc.add(
+                                                    ChangeSurahInAddMistakeScreenEvent(
+                                                        surahNumber: index));
                                               }
-                                              appBloc.add(
-                                                  ChangeSurahInAddMistakeScreenEvent(
-                                                      surahNumber: index));
                                               _isListWheelScrollSurahControllerTimerOver =
                                                   true;
                                             },
                                           );
+                                          if (!(_listWheelScrollVerseController
+                                                          .selectedItem +
+                                                      1 >
+                                                  quranSurahVerses[index]) &&
+                                              _isFadeTimerOver) {
+                                            Timer(
+                                                const Duration(
+                                                    milliseconds: 20),
+                                                () async {
+                                              if (!_isVerseScrolling) {
+                                                _fadeTextAnimationController
+                                                    .forward()
+                                                    .then((_) {
+                                                  appBloc.add(ChangeAyaInAddMistakeScreenEvent(
+                                                      selectedSurahInAddMistakeScreen:
+                                                          _listWheelScrollSurahController
+                                                                  .selectedItem +
+                                                              1,
+                                                      selectedVerseInAddMistakeScreen:
+                                                          _listWheelScrollVerseController
+                                                                  .selectedItem +
+                                                              1));
+                                                  _fadeTextAnimationController
+                                                      .reverse();
+                                                });
+                                              }
+                                            });
+                                          }
                                         } else if (_listWheelScrollSurahController
                                                     .selectedItem +
                                                 1 ==
@@ -244,6 +336,11 @@ class _AddMistakeScreenState extends State<AddMistakeScreen> {
                                           _isListWheelScrollSurahControllerTimerOver =
                                               true;
                                         }
+                                        _isSurahScrollingTimer = Timer(
+                                            const Duration(milliseconds: 200),
+                                            () async {
+                                          _isSurahScrolling = false;
+                                        });
                                       },
                                       itemExtent: 20.h,
                                       perspective: 0.0001,
@@ -355,7 +452,39 @@ class _AddMistakeScreenState extends State<AddMistakeScreen> {
                                   child: ListWheelScrollView.useDelegate(
                                       controller:
                                           _listWheelScrollVerseController,
-                                      onSelectedItemChanged: (index) {},
+                                      onSelectedItemChanged: (index) {
+                                        _isVerseScrolling = true;
+                                        _isVerseScrollingTimer?.cancel();
+                                        if (_isFadeTimerOver &&
+                                            _isListWheelScrollSurahControllerTimerOver) {
+                                          Timer(
+                                              const Duration(milliseconds: 20),
+                                              () async {
+                                            if (!_isSurahScrolling) {
+                                              _fadeTextAnimationController
+                                                  .forward()
+                                                  .then((_) {
+                                                appBloc.add(ChangeAyaInAddMistakeScreenEvent(
+                                                    selectedSurahInAddMistakeScreen:
+                                                        _listWheelScrollSurahController
+                                                                .selectedItem +
+                                                            1,
+                                                    selectedVerseInAddMistakeScreen:
+                                                        _listWheelScrollVerseController
+                                                                .selectedItem +
+                                                            1));
+                                                _fadeTextAnimationController
+                                                    .reverse();
+                                              });
+                                            }
+                                          });
+                                        }
+                                        _isVerseScrollingTimer = Timer(
+                                            const Duration(milliseconds: 200),
+                                            () async {
+                                          _isVerseScrolling = false;
+                                        });
+                                      },
                                       itemExtent: 20.h,
                                       perspective: 0.0001,
                                       physics: const FixedExtentScrollPhysics(),
@@ -414,8 +543,66 @@ class _AddMistakeScreenState extends State<AddMistakeScreen> {
                       ],
                     ),
                   ),
-                  SizedBox(
-                    height: 16.h,
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0).r,
+                    child: SizedBox(
+                      height: 80.h,
+                      child: ShaderMask(
+                        shaderCallback: (bounds) {
+                          return LinearGradient(
+                            begin: Alignment.topCenter,
+                            end: Alignment.bottomCenter,
+                            colors: [
+                              Colors.transparent,
+                              Theme.of(context).textTheme.displayLarge!.color!,
+                              Theme.of(context).textTheme.displayLarge!.color!,
+                              Colors.transparent,
+                            ],
+                            stops: const [0.0, 0.1, 0.9, 1],
+                          ).createShader(bounds);
+                        },
+                        child: Center(
+                          child: SingleChildScrollView(
+                            child: Column(
+                              children: [
+                                SizedBox(
+                                  height: 8.h,
+                                ),
+                                if (appBloc.selectedVerseInAddMistakeScreen <=
+                                    quranSurahVerses[appBloc
+                                            .selectedSurahInAddMistakeScreen -
+                                        1])
+                                  FadeTransition(
+                                    opacity: _fadeTextAnimation,
+                                    child: Text(
+                                      quran.getVerse(
+                                          appBloc
+                                              .selectedSurahInAddMistakeScreen,
+                                          appBloc
+                                              .selectedVerseInAddMistakeScreen),
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                          fontFamily: 'Uthmani',
+                                          fontSize: Theme.of(context)
+                                              .textTheme
+                                              .bodyLarge!
+                                              .fontSize,
+                                          color: Theme.of(context)
+                                              .textTheme
+                                              .bodyLarge!
+                                              .color,
+                                          overflow: TextOverflow.fade),
+                                    ),
+                                  ),
+                                SizedBox(
+                                  height: 8.h,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
                   ),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16.0).r,
@@ -715,11 +902,16 @@ class _AddMistakeScreenState extends State<AddMistakeScreen> {
                       builder: (context, state) {
                         return ElevatedButton(
                           onPressed: () {
-                            if (_isListWheelScrollSurahControllerTimerOver) {
+                            if (_isListWheelScrollSurahControllerTimerOver &&
+                                appBloc.selectedVerseInAddMistakeScreen <=
+                                    quranSurahVerses[appBloc
+                                            .selectedSurahInAddMistakeScreen -
+                                        1]) {
                               // insert data
                               if (_listWheelScrollMistakeKindController
                                       .selectedItem ==
                                   0) {
+                                // check if data is valid before inserting it to db
                                 if (widget.isEdit) {
                                   _updateData(context);
                                   Get.Get.back();
@@ -742,6 +934,7 @@ class _AddMistakeScreenState extends State<AddMistakeScreen> {
                               }
                             } else {
                               // if still scrolling
+                              Vibration.vibrate(duration: 50);
                               debugPrint('CTA clicked while scrolling!');
                             }
                           },

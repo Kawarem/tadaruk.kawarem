@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
@@ -29,7 +30,7 @@ class SqlCubit extends Cubit<SqlState> {
   static List<List<Map<String, dynamic>>> homeScreenJuzNumberData = [];
   static List<List<Map<String, dynamic>>> homeScreenMistakeKindSurahData = [];
   static List<List<Map<String, dynamic>>> homeScreenMistakeRepetitionSurahData =
-      [];
+  [];
   static Map<int, Map<String, dynamic>> idData = {};
   static List<int> notificationsIdsList = [];
   static int counter = 0;
@@ -41,17 +42,22 @@ class SqlCubit extends Cubit<SqlState> {
   Future<void> createDatabase() async {
     await openDatabase('kawarem.tadaruk.db', version: 1,
         onCreate: (database, version) {
-      _onCreate(database);
-      if (kDebugMode) {
-        print('database created');
-      }
-    }, onOpen: (database) {
-      ensureSurahNamesInitialized(database);
-      getDatabase(database);
-      if (kDebugMode) {
-        print('database opened');
-      }
-    }).then((value) {
+          _onCreate(database);
+          if (kDebugMode) {
+            print('database created');
+          }
+          // }, onUpgrade: (db, oldVersion, newVersion) async {
+          //   if (oldVersion < 2) {
+          //     await db.execute(
+          //         'ALTER TABLE surah_mistakes ADD COLUMN archived INTEGER DEFAULT 0');
+          //   }
+        }, onOpen: (database) {
+          ensureSurahNamesInitialized(database);
+          getDatabase(database);
+          if (kDebugMode) {
+            print('database opened');
+          }
+        }).then((value) {
       database = value;
       emit(CreateDatabaseState());
     });
@@ -278,12 +284,12 @@ class SqlCubit extends Cubit<SqlState> {
     }).toList();
     homeScreenMistakeKindSurahData =
         mistakeKindGroupedData.entries.map((entry) {
-      return entry.value;
-    }).toList();
+          return entry.value;
+        }).toList();
     homeScreenMistakeRepetitionSurahData =
         mistakeRepetitionGroupedData.entries.map((entry) {
-      return entry.value;
-    }).toList();
+          return entry.value;
+        }).toList();
     idData = idGroupedData;
     emit(GetDatabaseState());
     printDatabase();
@@ -291,6 +297,7 @@ class SqlCubit extends Cubit<SqlState> {
     if (AppBloc.isNotificationsActivated) {
       await LocalNotificationsHelper.scheduleRecurringNotifications();
     }
+    FlutterNativeSplash.remove();
   }
 
   static void changerCategoryType() {
@@ -392,20 +399,19 @@ class SqlCubit extends Cubit<SqlState> {
     });
   }
 
-  void deleteFromDatabase(
-    context, {
+  void deleteFromDatabase(context, {
     required int id,
   }) async {
     database.rawDelete('DELETE FROM surah_mistakes WHERE id = ?', [id]).then(
-        (value) async {
-      if (kDebugMode) {
-        print('$value deleted successfully');
-      }
-      emit(DeleteDatabaseState());
-      await LocalNotificationsHelper.cancelAll();
-      await getDatabase(database);
-      validateNotificationsActivation(context);
-    });
+            (value) async {
+          if (kDebugMode) {
+            print('$value deleted successfully');
+          }
+          emit(DeleteDatabaseState());
+          await LocalNotificationsHelper.cancelAll();
+          await getDatabase(database);
+          validateNotificationsActivation(context);
+        });
   }
 
   Future<void> deleteAllMistakesFor(context, {required int index}) async {
@@ -483,16 +489,18 @@ class SqlCubit extends Cubit<SqlState> {
   }
 
   backupDatabase() async {
-    if (await Permission.manageExternalStorage.request().isGranted) {
+    if (await Permission.manageExternalStorage
+        .request()
+        .isGranted) {
       try {
         final String databasePath = await getDatabasesPath();
         File ourDBFile = File('$databasePath/kawarem.tadaruk.db');
         Directory? folderPathForDBFile =
-            Directory('/storage/emulated/0/Tadaruk Backups/');
+        Directory('/storage/emulated/0/Tadaruk Backups/');
         await folderPathForDBFile.create();
 
         final formattedDateTime =
-            DateFormat('yyyy-MM-dd_HH-mm').format(DateTime.now());
+        DateFormat('yyyy-MM-dd_HH-mm').format(DateTime.now());
         await ourDBFile.copy(
             '/storage/emulated/0/Tadaruk Backups/Tadaruk_backup_$formattedDateTime.db');
         Get.back();
@@ -500,7 +508,7 @@ class SqlCubit extends Cubit<SqlState> {
         debugPrint('Database backup successfully :)');
         Fluttertoast.showToast(
             msg:
-                'تم إنشاء نسخة احتياطية بنجاح\n يمكنك إيجادها في ملفاتك ضمن مجلد اسمه Tadaruk backups',
+            'تم إنشاء نسخة احتياطية بنجاح\n يمكنك إيجادها في ملفاتك ضمن مجلد اسمه Tadaruk backups',
             backgroundColor: TOAST_BACKGROUND_COLOR,
             toastLength: Toast.LENGTH_LONG);
       } catch (e) {
@@ -518,7 +526,9 @@ class SqlCubit extends Cubit<SqlState> {
   }
 
   void restoreDatabase() async {
-    if (await Permission.manageExternalStorage.request().isGranted) {
+    if (await Permission.manageExternalStorage
+        .request()
+        .isGranted) {
       try {
         // choose file
         FilePickerResult? result = await FilePicker.platform.pickFiles(
@@ -552,14 +562,14 @@ class SqlCubit extends Cubit<SqlState> {
               debugPrint('Selected file is not my db file');
               Fluttertoast.showToast(
                   msg:
-                      'فشلت عملية استعادة النسخة الاحتياطية: الملف المختار غير مدعوم',
+                  'فشلت عملية استعادة النسخة الاحتياطية: الملف المختار غير مدعوم',
                   backgroundColor: TOAST_BACKGROUND_COLOR);
             }
           } else {
             debugPrint('Selected file is not a .db file');
             Fluttertoast.showToast(
                 msg:
-                    'فشلت عملية استعادة النسخة الاحتياطية: الملف المختار غير مدعوم',
+                'فشلت عملية استعادة النسخة الاحتياطية: الملف المختار غير مدعوم',
                 backgroundColor: TOAST_BACKGROUND_COLOR);
           }
         } else {

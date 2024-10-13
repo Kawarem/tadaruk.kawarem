@@ -76,3 +76,12 @@ class ChangeNotificationsActivationEvent extends AppEvent {
 
   ChangeNotificationsActivationEvent({required this.isNotificationsActivated});
 }
+
+class ChangeAyaInAddMistakeScreenEvent extends AppEvent {
+  final int selectedSurahInAddMistakeScreen;
+  final int selectedVerseInAddMistakeScreen;
+
+  ChangeAyaInAddMistakeScreenEvent(
+      {required this.selectedSurahInAddMistakeScreen,
+      required this.selectedVerseInAddMistakeScreen});
+}

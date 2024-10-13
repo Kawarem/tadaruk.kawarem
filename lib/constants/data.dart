@@ -1,6 +1,6 @@
 const String TELEGRAM_CHANNEL_LINK = 'https://t.me/+VjY01iPi_3BlMTI0';
 const String KAWAREM_BOT_LINK = 'https://t.me/KawaremBot';
-const String VERSION = '1.0.0';
+const String VERSION = '1.3.2';
 List<String> quranSurahNames = [
   'الفاتحة',
   'البقرة',
@@ -234,4 +234,4 @@ List<int> quranSurahVerses = [
   5,
   6,
 ];
-const List<String> mistakeKinds = ['مجمل', 'نقص', 'زيادة', 'تشكيل', 'إبدال'];
+const List<String> mistakeKinds = ['كلي', 'نقص', 'زيادة', 'تشكيل', 'إبدال'];
