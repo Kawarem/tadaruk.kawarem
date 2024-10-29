@@ -52,7 +52,7 @@ class SqlCubit extends Cubit<SqlState> {
         onCreate: (database, version) {
       _onCreate(database);
       if (kDebugMode) {
-        print('database created');
+        debugPrint('database created');
       }
     }, onUpgrade: (db, oldVersion, newVersion) async {
       if (oldVersion < 2) {
@@ -90,8 +90,8 @@ class SqlCubit extends Cubit<SqlState> {
             mistake TEXT,
             note TEXT,
             mistake_repetition INTEGER,
-            FOREIGN KEY (surah_number) REFERENCES surah_names(id),
-            archived INTEGER DEFAULT 0
+            is_archived INTEGER DEFAULT 0,
+            FOREIGN KEY (surah_number) REFERENCES surah_names(id)
           )''');
   }
 
@@ -181,10 +181,10 @@ class SqlCubit extends Cubit<SqlState> {
       m.mistake,
       m.note,
       m.mistake_repetition,
-      m.archived
+      m.is_archived
     FROM surah_names s
     LEFT JOIN surah_mistakes m ON s.id = m.surah_number
-    WHERE m.id IS NOT NULL AND m.archived = 0
+    WHERE m.id IS NOT NULL AND m.is_archived = 0
     ORDER BY s.id, m.verse_number, m.id
   ''');
     // Group the raw data by surah_number
@@ -237,7 +237,7 @@ class SqlCubit extends Cubit<SqlState> {
       m.mistake,
       m.note,
       m.mistake_repetition,
-      m.archived
+      m.is_archived
     FROM surah_names s
     LEFT JOIN surah_mistakes m ON s.id = m.surah_number
     WHERE m.id IS NOT NULL
@@ -270,10 +270,10 @@ class SqlCubit extends Cubit<SqlState> {
         m.mistake,
         m.note,
         m.mistake_repetition,
-        m.archived
+        m.is_archived
       FROM surah_names s
       LEFT JOIN surah_mistakes m ON s.id = m.surah_number
-      WHERE m.id IS NOT NULL AND m.archived = 0
+      WHERE m.id IS NOT NULL AND m.is_archived = 0
       ORDER BY m.mistake_kind, s.id, m.verse_number, m.id
     ''');
     // Group the raw data by mistake_kind
@@ -298,10 +298,10 @@ class SqlCubit extends Cubit<SqlState> {
       m.mistake,
       m.note,
       m.mistake_repetition,
-      m.archived
+      m.is_archived
     FROM surah_names s
     LEFT JOIN surah_mistakes m ON s.id = m.surah_number
-    WHERE m.id IS NOT NULL AND m.archived = 0
+    WHERE m.id IS NOT NULL AND m.is_archived = 0
     ORDER BY m.mistake_repetition DESC, s.id, m.verse_number, m.id
   ''');
     // Group the raw data by mistake_repetition
@@ -347,10 +347,10 @@ class SqlCubit extends Cubit<SqlState> {
       m.mistake,
       m.note,
       m.mistake_repetition,
-      m.archived
+      m.is_archived
     FROM surah_names s
     LEFT JOIN surah_mistakes m ON s.id = m.surah_number
-    WHERE m.id IS NOT NULL AND m.archived = 1
+    WHERE m.id IS NOT NULL AND m.is_archived = 1
     ORDER BY s.id, m.verse_number, m.id
   ''');
     // Group the raw data by surah_number
@@ -407,10 +407,10 @@ class SqlCubit extends Cubit<SqlState> {
         m.mistake,
         m.note,
         m.mistake_repetition,
-        m.archived
+        m.is_archived
       FROM surah_names s
       LEFT JOIN surah_mistakes m ON s.id = m.surah_number
-      WHERE m.id IS NOT NULL AND m.archived = 1
+      WHERE m.id IS NOT NULL AND m.is_archived = 1
       ORDER BY m.mistake_kind, s.id, m.verse_number, m.id
     ''');
     // Group the raw data by mistake_kind
@@ -435,10 +435,10 @@ class SqlCubit extends Cubit<SqlState> {
       m.mistake,
       m.note,
       m.mistake_repetition,
-      m.archived
+      m.is_archived
     FROM surah_names s
     LEFT JOIN surah_mistakes m ON s.id = m.surah_number
-    WHERE m.id IS NOT NULL AND m.archived = 1
+    WHERE m.id IS NOT NULL AND m.is_archived = 1
     ORDER BY m.mistake_repetition DESC, s.id, m.verse_number, m.id
   ''');
     // Group the raw data by mistake_repetition
@@ -543,7 +543,7 @@ class SqlCubit extends Cubit<SqlState> {
           print('Mistake: ${mistake['mistake']}');
           print('Note: ${mistake['note']}');
           print('Mistake Repetition: ${mistake['mistake_repetition']}');
-          print('Archived: ${mistake['archived']}');
+          print('Is archived: ${mistake['is_archived']}');
           print('---');
         }
       }
@@ -613,18 +613,18 @@ class SqlCubit extends Cubit<SqlState> {
     switch (AppBloc.displayTypeInHomeScreen) {
       case 0:
         database.rawDelete(
-            'DELETE FROM surah_mistakes WHERE surah_number = ? AND archived = $archived',
+            'DELETE FROM surah_mistakes WHERE surah_number = ? AND is_archived = $archived',
             [index]).then((value) async {
           if (kDebugMode) {
             print(
-                '$value archived mistakes from surah $index were deleted successfully');
+                '$value is_archived mistakes from surah $index were deleted successfully');
           }
           emit(DeleteDatabaseState());
           await getDatabase(database);
         });
       case 1:
         database.rawDelete(
-            'DELETE FROM surah_mistakes WHERE page_number = ? AND archived = $archived',
+            'DELETE FROM surah_mistakes WHERE page_number = ? AND is_archived = $archived',
             [index]).then((value) async {
           if (kDebugMode) {
             print(
@@ -635,7 +635,7 @@ class SqlCubit extends Cubit<SqlState> {
         });
       case 2:
         database.rawDelete(
-            'DELETE FROM surah_mistakes WHERE juz_number = ? AND archived = $archived',
+            'DELETE FROM surah_mistakes WHERE juz_number = ? AND is_archived = $archived',
             [index]).then((value) async {
           if (kDebugMode) {
             print(
@@ -646,7 +646,7 @@ class SqlCubit extends Cubit<SqlState> {
         });
       case 3:
         database.rawDelete(
-            'DELETE FROM surah_mistakes WHERE mistake_kind = ? AND archived = $archived',
+            'DELETE FROM surah_mistakes WHERE mistake_kind = ? AND is_archived = $archived',
             [index]).then((value) async {
           if (kDebugMode) {
             print(
@@ -657,7 +657,7 @@ class SqlCubit extends Cubit<SqlState> {
         });
       case 4:
         database.rawDelete(
-            'DELETE FROM surah_mistakes WHERE mistake_repetition = ? AND archived = $archived',
+            'DELETE FROM surah_mistakes WHERE mistake_repetition = ? AND is_archived = $archived',
             [index]).then((value) async {
           if (kDebugMode) {
             print(
@@ -863,7 +863,7 @@ class SqlCubit extends Cubit<SqlState> {
     database.rawUpdate('''
     UPDATE surah_mistakes
     SET
-      archived = ?
+      is_archived = ?
       WHERE id = ?
     ''', [archived, id]).then((value) async {
       emit(UpdateDatabaseState());
@@ -882,7 +882,7 @@ class SqlCubit extends Cubit<SqlState> {
         database.rawUpdate('''
                      UPDATE surah_mistakes
                      SET
-                     archived = ?
+                     is_archived = ?
                      WHERE surah_number = ?
     ''', [archived, index]).then((value) async {
           emit(UpdateDatabaseState());
@@ -895,7 +895,7 @@ class SqlCubit extends Cubit<SqlState> {
         database.rawUpdate('''
                      UPDATE surah_mistakes
                      SET
-                     archived = ?
+                     is_archived = ?
                      WHERE page_number = ?
     ''', [archived, index]).then((value) async {
           emit(UpdateDatabaseState());
@@ -908,7 +908,7 @@ class SqlCubit extends Cubit<SqlState> {
         database.rawUpdate('''
                      UPDATE surah_mistakes
                      SET
-                     archived = ?
+                     is_archived = ?
                      WHERE juz_number = ?
     ''', [archived, index]).then((value) async {
           emit(UpdateDatabaseState());
@@ -921,7 +921,7 @@ class SqlCubit extends Cubit<SqlState> {
         database.rawUpdate('''
                      UPDATE surah_mistakes
                      SET
-                     archived = ?
+                     is_archived = ?
                      WHERE mistake_kind = ?
     ''', [archived, index]).then((value) async {
           emit(UpdateDatabaseState());
@@ -934,7 +934,7 @@ class SqlCubit extends Cubit<SqlState> {
         database.rawUpdate('''
                      UPDATE surah_mistakes
                      SET
-                     archived = ?
+                     is_archived = ?
                      WHERE mistake_repetition = ?
     ''', [archived, index]).then((value) async {
           emit(UpdateDatabaseState());

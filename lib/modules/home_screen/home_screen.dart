@@ -26,6 +26,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
+    // FlutterNativeSplash.remove();
 
 //  to listen to any notification clicked
     listenToNotificationStream();
