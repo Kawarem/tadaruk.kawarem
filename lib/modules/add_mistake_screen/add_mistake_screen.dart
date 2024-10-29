@@ -153,7 +153,7 @@ class _AddMistakeScreenState extends State<AddMistakeScreen>
         return Scaffold(
           appBar: AppBar(
             title: Text(
-              (widget.isEdit) ? 'تعديل الخطأ' : 'إضافة خطأ',
+              (widget.isEdit) ? 'تعديل التنبيه' : 'إضافة تنبيه',
             ),
             leading: IconButton(
               onPressed: () {
@@ -165,17 +165,21 @@ class _AddMistakeScreenState extends State<AddMistakeScreen>
               if (widget.isEdit)
                 IconButton(
                     onPressed: () {
-                      showDeleteDialog(context,
-                          message: 'هل أنت متأكد أنك تريد حذف هذا الخطأ؟',
+                      showActionDialog(context,
+                          message: 'حذف هذا التنبيه؟',
+                          isDeleteMessage: true,
+                          isArchived: false,
                           onDeleteFunction: () {
-                        sqlCubit.deleteFromDatabase(context, id: id!);
-                        Get.Get.back();
-                        Get.Get.back();
-                        Get.Get.back();
-                        validateNotificationsActivation(context);
-                      }, onCancelFunction: () {
-                        Get.Get.back();
-                      });
+                            sqlCubit.deleteFromDatabase(context, id: id!);
+                            Get.Get.back();
+                            Get.Get.back();
+                            Get.Get.back();
+                            validateNotificationsActivation(context);
+                          },
+                          onArchiveFunction: () {},
+                          onCancelFunction: () {
+                            Get.Get.back();
+                          });
                     },
                     icon: const Icon(Icons.delete_outline_rounded)),
               const SizedBox()
@@ -609,7 +613,7 @@ class _AddMistakeScreenState extends State<AddMistakeScreen>
                     child: Row(
                       children: [
                         Text(
-                          'نوعية الخطأ:',
+                          'نوعية التنبيه:',
                           style: Theme.of(context).textTheme.displayLarge,
                         ),
                       ],
@@ -807,7 +811,7 @@ class _AddMistakeScreenState extends State<AddMistakeScreen>
                                 return null;
                               },
                               decoration: const InputDecoration(
-                                labelText: 'الخطأ',
+                                labelText: 'التنبيه',
                                 prefixIcon:
                                     Icon(Icons.bookmark_outline_rounded),
                               )),
@@ -837,7 +841,7 @@ class _AddMistakeScreenState extends State<AddMistakeScreen>
                     child: Row(
                       children: [
                         Text(
-                          'تكرار الخطأ:',
+                          'تكرار التنبيه:',
                           style: Theme.of(context).textTheme.displayLarge,
                         ),
                       ],

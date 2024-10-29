@@ -308,7 +308,7 @@ class SettingsScreen extends StatelessWidget {
 لكن الأمر لا ينتهي هنا! تطبيق تدارُك يذهب إلى أبعد من ذلك بدعمه لإشعارات تذكرك بأخطائك لمراجعتها. ما عليك سوى ضبط الفترات الزمنية التي تناسبك، والتطبيق سيرسل إشعارات في الوقت المناسب لتذكيرك بمراجعة أخطائك.\n
 وللمزيد من التخصيص، يمكنك اختيار ألوان التطبيق بما يتناسب مع ذوقك الشخصي. كما يوفر لك إمكانية عمل نسخة احتياطية لأخطائك، لضمان عدم فقدانها.\n
 كل هذه الميزات مدمجة في تصميم جميل وسهل التفاعل، ليمنحك تجربة مراجعة ذاتية سلسة وممتعة.\n
-قم بتنزيل تطبيق تدارُك الآن واكتشف الفرق الذي سيحدثه في عملية مراجعتك الذاتية!
+قم بتنزيل تطبيق تدارُك الآن واكتشف الفرق الذي سيحدثه في عملية مراجعتك الذاتية!\n
 لتحميل التطبيق اضغط على الرابط التالي: $TELEGRAM_CHANNEL_LINK''');
                         },
                         child: Container(
@@ -448,11 +448,11 @@ class SettingsScreen extends StatelessWidget {
       bool areNotificationsEnabled =
           await LocalNotificationsHelper.isAndroidPermissionGranted();
       if (areNotificationsEnabled) {
-        if (SqlCubit.notificationsIdsList.isEmpty) {
+        if (SqlCubit.notificationsIds.isEmpty) {
           Vibration.vibrate(duration: 50);
           Fluttertoast.cancel();
           Fluttertoast.showToast(
-              msg: 'يرجى إضافة خطأ لتفعيل الإشعارات',
+              msg: 'يرجى إضافة تنبيه لتفعيل الإشعارات',
               backgroundColor: TOAST_BACKGROUND_COLOR);
         } else {
           appBloc.add(ChangeNotificationsActivationEvent(

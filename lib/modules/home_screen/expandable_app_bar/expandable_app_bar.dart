@@ -92,64 +92,7 @@ class ExpandableAppBar extends StatelessWidget {
                   isExpandedWidget: true,
                   child: Align(
                     alignment: Alignment.bottomCenter,
-                    child: Container(
-                      width: double.infinity,
-                      // TODO: change color to adapt to Theme
-                      color: const Color(0xff02786A),
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                                horizontal: 0, vertical: 5)
-                            .r,
-                        child: BlocBuilder<AppBloc, AppState>(
-                          builder: (context, state) {
-                            return SingleChildScrollView(
-                              scrollDirection: Axis.horizontal,
-                              child: Row(
-                                children: [
-                                  SizedBox(
-                                    width: 16.r,
-                                  ),
-                                  Text(
-                                    'عرض حسب:',
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .displaySmall,
-                                  ),
-                                  SizedBox(
-                                    width: 8.w,
-                                  ),
-                                  categoryButtonInHomeScreen(context,
-                                      title: 'السور', index: 0),
-                                  SizedBox(
-                                    width: 8.w,
-                                  ),
-                                  categoryButtonInHomeScreen(context,
-                                      title: 'الصفحات', index: 1),
-                                  SizedBox(
-                                    width: 8.w,
-                                  ),
-                                  categoryButtonInHomeScreen(context,
-                                      title: 'الأجزاء', index: 2),
-                                  SizedBox(
-                                    width: 8.w,
-                                  ),
-                                  categoryButtonInHomeScreen(context,
-                                      title: 'نوعية الخطأ', index: 3),
-                                  SizedBox(
-                                    width: 8.w,
-                                  ),
-                                  categoryButtonInHomeScreen(context,
-                                      title: 'تكرار الخطأ', index: 4),
-                                  SizedBox(
-                                    width: 16.r,
-                                  ),
-                                ],
-                              ),
-                            );
-                          },
-                        ),
-                      ),
-                    ),
+                    child: categoriesRow(context),
                   ),
                 ),
                 SafeArea(
@@ -244,7 +187,7 @@ class ExpandableAppBar extends StatelessWidget {
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 Text(
-                                  'لا يوجد أخطاء بعد',
+                                  'لا يوجد تنبيهات بعد',
                                   style: Theme.of(context).textTheme.labelLarge,
                                 ),
                               ],

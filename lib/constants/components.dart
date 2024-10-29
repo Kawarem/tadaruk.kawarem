@@ -55,8 +55,10 @@ Widget categoryButtonInHomeScreen(context,
       ),
     );
 
-Widget expansionTiles(
-    context, List<Map<String, dynamic>> model, SqlCubit sqlCubit) {
+Widget expansionTiles(context,
+    {required List<Map<String, dynamic>> model,
+    required SqlCubit sqlCubit,
+    required bool isArchived}) {
   String title = '';
   String message = '';
   int index = 0;
@@ -64,21 +66,23 @@ Widget expansionTiles(
     case 0:
       title = 'سورة ${model[0]['surah']}';
       message =
-          'هل أنت متأكد أنك تريد حذف جميع أخطاء سورة ${model[0]['surah']}؟';
+          'تنفيذ الإجراء التالي على جميع تنبيهات سورة ${model[0]['surah']}'
+          '${(isArchived) ? ' المؤرشفة' : ''}'
+          '؟';
       index = model[0]['surah_number'];
     case 1:
       title = 'الصفحة ${model[0]['page_number']}';
       message =
-          'هل أنت متأكد أنك تريد حذف جميع أخطاء الصفحة ${model[0]['page_number']}؟';
+          'تنفيذ الإجراء التالي على جميع تنبيهات الصفحة ${model[0]['page_number']}؟';
       index = model[0]['page_number'];
     case 2:
       title = 'الجزء ${model[0]['juz_number']}';
       message =
-          'هل أنت متأكد أنك تريد حذف جميع أخطاء الجزء ${model[0]['juz_number']}؟';
+          'تنفيذ الإجراء التالي على جميع تنبيهات الجزء ${model[0]['juz_number']}؟';
       index = model[0]['juz_number'];
     case 3:
       title = mistakeKinds[model[0]['mistake_kind'] - 1];
-      message = 'هل أنت متأكد أنك تريد حذف جميع الأخطاء من النوع ($title)؟';
+      message = 'تنفيذ الإجراء التالي على جميع التنبيهات من النوع ($title)؟';
       index = model[0]['mistake_kind'];
     case 4:
       switch (model[0]['mistake_repetition']) {
@@ -91,15 +95,23 @@ Widget expansionTiles(
         case 4:
           title = 'الأكثر تكراراً';
       }
-      message = 'هل أنت متأكد أنك تريد حذف جميع أخطاء نوع التكرار ($title)؟';
+      message = 'تنفيذ الإجراء التالي على جميع تنبيهات نوع التكرار ($title)؟';
       index = model[0]['mistake_repetition'];
   }
 
   return GestureDetector(
     onLongPress: () {
-      showDeleteDialog(context, sqlCubit: sqlCubit, message: message,
-          onDeleteFunction: () async {
-        await sqlCubit.deleteAllMistakesFor(context, index: index);
+      showActionDialog(context,
+          sqlCubit: sqlCubit,
+          message: message,
+          isDeleteMessage: false,
+          isArchived: isArchived, onArchiveFunction: () async {
+        await sqlCubit.archiveAndUnarchiveAllMistakesFor(context,
+            isArchived: isArchived, index: index);
+        Get.back();
+      }, onDeleteFunction: () async {
+        await sqlCubit.deleteAllMistakesFor(context,
+            index: index, isArchived: isArchived);
         Get.back();
       }, onCancelFunction: () {
         Get.back();
@@ -132,9 +144,13 @@ Widget expansionTiles(
                 delegate: SliverChildBuilderDelegate(
                   (context, index) {
                     if (index.isEven) {
-                      return mistakeCard(context,
-                          id: model[index ~/ 2]['mistake_id'],
-                          category: AppBloc.displayTypeInHomeScreen);
+                      return mistakeCard(
+                        context,
+                        id: model[index ~/ 2]['mistake_id'],
+                        category: AppBloc.displayTypeInHomeScreen,
+                        sqlCubit: sqlCubit,
+                        isArchived: isArchived,
+                      );
                     }
                     return Container(
                       width: double.infinity,
@@ -158,6 +174,8 @@ Widget mistakeCard(
   context, {
   required int id,
   required int category,
+  required SqlCubit sqlCubit,
+  required bool isArchived,
 }) {
   final int surahNumber = SqlCubit.idData[id]!['surah_number'];
   final String mistake = SqlCubit.idData[id]!['mistake'];
@@ -169,13 +187,13 @@ Widget mistakeCard(
   String mistakeKindText;
   switch (mistakeKind) {
     case 1:
-      mistakeKindText = 'خطأ كلي في الآية:  ';
+      mistakeKindText = 'تنبيه كلّي في الآية:  ';
     case 2:
       mistakeKindText = 'هي نقص في الآية:  ';
     case 3:
       mistakeKindText = 'هي زيادة في الآية:  ';
     case 4:
-      mistakeKindText = 'خطأ تشكيلي في الآية:  ';
+      mistakeKindText = 'تنبيه تشكيلي في الآية:  ';
     default:
       mistakeKindText = 'هي إبدال في الآية:  ';
   }
@@ -230,16 +248,32 @@ Widget mistakeCard(
                                     Navigator.pop(context);
                                   },
                                   icon: const Icon(Icons.close)),
-                              IconButton(
-                                  onPressed: () {
-                                    Get.to(
-                                        () => AddMistakeScreen(
-                                              isEdit: true,
-                                              id: id,
-                                            ),
-                                        transition: Transition.fadeIn);
-                                  },
-                                  icon: const Icon(Icons.edit)),
+                              Row(
+                                children: [
+                                  IconButton(
+                                      onPressed: () {
+                                        sqlCubit.archiveAndUnarchiveMistake(
+                                          context,
+                                          id: id,
+                                          isArchived: isArchived,
+                                        );
+                                        Get.back();
+                                      },
+                                      icon: (isArchived)
+                                          ? const Icon(Icons.unarchive_outlined)
+                                          : const Icon(Icons.archive_outlined)),
+                                  IconButton(
+                                      onPressed: () {
+                                        Get.to(
+                                            () => AddMistakeScreen(
+                                                  isEdit: true,
+                                                  id: id,
+                                                ),
+                                            transition: Transition.fadeIn);
+                                      },
+                                      icon: const Icon(Icons.edit)),
+                                ],
+                              ),
                             ],
                           ),
                           Row(
@@ -389,7 +423,7 @@ Widget mistakeCard(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  'الخطأ: ',
+                                  'التنبيه: ',
                                   style: TextStyle(
                                     color: const Color(0xffe53835),
                                     fontFamily: Theme.of(context)
@@ -784,7 +818,7 @@ Future showMistakeDialogWhenAppLunchedThroughNotification(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'الخطأ: ',
+                              'التنبيه: ',
                               style: TextStyle(
                                 color: const Color(0xffe53835),
                                 fontFamily: Theme.of(context)
@@ -847,10 +881,13 @@ Future showMistakeDialogWhenAppLunchedThroughNotification(
       });
 }
 
-Future<Object?> showDeleteDialog(context,
+Future<Object?> showActionDialog(context,
         {SqlCubit? sqlCubit,
         required String message,
+        required bool isDeleteMessage,
+        required bool isArchived,
         required Function()? onDeleteFunction,
+        required Function()? onArchiveFunction,
         required Function()? onCancelFunction}) =>
     showGeneralDialog(
         context: context,
@@ -906,6 +943,37 @@ Future<Object?> showDeleteDialog(context,
                           SizedBox(
                             height: 8.h,
                           ),
+                          (!isDeleteMessage)
+                              ? Column(
+                                  children: [
+                                    ElevatedButton(
+                                      onPressed: onArchiveFunction,
+                                      style: ElevatedButton.styleFrom(
+                                        minimumSize: Size(170.w, 43.h),
+                                        shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(8).r),
+                                      ),
+                                      child: Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                                vertical: 8)
+                                            .h,
+                                        child: Text(
+                                          (isArchived)
+                                              ? 'إلغاء الأرشفة'
+                                              : 'أرشفة',
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .displayLarge,
+                                        ),
+                                      ),
+                                    ),
+                                    SizedBox(
+                                      height: 8.h,
+                                    ),
+                                  ],
+                                )
+                              : const SizedBox(),
                           SizedBox(
                             width: 170.w,
                             height: 43.h,
@@ -941,7 +1009,7 @@ Future<Object?> showDeleteDialog(context,
         });
 
 void validateNotificationsActivation(context) {
-  if (SqlCubit.notificationsIdsList.isEmpty) {
+  if (SqlCubit.notificationsIds.isEmpty) {
     if (AppBloc.isNotificationsActivated) {
       bloc.BlocProvider.of<AppBloc>(context).add(
           ChangeNotificationsActivationEvent(isNotificationsActivated: false));
@@ -954,3 +1022,57 @@ void validateNotificationsActivation(context) {
     debugPrint('meow');
   }
 }
+
+Widget categoriesRow(context) => Container(
+      width: double.infinity,
+      // TODO: change color to adapt to Theme
+      color: const Color(0xff02786A),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 5).r,
+        child: bloc.BlocBuilder<AppBloc, AppState>(
+          builder: (context, state) {
+            return SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: [
+                    SizedBox(
+                      width: 16.r,
+                    ),
+                    Text(
+                      'عرض حسب:',
+                      style: Theme.of(context).textTheme.displaySmall,
+                    ),
+                    SizedBox(
+                      width: 8.w,
+                    ),
+                    categoryButtonInHomeScreen(context,
+                        title: 'السور', index: 0),
+                    SizedBox(
+                      width: 8.w,
+                    ),
+                    categoryButtonInHomeScreen(context,
+                        title: 'الصفحات', index: 1),
+                    SizedBox(
+                      width: 8.w,
+                    ),
+                    categoryButtonInHomeScreen(context,
+                        title: 'الأجزاء', index: 2),
+                    SizedBox(
+                      width: 8.w,
+                    ),
+                    categoryButtonInHomeScreen(context,
+                        title: 'نوعية التنبيه', index: 3),
+                    SizedBox(
+                      width: 8.w,
+                    ),
+                    categoryButtonInHomeScreen(context,
+                        title: 'تكرار التنبيه', index: 4),
+                    SizedBox(
+                      width: 16.r,
+                    ),
+                  ],
+                ));
+          },
+        ),
+      ),
+    );

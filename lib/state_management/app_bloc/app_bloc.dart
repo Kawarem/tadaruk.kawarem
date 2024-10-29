@@ -24,6 +24,8 @@ class AppBloc extends Bloc<AppEvent, AppState> {
   int surahNumber = 0;
   static int displayTypeInHomeScreen = 0;
   static List<List<Map<String, dynamic>>> displayDataInHomeScreen = [];
+  static List<List<Map<String, dynamic>>> displayDataInArchivedMistakesScreen =
+      [];
   bool isAppBarCollapsed = false;
   static bool isNotificationsActivated = false;
   int selectedSurahInAddMistakeScreen = 1;

@@ -59,13 +59,13 @@ class LocalNotificationsHelper {
       // set new notifications
       // List<int> notificationsIdsList =
       //     await AppCacheHelper().getCachedIdsList();
-      debugPrint('ids: ${SqlCubit.notificationsIdsList}');
-      if (SqlCubit.notificationsIdsList.isEmpty) {
+      debugPrint('ids: ${SqlCubit.notificationsIds}');
+      if (SqlCubit.notificationsIds.isEmpty) {
         debugPrint('ID list is empty. Cannot schedule notifications.');
         return;
       }
       // await showSimpleNotification(title: 'notificationsIdsList is not empty');
-      List<int> idList = List.from(SqlCubit.notificationsIdsList);
+      List<int> idList = List.from(SqlCubit.notificationsIds);
       tz.initializeTimeZones();
 
       final notificationsNumber = AppBloc.notificationsNumber;
@@ -83,7 +83,7 @@ class LocalNotificationsHelper {
           tz.local,
         );
         if (idList.isEmpty) {
-          idList = List.from(SqlCubit.notificationsIdsList);
+          idList = List.from(SqlCubit.notificationsIds);
         }
         final randomIndex = Random().nextInt(idList.length);
         final randomId = idList[randomIndex];
@@ -95,7 +95,7 @@ class LocalNotificationsHelper {
         String mistake = SqlCubit.idData[randomId]!['mistake'];
         String note = SqlCubit.idData[randomId]!['note'];
         final notificationBody =
-            '${(mistake.isNotEmpty) ? 'الخطأ: $mistake\n' : ''}${(note.isNotEmpty) ? 'ملاحظة: $note' : ''}';
+            '${(mistake.isNotEmpty) ? 'التنبيه: $mistake\n' : ''}${(note.isNotEmpty) ? 'ملاحظة: $note' : ''}';
         // payload = id, surahNumber, verseNumber, mistakeKind, mistakeRepetition, mistake, note
         final payload =
             '$randomId, ${SqlCubit.idData[randomId]!['surah_number']}, ${SqlCubit.idData[randomId]!['verse_number']}, ${SqlCubit.idData[randomId]!['mistake_kind']}, ${SqlCubit.idData[randomId]!['mistake_repetition']}, ${SqlCubit.idData[randomId]!['mistake']}, ${SqlCubit.idData[randomId]!['note']}';

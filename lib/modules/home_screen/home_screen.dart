@@ -6,6 +6,7 @@ import 'package:get/get.dart';
 import 'package:tadaruk/constants/components.dart';
 import 'package:tadaruk/helpers/local_notifications_helper.dart';
 import 'package:tadaruk/modules/add_mistake_screen/add_mistake_screen.dart';
+import 'package:tadaruk/modules/archived_mistakes_screen/archived_mistakes_screen.dart';
 import 'package:tadaruk/modules/home_screen/expandable_app_bar/expandable_app_bar.dart';
 import 'package:tadaruk/modules/home_screen/scroll_to_hide_widget.dart';
 import 'package:tadaruk/modules/settings_screen/settings_screen.dart';
@@ -54,7 +55,6 @@ class _HomeScreenState extends State<HomeScreen> {
         var sqlCubit = SqlCubit.get(context);
         return bloc.BlocBuilder<AppBloc, AppState>(
           builder: (context, state) {
-            var appBloc = AppBloc.get(context);
             return Scaffold(
               body: Stack(children: [
                 ExpandableAppBar(
@@ -77,11 +77,22 @@ class _HomeScreenState extends State<HomeScreen> {
                           Icons.settings,
                           color: Theme.of(context).appBarTheme.iconTheme!.color,
                         )),
+                    IconButton(
+                        onPressed: () {
+                          Get.to(() => ArchivedMistakesScreen(),
+                              transition: Transition.leftToRightWithFade);
+                        },
+                        icon: Icon(
+                          Icons.archive_outlined,
+                          color: Theme.of(context).appBarTheme.iconTheme!.color,
+                        )),
                   ],
                   sliverList: SliverList(
                     delegate: SliverChildBuilderDelegate((context, index) {
                       return expansionTiles(context,
-                          AppBloc.displayDataInHomeScreen[index], sqlCubit);
+                          model: AppBloc.displayDataInHomeScreen[index],
+                          sqlCubit: sqlCubit,
+                          isArchived: false);
                     }, childCount: AppBloc.displayDataInHomeScreen.length),
                   ),
                 ),
