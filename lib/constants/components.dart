@@ -133,6 +133,12 @@ Widget expansionTiles(context,
               title,
               style: Theme.of(context).textTheme.labelLarge,
             ),
+      onExpansionChanged: (isExpanded) {
+        if (!isExpanded) {
+          bloc.BlocProvider.of<AppBloc>(context)
+              .add(ExpansionTileCollapsedEvent());
+        }
+      },
       children: [
         Container(
           color: Theme.of(context).scaffoldBackgroundColor,

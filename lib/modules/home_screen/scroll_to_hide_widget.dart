@@ -13,7 +13,7 @@ class ScrollToHideWidget extends StatelessWidget {
       {super.key,
       required this.child,
       required this.controller,
-      this.duration = const Duration(milliseconds: 200),
+      this.duration = const Duration(milliseconds: 400),
       required this.height});
 
   // bool isVisible = true;
@@ -61,8 +61,11 @@ class ScrollToHideWidget extends StatelessWidget {
             listener: (context, state) {
               if (state is AppBarCollapsedState) {
                 if (state.isCollapsed) {
-                  BlocProvider.of<ScrollToHideCubit>(context).appBarCollapsed();
+                  BlocProvider.of<ScrollToHideCubit>(context)
+                      .showHiddenButton();
                 }
+              } else if (state is ExpansionTileCollapsedState) {
+                BlocProvider.of<ScrollToHideCubit>(context).showHiddenButton();
               }
             },
             child: AnimatedContainer(
@@ -85,19 +88,27 @@ class ScrollToHideCubit extends Cubit<ScrollToHideState> {
     _controller.addListener(_handleScroll);
   }
 
+  double _previousScrollOffset = 0.0;
+
   void _handleScroll() {
+    final currentScrollOffset = _controller.position.pixels;
     final direction = _controller.position.userScrollDirection;
-    if (direction == ScrollDirection.forward) {
-      emit(state.copyWith(isVisible: true));
-    } else if (direction == ScrollDirection.reverse) {
-      emit(state.copyWith(isVisible: false));
+    if ((currentScrollOffset - _previousScrollOffset).abs() > 5) {
+      if (direction == ScrollDirection.forward) {
+        emit(state.copyWith(isVisible: true));
+      } else if (direction == ScrollDirection.reverse) {
+        emit(state.copyWith(isVisible: false));
+      }
     }
     // else if (appBarIsCollapsedGlobal) {
     //   emit(state.copyWith(isVisible: true));
     // }
+
+    // Update the previous scroll offset
+    _previousScrollOffset = currentScrollOffset;
   }
 
-  void appBarCollapsed() {
+  void showHiddenButton() {
     emit(state.copyWith(isVisible: true));
   }
 

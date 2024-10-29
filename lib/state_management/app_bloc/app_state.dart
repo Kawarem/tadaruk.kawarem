@@ -33,6 +33,8 @@ class AppBarCollapsedState extends AppState {
   AppBarCollapsedState({required this.isCollapsed});
 }
 
+class ExpansionTileCollapsedState extends AppState {}
+
 class GetSettingsDataFromSharedPreferencesState extends AppState {}
 
 class InsertDataToDatabaseState extends AppState {}
