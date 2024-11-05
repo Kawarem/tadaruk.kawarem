@@ -36,12 +36,14 @@ class _AddMistakeScreenState extends State<AddMistakeScreen>
   final _listWheelScrollMistakeKindController = FixedExtentScrollController();
   Timer? _listWheelScrollSurahControllerTimer;
   bool _isListWheelScrollSurahControllerTimerOver = true;
-  Timer? _fadeTimer;
-  bool _isFadeTimerOver = false;
+  Timer? _preventAyaFadeAnimationTimer;
+
+  //todo: bug: it is not working in edit screen so I deactivated it for now
+  bool _isPreventAyaFadeAnimationTimerOver = false;
   Timer? _isSurahScrollingTimer;
-  bool _isSurahScrolling = true;
+  bool _isSurahScrolling = false;
   Timer? _isVerseScrollingTimer;
-  bool _isVerseScrolling = true;
+  bool _isVerseScrolling = false;
   late AnimationController _fadeTextAnimationController;
   late Animation<double> _fadeTextAnimation;
 
@@ -75,7 +77,12 @@ class _AddMistakeScreenState extends State<AddMistakeScreen>
     );
     _fadeTextAnimation = Tween<double>(begin: 1.0, end: 0.0)
         .animate(_fadeTextAnimationController);
+    _preventAyaFadeAnimationTimer =
+        Timer(const Duration(milliseconds: 1020), () async {
+      _isPreventAyaFadeAnimationTimerOver = true;
+    });
     if (widget.isEdit) {
+      // this event adjust verses number to align with the surah
       BlocProvider.of<AppBloc>(context).add(ChangeSurahInAddMistakeScreenEvent(
           surahNumber: SqlCubit.idData[widget.id]!['surah_number']! - 1));
       WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -106,9 +113,10 @@ class _AddMistakeScreenState extends State<AddMistakeScreen>
                 SqlCubit.idData[widget.id]!['surah_number'],
             selectedVerseInAddMistakeScreen:
                 SqlCubit.idData[widget.id]!['verse_number']));
-        _fadeTimer = Timer(const Duration(milliseconds: 1020), () async {
-          _isFadeTimerOver = true;
-        });
+        // _isFadeTimerOver = true;
+        // _fadeTimer = Timer(const Duration(milliseconds: 1020), () async {
+        //   _isFadeTimerOver = true;
+        // });
       });
     } else {
       // Not edit
@@ -124,9 +132,9 @@ class _AddMistakeScreenState extends State<AddMistakeScreen>
         BlocProvider.of<AppBloc>(context).add(ChangeAyaInAddMistakeScreenEvent(
             selectedSurahInAddMistakeScreen: 1,
             selectedVerseInAddMistakeScreen: 1));
-        _fadeTimer = Timer(const Duration(milliseconds: 1020), () async {
-          _isFadeTimerOver = true;
-        });
+        // _fadeTimer = Timer(const Duration(milliseconds: 1020), () async {
+        //   _isFadeTimerOver = true;
+        // });
       });
     }
   }
@@ -198,121 +206,284 @@ class _AddMistakeScreenState extends State<AddMistakeScreen>
                   ),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16.0).r,
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Column(
-                          children: [
-                            Text(
-                              'سورة',
-                              style: Theme.of(context).textTheme.displayLarge,
-                            ),
-                            SizedBox(
-                              height: 8.h,
-                            ),
-                            Stack(children: [
+                    child: IgnorePointer(
+                      ignoring: (isEdit)
+                          ? false
+                          : (_isPreventAyaFadeAnimationTimerOver)
+                              ? false
+                              : true,
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Column(
+                            children: [
+                              Text(
+                                'سورة',
+                                style: Theme.of(context).textTheme.displayLarge,
+                              ),
                               SizedBox(
-                                width: 70.w,
-                                height: 60.h,
-                                child: ShaderMask(
-                                  shaderCallback: (bounds) {
-                                    return LinearGradient(
-                                      begin: Alignment.topCenter,
-                                      end: Alignment.bottomCenter,
-                                      colors: [
-                                        Colors.transparent,
-                                        Theme.of(context)
-                                            .textTheme
-                                            .displayLarge!
-                                            .color!,
-                                        Theme.of(context)
-                                            .textTheme
-                                            .displayLarge!
-                                            .color!,
-                                        Colors.transparent,
-                                      ],
-                                      stops: const [0.0, 0.2, 0.7, 1],
-                                    ).createShader(bounds);
-                                  },
-                                  child: ListWheelScrollView.useDelegate(
-                                      controller:
-                                          _listWheelScrollSurahController,
-                                      onSelectedItemChanged: (index) async {
-                                        _isSurahScrolling = true;
-                                        _isSurahScrollingTimer?.cancel();
-                                        if (!isEdit) {
-                                          _isListWheelScrollSurahControllerTimerOver =
-                                              false;
-                                          _listWheelScrollSurahControllerTimer
-                                              ?.cancel();
-                                          _listWheelScrollSurahControllerTimer =
-                                              Timer(
-                                            const Duration(milliseconds: 400),
-                                            () async {
-                                              if (_listWheelScrollVerseController
-                                                          .selectedItem +
-                                                      1 >
-                                                  quranSurahVerses[index]) {
-                                                _listWheelScrollVerseController
-                                                    .animateToItem(
-                                                        quranSurahVerses[
-                                                                index] -
-                                                            1,
-                                                        duration:
-                                                            const Duration(
-                                                                milliseconds:
-                                                                    1000),
-                                                        curve:
-                                                            Curves.easeInOut);
+                                height: 8.h,
+                              ),
+                              Stack(children: [
+                                SizedBox(
+                                  width: 70.w,
+                                  height: 60.h,
+                                  child: ShaderMask(
+                                    shaderCallback: (bounds) {
+                                      return LinearGradient(
+                                        begin: Alignment.topCenter,
+                                        end: Alignment.bottomCenter,
+                                        colors: [
+                                          Colors.transparent,
+                                          Theme.of(context)
+                                              .textTheme
+                                              .displayLarge!
+                                              .color!,
+                                          Theme.of(context)
+                                              .textTheme
+                                              .displayLarge!
+                                              .color!,
+                                          Colors.transparent,
+                                        ],
+                                        stops: const [0.0, 0.2, 0.7, 1],
+                                      ).createShader(bounds);
+                                    },
+                                    child: ListWheelScrollView.useDelegate(
+                                        controller:
+                                            _listWheelScrollSurahController,
+                                        onSelectedItemChanged: (index) async {
+                                          _isSurahScrolling = true;
+                                          _isSurahScrollingTimer?.cancel();
+                                          if (!isEdit) {
+                                            _isListWheelScrollSurahControllerTimerOver =
+                                                false;
+                                            _listWheelScrollSurahControllerTimer
+                                                ?.cancel();
+                                            _listWheelScrollSurahControllerTimer =
                                                 Timer(
-                                                    const Duration(
-                                                        milliseconds: 250),
-                                                    () async {
-                                                  if (!_isVerseScrolling) {
-                                                    _fadeTextAnimationController
-                                                        .forward()
-                                                        .then((_) {
-                                                      appBloc.add(ChangeAyaInAddMistakeScreenEvent(
-                                                          selectedSurahInAddMistakeScreen:
-                                                              _listWheelScrollSurahController
-                                                                      .selectedItem +
-                                                                  1,
-                                                          selectedVerseInAddMistakeScreen:
-                                                              quranSurahVerses[
-                                                                  index]));
+                                              const Duration(milliseconds: 400),
+                                              () async {
+                                                if (_listWheelScrollVerseController
+                                                            .selectedItem +
+                                                        1 >
+                                                    quranSurahVerses[index]) {
+                                                  _listWheelScrollVerseController
+                                                      .animateToItem(
+                                                          quranSurahVerses[
+                                                                  index] -
+                                                              1,
+                                                          duration:
+                                                              const Duration(
+                                                                  milliseconds:
+                                                                      1000),
+                                                          curve:
+                                                              Curves.easeInOut);
+                                                  Timer(
+                                                      const Duration(
+                                                          milliseconds: 250),
+                                                      () async {
+                                                    if (!_isVerseScrolling) {
                                                       _fadeTextAnimationController
-                                                          .reverse();
-                                                    });
-                                                  }
-                                                });
-                                                Timer(
-                                                    const Duration(
-                                                        milliseconds: 1000),
-                                                    () async {
+                                                          .forward()
+                                                          .then((_) {
+                                                        appBloc.add(ChangeAyaInAddMistakeScreenEvent(
+                                                            selectedSurahInAddMistakeScreen:
+                                                                _listWheelScrollSurahController
+                                                                        .selectedItem +
+                                                                    1,
+                                                            selectedVerseInAddMistakeScreen:
+                                                                quranSurahVerses[
+                                                                    index]));
+                                                        _fadeTextAnimationController
+                                                            .reverse();
+                                                      });
+                                                    }
+                                                  });
+                                                  Timer(
+                                                      const Duration(
+                                                          milliseconds: 1000),
+                                                      () async {
+                                                    appBloc.add(
+                                                        ChangeSurahInAddMistakeScreenEvent(
+                                                            surahNumber:
+                                                                index));
+                                                  });
+                                                } else {
                                                   appBloc.add(
                                                       ChangeSurahInAddMistakeScreenEvent(
                                                           surahNumber: index));
-                                                });
-                                              } else {
-                                                appBloc.add(
-                                                    ChangeSurahInAddMistakeScreenEvent(
-                                                        surahNumber: index));
-                                              }
-                                              _isListWheelScrollSurahControllerTimerOver =
-                                                  true;
-                                            },
-                                          );
-                                          if (!(_listWheelScrollVerseController
-                                                          .selectedItem +
-                                                      1 >
-                                                  quranSurahVerses[index]) &&
-                                              _isFadeTimerOver) {
+                                                }
+                                                _isListWheelScrollSurahControllerTimerOver =
+                                                    true;
+                                              },
+                                            );
+                                            if (!(_listWheelScrollVerseController
+                                                            .selectedItem +
+                                                        1 >
+                                                    quranSurahVerses[index]) &&
+                                                _isPreventAyaFadeAnimationTimerOver) {
+                                              Timer(
+                                                  const Duration(
+                                                      milliseconds: 20),
+                                                  () async {
+                                                if (!_isVerseScrolling) {
+                                                  _fadeTextAnimationController
+                                                      .forward()
+                                                      .then((_) {
+                                                    appBloc.add(ChangeAyaInAddMistakeScreenEvent(
+                                                        selectedSurahInAddMistakeScreen:
+                                                            _listWheelScrollSurahController
+                                                                    .selectedItem +
+                                                                1,
+                                                        selectedVerseInAddMistakeScreen:
+                                                            _listWheelScrollVerseController
+                                                                    .selectedItem +
+                                                                1));
+                                                    _fadeTextAnimationController
+                                                        .reverse();
+                                                  });
+                                                }
+                                              });
+                                            }
+                                          } else if (_listWheelScrollSurahController
+                                                      .selectedItem +
+                                                  1 ==
+                                              SqlCubit.idData[widget.id]![
+                                                  'surah_number']) {
+                                            isEdit = false;
+                                            _isListWheelScrollSurahControllerTimerOver =
+                                                true;
+                                            _isPreventAyaFadeAnimationTimerOver =
+                                                true;
+                                          }
+                                          _isSurahScrollingTimer = Timer(
+                                              const Duration(milliseconds: 200),
+                                              () async {
+                                            _isSurahScrolling = false;
+                                          });
+                                        },
+                                        itemExtent: 20.h,
+                                        perspective: 0.0001,
+                                        physics:
+                                            const FixedExtentScrollPhysics(),
+                                        childDelegate:
+                                            ListWheelChildBuilderDelegate(
+                                                childCount:
+                                                    quranSurahNames.length,
+                                                builder: (BuildContext context,
+                                                    int index) {
+                                                  return Text(
+                                                    quranSurahNames[index],
+                                                    style: Theme.of(context)
+                                                        .textTheme
+                                                        .displayMedium,
+                                                  );
+                                                })),
+                                  ),
+                                ),
+                                Column(
+                                  children: [
+                                    SizedBox(
+                                      height: 18.h,
+                                    ),
+                                    Row(
+                                      children: [
+                                        SizedBox(
+                                          width: 5.w,
+                                        ),
+                                        Container(
+                                          height: 1.h,
+                                          width: 60.w,
+                                          color: Theme.of(context).primaryColor,
+                                        ),
+                                      ],
+                                    ),
+                                    SizedBox(
+                                      height: 20.h,
+                                    ),
+                                    Row(
+                                      children: [
+                                        SizedBox(
+                                          width: 5.w,
+                                        ),
+                                        Container(
+                                          height: 1.h,
+                                          width: 60.w,
+                                          color: Theme.of(context).primaryColor,
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                )
+                              ])
+                            ],
+                          ),
+                          Column(
+                            children: [
+                              Container(
+                                height: 20.h,
+                                width: 1.w,
+                                color: Theme.of(context).primaryColor,
+                              ),
+                              SizedBox(
+                                height: 22.h,
+                              ),
+                              Text(
+                                ":",
+                                style: TextStyle(
+                                    color: Theme.of(context).primaryColor,
+                                    fontSize: 18.sp,
+                                    fontWeight: FontWeight.bold),
+                              )
+                            ],
+                          ),
+                          Column(
+                            children: [
+                              Text(
+                                'آية',
+                                style: Theme.of(context).textTheme.displayLarge,
+                              ),
+                              SizedBox(
+                                height: 8.h,
+                              ),
+                              Stack(children: [
+                                SizedBox(
+                                  width: 46.w,
+                                  height: 60.h,
+                                  child: ShaderMask(
+                                    shaderCallback: (bounds) {
+                                      return LinearGradient(
+                                        begin: Alignment.topCenter,
+                                        end: Alignment.bottomCenter,
+                                        colors: [
+                                          Colors.transparent,
+                                          Theme.of(context)
+                                              .textTheme
+                                              .displayMedium!
+                                              .color!,
+                                          Theme.of(context)
+                                              .textTheme
+                                              .displayMedium!
+                                              .color!,
+                                          Colors.transparent,
+                                        ],
+                                        stops: const [0.0, 0.2, 0.7, 1],
+                                      ).createShader(bounds);
+                                    },
+                                    child: ListWheelScrollView.useDelegate(
+                                        controller:
+                                            _listWheelScrollVerseController,
+                                        onSelectedItemChanged: (index) {
+                                          _isVerseScrolling = true;
+                                          _isVerseScrollingTimer?.cancel();
+                                          if (_isPreventAyaFadeAnimationTimerOver &&
+                                              _isListWheelScrollSurahControllerTimerOver) {
                                             Timer(
                                                 const Duration(
                                                     milliseconds: 20),
                                                 () async {
-                                              if (!_isVerseScrolling) {
+                                              if (!_isSurahScrolling) {
                                                 _fadeTextAnimationController
                                                     .forward()
                                                     .then((_) {
@@ -331,220 +502,70 @@ class _AddMistakeScreenState extends State<AddMistakeScreen>
                                               }
                                             });
                                           }
-                                        } else if (_listWheelScrollSurahController
-                                                    .selectedItem +
-                                                1 ==
-                                            SqlCubit.idData[widget.id]![
-                                                'surah_number']) {
-                                          isEdit = false;
-                                          _isListWheelScrollSurahControllerTimerOver =
-                                              true;
-                                        }
-                                        _isSurahScrollingTimer = Timer(
-                                            const Duration(milliseconds: 200),
-                                            () async {
-                                          _isSurahScrolling = false;
-                                        });
-                                      },
-                                      itemExtent: 20.h,
-                                      perspective: 0.0001,
-                                      physics: const FixedExtentScrollPhysics(),
-                                      childDelegate:
-                                          ListWheelChildBuilderDelegate(
-                                              childCount:
-                                                  quranSurahNames.length,
-                                              builder: (BuildContext context,
-                                                  int index) {
-                                                return Text(
-                                                  quranSurahNames[index],
-                                                  style: Theme.of(context)
-                                                      .textTheme
-                                                      .displayMedium,
-                                                );
-                                              })),
-                                ),
-                              ),
-                              Column(
-                                children: [
-                                  SizedBox(
-                                    height: 18.h,
-                                  ),
-                                  Row(
-                                    children: [
-                                      SizedBox(
-                                        width: 5.w,
-                                      ),
-                                      Container(
-                                        height: 1.h,
-                                        width: 60.w,
-                                        color: Theme.of(context).primaryColor,
-                                      ),
-                                    ],
-                                  ),
-                                  SizedBox(
-                                    height: 20.h,
-                                  ),
-                                  Row(
-                                    children: [
-                                      SizedBox(
-                                        width: 5.w,
-                                      ),
-                                      Container(
-                                        height: 1.h,
-                                        width: 60.w,
-                                        color: Theme.of(context).primaryColor,
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              )
-                            ])
-                          ],
-                        ),
-                        Column(
-                          children: [
-                            Container(
-                              height: 20.h,
-                              width: 1.w,
-                              color: Theme.of(context).primaryColor,
-                            ),
-                            SizedBox(
-                              height: 22.h,
-                            ),
-                            Text(
-                              ":",
-                              style: TextStyle(
-                                  color: Theme.of(context).primaryColor,
-                                  fontSize: 18.sp,
-                                  fontWeight: FontWeight.bold),
-                            )
-                          ],
-                        ),
-                        Column(
-                          children: [
-                            Text(
-                              'آية',
-                              style: Theme.of(context).textTheme.displayLarge,
-                            ),
-                            SizedBox(
-                              height: 8.h,
-                            ),
-                            Stack(children: [
-                              SizedBox(
-                                width: 46.w,
-                                height: 60.h,
-                                child: ShaderMask(
-                                  shaderCallback: (bounds) {
-                                    return LinearGradient(
-                                      begin: Alignment.topCenter,
-                                      end: Alignment.bottomCenter,
-                                      colors: [
-                                        Colors.transparent,
-                                        Theme.of(context)
-                                            .textTheme
-                                            .displayMedium!
-                                            .color!,
-                                        Theme.of(context)
-                                            .textTheme
-                                            .displayMedium!
-                                            .color!,
-                                        Colors.transparent,
-                                      ],
-                                      stops: const [0.0, 0.2, 0.7, 1],
-                                    ).createShader(bounds);
-                                  },
-                                  child: ListWheelScrollView.useDelegate(
-                                      controller:
-                                          _listWheelScrollVerseController,
-                                      onSelectedItemChanged: (index) {
-                                        _isVerseScrolling = true;
-                                        _isVerseScrollingTimer?.cancel();
-                                        if (_isFadeTimerOver &&
-                                            _isListWheelScrollSurahControllerTimerOver) {
-                                          Timer(
-                                              const Duration(milliseconds: 20),
+                                          _isVerseScrollingTimer = Timer(
+                                              const Duration(milliseconds: 200),
                                               () async {
-                                            if (!_isSurahScrolling) {
-                                              _fadeTextAnimationController
-                                                  .forward()
-                                                  .then((_) {
-                                                appBloc.add(ChangeAyaInAddMistakeScreenEvent(
-                                                    selectedSurahInAddMistakeScreen:
-                                                        _listWheelScrollSurahController
-                                                                .selectedItem +
-                                                            1,
-                                                    selectedVerseInAddMistakeScreen:
-                                                        _listWheelScrollVerseController
-                                                                .selectedItem +
-                                                            1));
-                                                _fadeTextAnimationController
-                                                    .reverse();
-                                              });
-                                            }
+                                            _isVerseScrolling = false;
                                           });
-                                        }
-                                        _isVerseScrollingTimer = Timer(
-                                            const Duration(milliseconds: 200),
-                                            () async {
-                                          _isVerseScrolling = false;
-                                        });
-                                      },
-                                      itemExtent: 20.h,
-                                      perspective: 0.0001,
-                                      physics: const FixedExtentScrollPhysics(),
-                                      childDelegate:
-                                          ListWheelChildBuilderDelegate(
-                                              childCount: quranSurahVerses[
-                                                  appBloc.surahNumber],
-                                              builder: (BuildContext context,
-                                                  int index) {
-                                                return Text(
-                                                  '${index + 1}',
-                                                  style: Theme.of(context)
-                                                      .textTheme
-                                                      .displayMedium,
-                                                );
-                                              })),
+                                        },
+                                        itemExtent: 20.h,
+                                        perspective: 0.0001,
+                                        physics:
+                                            const FixedExtentScrollPhysics(),
+                                        childDelegate:
+                                            ListWheelChildBuilderDelegate(
+                                                childCount: quranSurahVerses[
+                                                    appBloc.surahNumber],
+                                                builder: (BuildContext context,
+                                                    int index) {
+                                                  return Text(
+                                                    '${index + 1}',
+                                                    style: Theme.of(context)
+                                                        .textTheme
+                                                        .displayMedium,
+                                                  );
+                                                })),
+                                  ),
                                 ),
-                              ),
-                              Column(
-                                children: [
-                                  SizedBox(
-                                    height: 18.h,
-                                  ),
-                                  Row(
-                                    children: [
-                                      SizedBox(
-                                        width: 8.w,
-                                      ),
-                                      Container(
-                                        height: 1.h,
-                                        width: 30.w,
-                                        color: Theme.of(context).primaryColor,
-                                      ),
-                                    ],
-                                  ),
-                                  SizedBox(
-                                    height: 20.h,
-                                  ),
-                                  Row(
-                                    children: [
-                                      SizedBox(
-                                        width: 8.w,
-                                      ),
-                                      Container(
-                                        height: 1.h,
-                                        width: 30.w,
-                                        color: Theme.of(context).primaryColor,
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              )
-                            ])
-                          ],
-                        ),
-                      ],
+                                Column(
+                                  children: [
+                                    SizedBox(
+                                      height: 18.h,
+                                    ),
+                                    Row(
+                                      children: [
+                                        SizedBox(
+                                          width: 8.w,
+                                        ),
+                                        Container(
+                                          height: 1.h,
+                                          width: 30.w,
+                                          color: Theme.of(context).primaryColor,
+                                        ),
+                                      ],
+                                    ),
+                                    SizedBox(
+                                      height: 20.h,
+                                    ),
+                                    Row(
+                                      children: [
+                                        SizedBox(
+                                          width: 8.w,
+                                        ),
+                                        Container(
+                                          height: 1.h,
+                                          width: 30.w,
+                                          color: Theme.of(context).primaryColor,
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                )
+                              ])
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                   Padding(

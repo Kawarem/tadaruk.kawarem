@@ -80,7 +80,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         )),
                     IconButton(
                         onPressed: () {
-                          Get.to(() => ArchivedMistakesScreen(),
+                          Get.to(() => const ArchivedMistakesScreen(),
                               transition: Transition.leftToRightWithFade);
                         },
                         icon: Icon(
