@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -154,6 +155,9 @@ class _AddMistakeScreenState extends State<AddMistakeScreen>
   Widget build(BuildContext context) {
     int? id = widget.id;
     bool isEdit = widget.isEdit;
+    double notiInnerColor = HSLColor.fromColor(
+            Theme.of(context).appBarTheme.backgroundColor ?? Colors.white)
+        .lightness;
     return BlocBuilder<AppBloc, AppState>(
       builder: (context, state) {
         var appBloc = AppBloc.get(context);
@@ -731,19 +735,36 @@ class _AddMistakeScreenState extends State<AddMistakeScreen>
                           height: 55.h,
                           width: 120.w,
                           decoration: BoxDecoration(
-                              // TODO: Change color
-                              color: const Color(0xff005154),
+                              color: HSLColor.fromColor(Theme.of(context)
+                                          .appBarTheme
+                                          .backgroundColor ??
+                                      Colors.white)
+                                  .withLightness(
+                                      max(notiInnerColor - .25, 0.11))
+                                  .toColor(),
                               borderRadius: const BorderRadius.only(
                                 topRight: Radius.circular(90),
                                 bottomRight: Radius.circular(90),
                               ),
                               border: Border(
                                 top: BorderSide(
-                                    color: const Color(0xff02786A), width: 5.r),
+                                    color: Theme.of(context)
+                                            .appBarTheme
+                                            .backgroundColor ??
+                                        Colors.white,
+                                    width: 5.r),
                                 bottom: BorderSide(
-                                    color: const Color(0xff02786A), width: 5.r),
+                                    color: Theme.of(context)
+                                            .appBarTheme
+                                            .backgroundColor ??
+                                        Colors.white,
+                                    width: 5.r),
                                 right: BorderSide(
-                                    color: const Color(0xff02786A), width: 5.r),
+                                    color: Theme.of(context)
+                                            .appBarTheme
+                                            .backgroundColor ??
+                                        Colors.white,
+                                    width: 5.r),
                               )),
                           clipBehavior: Clip.antiAliasWithSaveLayer,
                           child: Row(
@@ -831,10 +852,23 @@ class _AddMistakeScreenState extends State<AddMistakeScreen>
                                 }
                                 return null;
                               },
-                              decoration: const InputDecoration(
+                              decoration: InputDecoration(
                                 labelText: 'التنبيه',
                                 prefixIcon:
-                                    Icon(Icons.bookmark_outline_rounded),
+                                    const Icon(Icons.bookmark_outline_rounded),
+                                fillColor: Color(0x34808080),
+                                enabledBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(16),
+                                  borderSide: BorderSide(
+                                      width: 1.5,
+                                      color: Theme.of(context).primaryColor),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(16),
+                                  borderSide: BorderSide(
+                                      width: 2,
+                                      color: Theme.of(context).primaryColor),
+                                ),
                               )),
                         ),
                         SizedBox(
@@ -846,9 +880,22 @@ class _AddMistakeScreenState extends State<AddMistakeScreen>
                           child: TextFormField(
                               controller: _noteController,
                               keyboardType: TextInputType.text,
-                              decoration: const InputDecoration(
+                              decoration: InputDecoration(
                                 labelText: 'ملاحظة',
-                                prefixIcon: Icon(Icons.note_alt_outlined),
+                                prefixIcon: const Icon(Icons.note_alt_outlined),
+                                fillColor: const Color(0x34808080),
+                                enabledBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(16),
+                                  borderSide: BorderSide(
+                                      width: 1.5,
+                                      color: Theme.of(context).primaryColor),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(16),
+                                  borderSide: BorderSide(
+                                      width: 2,
+                                      color: Theme.of(context).primaryColor),
+                                ),
                               )),
                         ),
                       ],
@@ -906,15 +953,33 @@ class _AddMistakeScreenState extends State<AddMistakeScreen>
                   ),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16.0).r,
-                    child: Slider(
-                      value: appBloc.mistakeRepetition.toDouble(),
-                      onChanged: (value) {
-                        appBloc.add(ChangeMistakeRepetitionEvent(
-                            mistakeRepetition: value.toInt()));
-                      },
-                      min: 1,
-                      max: 4,
-                      divisions: 3,
+                    child: Theme(
+                      data: Theme.of(context).copyWith(
+                        sliderTheme: SliderThemeData(
+                          inactiveTrackColor:
+                              Theme.of(context).primaryColor.withOpacity(0.2),
+                          activeTrackColor:
+                              Theme.of(context).primaryColor.withOpacity(0.8),
+                          activeTickMarkColor: Theme.of(context)
+                              .appBarTheme
+                              .backgroundColor
+                              ?.withOpacity(0.8),
+                          inactiveTickMarkColor: Theme.of(context)
+                              .appBarTheme
+                              .backgroundColor
+                              ?.withOpacity(0.8),
+                        ),
+                      ),
+                      child: Slider(
+                        value: appBloc.mistakeRepetition.toDouble(),
+                        onChanged: (value) {
+                          appBloc.add(ChangeMistakeRepetitionEvent(
+                              mistakeRepetition: value.toInt()));
+                        },
+                        min: 1,
+                        max: 4,
+                        divisions: 3,
+                      ),
                     ),
                   ),
                   SizedBox(
@@ -965,7 +1030,16 @@ class _AddMistakeScreenState extends State<AddMistakeScreen>
                           },
                           child: Text(
                             widget.isEdit ? 'تعديل' : 'حفظ',
-                            style: Theme.of(context).textTheme.displayLarge,
+                            style: Theme.of(context)
+                                .textTheme
+                                .displayLarge
+                                ?.copyWith(
+                                    color: Theme.of(context)
+                                                .primaryColor
+                                                .computeLuminance() <
+                                            0.5
+                                        ? const Color(0xffefefef)
+                                        : const Color(0xff1d1d1d)),
                           ),
                         );
                       },

@@ -29,10 +29,10 @@ Widget categoryButtonInHomeScreen(context,
           color: Color.lerp(
               !(AppBloc.displayTypeInHomeScreen == index)
                   ? Colors.white
-                  : Theme.of(context).primaryColor,
+                  : Theme.of(context).appBarTheme.backgroundColor,
               (AppBloc.displayTypeInHomeScreen == index)
                   ? Colors.white
-                  : Theme.of(context).primaryColor,
+                  : Theme.of(context).appBarTheme.backgroundColor,
               1),
         ),
         duration: const Duration(milliseconds: 250),
@@ -42,11 +42,17 @@ Widget categoryButtonInHomeScreen(context,
             fontFamily: Theme.of(context).textTheme.displaySmall!.fontFamily,
             color: Color.lerp(
                 !(AppBloc.displayTypeInHomeScreen == index)
-                    ? Theme.of(context).primaryColor
+                    ? Theme.of(context).appBarTheme.backgroundColor
                     : Colors.white,
                 (AppBloc.displayTypeInHomeScreen == index)
-                    ? Theme.of(context).primaryColor
-                    : Colors.white,
+                    ? Theme.of(context).appBarTheme.backgroundColor
+                    : Theme.of(context)
+                                .appBarTheme
+                                .backgroundColor!
+                                .computeLuminance() <
+                            0.5
+                        ? const Color(0xffefefef)
+                        : const Color(0xff1d1d1d),
                 1),
           ),
           duration: const Duration(milliseconds: 250),
@@ -119,7 +125,13 @@ Widget expansionTiles(context,
       Vibration.vibrate(duration: 40);
     },
     child: ExpansionTile(
-      collapsedIconColor: Theme.of(context).textTheme.labelLarge!.color,
+      collapsedIconColor: Theme.of(context)
+                  .expansionTileTheme
+                  .backgroundColor!
+                  .computeLuminance() <
+              .5
+          ? const Color(0xffefefef)
+          : const Color(0xff1d1d1d),
       // Check whether to show svg or text based on the category chosen
       title: (AppBloc.displayTypeInHomeScreen == 0)
           ? SvgPicture.asset(
@@ -127,7 +139,13 @@ Widget expansionTiles(context,
               width: 90.w,
               height: 30.h,
               alignment: AlignmentDirectional.topStart,
-              color: Theme.of(context).textTheme.labelLarge!.color,
+              color: Theme.of(context)
+                          .expansionTileTheme
+                          .backgroundColor!
+                          .computeLuminance() <
+                      .5
+                  ? const Color(0xffefefef)
+                  : const Color(0xff1d1d1d),
             )
           : Text(
               title,
@@ -460,7 +478,7 @@ Widget mistakeCard(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      'ملاحظة: ',
+                                      'ملظة: ',
                                       style: TextStyle(
                                         color: const Color(0xff469e4a),
                                         fontFamily: Theme.of(context)
@@ -574,7 +592,12 @@ Widget textToShowInsideCard(context,
           ),
         Text(
           mistakeKindText,
-          style: Theme.of(context).textTheme.bodyMedium,
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+              color:
+                  Theme.of(context).scaffoldBackgroundColor.computeLuminance() <
+                          0.5
+                      ? const Color(0xe0efefef)
+                      : const Color(0xe01d1d1d)),
         ),
         Text(
           '$verseNumber',
@@ -942,7 +965,16 @@ Future<Object?> showActionDialog(context,
                                   const EdgeInsets.symmetric(vertical: 8).h,
                               child: Text(
                                 'حذف',
-                                style: Theme.of(context).textTheme.displayLarge,
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .displayLarge
+                                    ?.copyWith(
+                                        color: Theme.of(context)
+                                                    .primaryColor
+                                                    .computeLuminance() <
+                                                0.5
+                                            ? const Color(0xffefefef)
+                                            : const Color(0xff1d1d1d)),
                               ),
                             ),
                           ),
@@ -970,7 +1002,15 @@ Future<Object?> showActionDialog(context,
                                               : 'أرشفة',
                                           style: Theme.of(context)
                                               .textTheme
-                                              .displayLarge,
+                                              .displayLarge
+                                              ?.copyWith(
+                                                  color: Theme.of(context)
+                                                              .primaryColor
+                                                              .computeLuminance() <
+                                                          0.5
+                                                      ? const Color(0xffefefef)
+                                                      : const Color(
+                                                          0xff1d1d1d)),
                                         ),
                                       ),
                                     ),
@@ -1004,7 +1044,16 @@ Future<Object?> showActionDialog(context,
                               ),
                               child: Text(
                                 'إلغاء',
-                                style: Theme.of(context).textTheme.displayLarge,
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .displayLarge
+                                    ?.copyWith(
+                                        color: Theme.of(context)
+                                                    .scaffoldBackgroundColor
+                                                    .computeLuminance() <
+                                                0.5
+                                            ? const Color(0xffefefef)
+                                            : const Color(0xff1d1d1d)),
                               ),
                             ),
                           )
@@ -1029,56 +1078,63 @@ void validateNotificationsActivation(context) {
   }
 }
 
-Widget categoriesRow(context) => Container(
-      width: double.infinity,
-      // TODO: change color to adapt to Theme
-      color: const Color(0xff02786A),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 5).r,
-        child: bloc.BlocBuilder<AppBloc, AppState>(
-          builder: (context, state) {
-            return SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Row(
-                  children: [
-                    SizedBox(
-                      width: 16.r,
-                    ),
-                    Text(
-                      'عرض حسب:',
-                      style: Theme.of(context).textTheme.displaySmall,
-                    ),
-                    SizedBox(
-                      width: 8.w,
-                    ),
-                    categoryButtonInHomeScreen(context,
-                        title: 'السور', index: 0),
-                    SizedBox(
-                      width: 8.w,
-                    ),
-                    categoryButtonInHomeScreen(context,
-                        title: 'الصفحات', index: 1),
-                    SizedBox(
-                      width: 8.w,
-                    ),
-                    categoryButtonInHomeScreen(context,
-                        title: 'الأجزاء', index: 2),
-                    SizedBox(
-                      width: 8.w,
-                    ),
-                    categoryButtonInHomeScreen(context,
-                        title: 'نوعية التنبيه', index: 3),
-                    SizedBox(
-                      width: 8.w,
-                    ),
-                    categoryButtonInHomeScreen(context,
-                        title: 'تكرار التنبيه', index: 4),
-                    SizedBox(
-                      width: 16.r,
-                    ),
-                  ],
-                ));
-          },
-        ),
+Widget categoriesRow(context) {
+  Color topColor = HSLColor.fromColor(
+          Theme.of(context).appBarTheme.backgroundColor ?? Colors.white)
+      .withLightness(0.25)
+      .toColor();
+  return Container(
+    width: double.infinity,
+    color: topColor,
+    child: Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 5).r,
+      child: bloc.BlocBuilder<AppBloc, AppState>(
+        builder: (context, state) {
+          return SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                children: [
+                  SizedBox(
+                    width: 16.r,
+                  ),
+                  Text(
+                    'عرض حسب:',
+                    style: Theme.of(context).textTheme.displaySmall?.copyWith(
+                        color: topColor.computeLuminance() < 0.5
+                            ? Color(0xffefefef)
+                            : Color(0xff1d1d1d)),
+                  ),
+                  SizedBox(
+                    width: 8.w,
+                  ),
+                  categoryButtonInHomeScreen(context, title: 'السور', index: 0),
+                  SizedBox(
+                    width: 8.w,
+                  ),
+                  categoryButtonInHomeScreen(context,
+                      title: 'الصفحات', index: 1),
+                  SizedBox(
+                    width: 8.w,
+                  ),
+                  categoryButtonInHomeScreen(context,
+                      title: 'الأجزاء', index: 2),
+                  SizedBox(
+                    width: 8.w,
+                  ),
+                  categoryButtonInHomeScreen(context,
+                      title: 'نوعية التنبيه', index: 3),
+                  SizedBox(
+                    width: 8.w,
+                  ),
+                  categoryButtonInHomeScreen(context,
+                      title: 'تكرار التنبيه', index: 4),
+                  SizedBox(
+                    width: 16.r,
+                  ),
+                ],
+              ));
+        },
       ),
-    );
+    ),
+  );
+}

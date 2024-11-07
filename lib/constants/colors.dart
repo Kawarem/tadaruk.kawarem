@@ -33,7 +33,6 @@ AppColors theme1 = AppColors(
     backgroundColor: const Color(0xff1B4965),
     appBarColor: const Color(0xff62B6CB),
     textColor: const Color(0xffFFFCFD),
-    //todo: change
     textFormFieldColor: const Color(0xff484848));
 
 AppColors theme2 = AppColors(

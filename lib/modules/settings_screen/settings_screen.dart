@@ -11,6 +11,7 @@ import 'package:tadaruk/constants/data.dart';
 import 'package:tadaruk/helpers/local_notifications_helper.dart';
 import 'package:tadaruk/modules/about_screen/about_screen.dart';
 import 'package:tadaruk/modules/backup_and_restore_screen/backup_and_restore_screen.dart';
+import 'package:tadaruk/modules/themes_screen/themes_screen.dart';
 import 'package:tadaruk/state_management/app_bloc/app_bloc.dart';
 import 'package:tadaruk/state_management/sql_cubit/sql_cubit.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -46,35 +47,35 @@ class SettingsScreen extends StatelessWidget {
                 children: [
                   Column(
                     children: [
-                      // InkWell(
-                      //   onTap: () {
-                      //     Get.to(() => const ThemesScreen(),
-                      //         transition: Transition.leftToRightWithFade);
-                      //   },
-                      //   child: Container(
-                      //     padding: const EdgeInsets.all(16).r,
-                      //     child: Row(
-                      //       children: [
-                      //         const Icon(Icons.storefront),
-                      //         SizedBox(
-                      //           width: 16.w,
-                      //         ),
-                      //         Text(
-                      //           'الثيمات',
-                      //           style: Theme.of(context).textTheme.bodyLarge,
-                      //         ),
-                      //         const Expanded(
-                      //           child: Row(
-                      //             mainAxisAlignment: MainAxisAlignment.end,
-                      //             children: [
-                      //               Icon(Icons.arrow_forward_ios_rounded),
-                      //             ],
-                      //           ),
-                      //         )
-                      //       ],
-                      //     ),
-                      //   ),
-                      // ),
+                      InkWell(
+                        onTap: () {
+                          Get.to(() => const ThemesScreen(),
+                              transition: Transition.leftToRightWithFade);
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.all(16).r,
+                          child: Row(
+                            children: [
+                              const Icon(Icons.storefront),
+                              SizedBox(
+                                width: 16.w,
+                              ),
+                              Text(
+                                'الثيمات',
+                                style: Theme.of(context).textTheme.bodyLarge,
+                              ),
+                              const Expanded(
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  children: [
+                                    Icon(Icons.arrow_forward_ios_rounded),
+                                  ],
+                                ),
+                              )
+                            ],
+                          ),
+                        ),
+                      ),
                       Padding(
                         padding: const EdgeInsets.symmetric(
                                 horizontal: 16.0, vertical: 8)
@@ -118,6 +119,17 @@ class SettingsScreen extends StatelessWidget {
                                           // await AndroidAlarmManager.cancel(0);
                                         }
                                       },
+                                      trackOutlineColor:
+                                          MaterialStateProperty.resolveWith(
+                                        (final Set<MaterialState> states) {
+                                          if (states.contains(
+                                              MaterialState.selected)) {
+                                            return null;
+                                          }
+
+                                          return Colors.transparent;
+                                        },
+                                      ),
                                     ),
                                   ],
                                 ),

@@ -138,6 +138,7 @@ final appThemeData = {
       }),
     ),
   ),
+  //---------------------------------------------------------------
   AppTheme.theme1: ThemeData(
     appBarTheme: AppBarTheme(
         backgroundColor: theme1.appBarColor,
@@ -236,10 +237,12 @@ final appThemeData = {
       ),
     ),
     expansionTileTheme: ExpansionTileThemeData(
-      collapsedIconColor: theme1.textColor,
+      collapsedIconColor: Color(0xff275978).computeLuminance() < .5
+          ? const Color(0xffefefef)
+          : const Color(0xff1d1d1d),
       shape: const Border(),
-      collapsedBackgroundColor: const Color(0xff023b3d),
-      backgroundColor: const Color(0xff023b3d),
+      collapsedBackgroundColor: const Color(0xff275978),
+      backgroundColor: const Color(0xff275978),
     ),
     dividerTheme: const DividerThemeData(
       color: Color(0xffbdbdbd),
@@ -274,6 +277,7 @@ final appThemeData = {
       }),
     ),
   ),
+  //---------------------------------------------------------------
   AppTheme.theme2: ThemeData(
     appBarTheme: AppBarTheme(
         backgroundColor: theme2.appBarColor,
@@ -345,10 +349,12 @@ final appThemeData = {
       ),
     ),
     expansionTileTheme: ExpansionTileThemeData(
-      collapsedIconColor: theme2.textColor,
+      collapsedIconColor: const Color(0xffe5dfec).computeLuminance() < .5
+          ? const Color(0xffefefef)
+          : const Color(0xff1d1d1d),
       shape: const Border(),
-      collapsedBackgroundColor: const Color(0xff023b3d),
-      backgroundColor: const Color(0xff023b3d),
+      collapsedBackgroundColor: const Color(0xffe5dfec),
+      backgroundColor: const Color(0xffe5dfec),
     ),
     dividerTheme: const DividerThemeData(
       color: Color(0xffbdbdbd),
@@ -383,4 +389,5 @@ final appThemeData = {
       }),
     ),
   ),
+  //---------------------------------------------------------------
 };

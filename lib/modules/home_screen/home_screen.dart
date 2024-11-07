@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart' as bloc;
@@ -51,6 +53,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    Color gradiantAnimationColor = Theme.of(context).primaryColor;
+
     return bloc.BlocBuilder<SqlCubit, SqlState>(
       builder: (context, state) {
         var sqlCubit = SqlCubit.get(context);
@@ -63,7 +67,27 @@ class _HomeScreenState extends State<HomeScreen> {
                     'مساعدك في المراجعة',
                     style: Theme.of(context).textTheme.headlineLarge,
                   ),
-                  colors: const [Color(0xff75BCD1), Color(0xff70C42F)],
+                  colors: [
+                    HSLColor.fromColor(gradiantAnimationColor)
+                        .withLightness(
+                            (HSLColor.fromColor(gradiantAnimationColor)
+                                            .lightness +
+                                        0.2 >=
+                                    1)
+                                ? (HSLColor.fromColor(gradiantAnimationColor)
+                                        .lightness -
+                                    0.2)
+                                : (HSLColor.fromColor(gradiantAnimationColor)
+                                        .lightness +
+                                    0.2))
+                        .toColor(),
+                    HSLColor.fromColor(gradiantAnimationColor)
+                        .withHue(
+                            (HSLColor.fromColor(gradiantAnimationColor).hue +
+                                    20) %
+                                360)
+                        .toColor()
+                  ],
                   collapsedWidget: Text(
                     'تدارُك',
                     style: Theme.of(context).appBarTheme.titleTextStyle,
@@ -118,7 +142,16 @@ class _HomeScreenState extends State<HomeScreen> {
                                 shape: const RoundedRectangleBorder()),
                             child: Text(
                               'إضافة تنبيه',
-                              style: Theme.of(context).textTheme.displayLarge,
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .displayLarge
+                                  ?.copyWith(
+                                      color: Theme.of(context)
+                                                  .primaryColor
+                                                  .computeLuminance() <
+                                              0.5
+                                          ? const Color(0xffefefef)
+                                          : const Color(0xff1d1d1d)),
                             )),
                       ),
                     )),
