@@ -42,3 +42,43 @@ AppColors theme2 = AppColors(
     appBarColor: const Color(0xff656176),
     textColor: const Color(0xff0F1515),
     textFormFieldColor: const Color(0xff484848));
+
+AppColors theme3 = AppColors(
+    primaryColor: const Color(0xff5a88c3),
+    secondaryColor: const Color(0xff415a77),
+    backgroundColor: const Color(0xffe0e1dd),
+    appBarColor: const Color(0xff2d598b),
+    textColor: const Color(0xff0F1515),
+    textFormFieldColor: const Color(0xff484848));
+
+AppColors theme4 = AppColors(
+    primaryColor: const Color(0xff7082dd),
+    secondaryColor: const Color(0xffad89f6),
+    backgroundColor: const Color(0xff2e4c5e),
+    appBarColor: const Color(0xff7781ef),
+    textColor: const Color(0xffebeceb),
+    textFormFieldColor: const Color(0xff484848));
+
+AppColors theme5 = AppColors(
+    primaryColor: const Color(0xff3d8684),
+    secondaryColor: const Color(0xff3d8684),
+    backgroundColor: const Color(0xffe5f4f9),
+    appBarColor: const Color(0xff405263),
+    textColor: const Color(0xff1d1d1d),
+    textFormFieldColor: const Color(0xff484848));
+
+AppColors theme6 = AppColors(
+    primaryColor: const Color(0xff606c38),
+    secondaryColor: const Color(0xff283618),
+    backgroundColor: const Color(0xfffefae0),
+    appBarColor: const Color(0xffdda15e),
+    textColor: const Color(0xff1d1d1d),
+    textFormFieldColor: const Color(0xff484848));
+
+AppColors theme7 = AppColors(
+    primaryColor: const Color(0xff2b2d42),
+    secondaryColor: const Color(0xffd90429),
+    backgroundColor: const Color(0xffedf2f4),
+    appBarColor: const Color(0xff8d99ae),
+    textColor: const Color(0xff1d1d1d),
+    textFormFieldColor: const Color(0xff484848));

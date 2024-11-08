@@ -597,7 +597,7 @@ Widget textToShowInsideCard(context,
                   Theme.of(context).scaffoldBackgroundColor.computeLuminance() <
                           0.5
                       ? const Color(0xe0efefef)
-                      : const Color(0xe01d1d1d)),
+                      : const Color(0xd91d1d1d)),
         ),
         Text(
           '$verseNumber',
@@ -608,7 +608,13 @@ Widget textToShowInsideCard(context,
             children: [
               Text(
                 '  في سورة  ',
-                style: Theme.of(context).textTheme.bodyMedium,
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: Theme.of(context)
+                                .scaffoldBackgroundColor
+                                .computeLuminance() <
+                            0.5
+                        ? const Color(0xe0efefef)
+                        : const Color(0xd91d1d1d)),
               ),
               Text(
                 quranSurahNames[surahNumber - 1],

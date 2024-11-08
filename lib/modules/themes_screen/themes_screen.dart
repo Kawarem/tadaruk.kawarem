@@ -22,48 +22,72 @@ class ThemesScreen extends StatelessWidget {
           icon: const Icon(Icons.arrow_back_ios_rounded),
         ),
       ),
-      body: CustomScrollView(slivers: [
-        SliverFillRemaining(
-          hasScrollBody: false,
-          child: Padding(
-            padding: const EdgeInsets.all(16.0).r,
-            child: Column(
-              children: [
-                BlocBuilder<ThemeBloc, ThemeState>(
-                  builder: (context, state) {
-                    if (state is LoadedThemeState) {
-                      return Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          themeCard(
-                            context,
-                            svg: 'assets/svgs/theme0.svg',
-                            isSelected: (state.themeIndex == 0),
-                            index: 0,
-                          ),
-                          themeCard(
-                            context,
-                            svg: 'assets/svgs/theme1.svg',
-                            isSelected: (state.themeIndex == 1),
-                            index: 1,
-                          ),
-                          themeCard(
-                            context,
-                            svg: 'assets/svgs/theme2.svg',
-                            isSelected: (state.themeIndex == 2),
-                            index: 2,
-                          ),
-                        ],
-                      );
-                    }
-                    return const SizedBox();
-                  },
-                ),
-              ],
-            ),
-          ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0).r,
+        child: BlocBuilder<ThemeBloc, ThemeState>(
+          builder: (context, state) {
+            if (state is LoadedThemeState) {
+              return GridView.count(
+                crossAxisSpacing: 16,
+                crossAxisCount: 3,
+                mainAxisSpacing: 16,
+                //mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  themeCard(
+                    context,
+                    svg: 'assets/svgs/theme0.svg',
+                    isSelected: (state.themeIndex == 0),
+                    index: 0,
+                  ),
+                  themeCard(
+                    context,
+                    svg: 'assets/svgs/theme1.svg',
+                    isSelected: (state.themeIndex == 1),
+                    index: 1,
+                  ),
+                  themeCard(
+                    context,
+                    svg: 'assets/svgs/theme2.svg',
+                    isSelected: (state.themeIndex == 2),
+                    index: 2,
+                  ),
+                  themeCard(
+                    context,
+                    svg: 'assets/svgs/theme3.svg',
+                    isSelected: (state.themeIndex == 3),
+                    index: 3,
+                  ),
+                  themeCard(
+                    context,
+                    svg: 'assets/svgs/theme4.svg',
+                    isSelected: (state.themeIndex == 4),
+                    index: 4,
+                  ),
+                  themeCard(
+                    context,
+                    svg: 'assets/svgs/theme5.svg',
+                    isSelected: (state.themeIndex == 5),
+                    index: 5,
+                  ),
+                  themeCard(
+                    context,
+                    svg: 'assets/svgs/theme6.svg',
+                    isSelected: (state.themeIndex == 6),
+                    index: 6,
+                  ),
+                  themeCard(
+                    context,
+                    svg: 'assets/svgs/theme7.svg',
+                    isSelected: (state.themeIndex == 7),
+                    index: 7,
+                  ),
+                ],
+              );
+            }
+            return const SizedBox();
+          },
         ),
-      ]),
+      ),
     );
   }
 }

@@ -739,8 +739,7 @@ class _AddMistakeScreenState extends State<AddMistakeScreen>
                                           .appBarTheme
                                           .backgroundColor ??
                                       Colors.white)
-                                  .withLightness(
-                                      max(notiInnerColor - .25, 0.11))
+                                  .withLightness(max(0, 0.25))
                                   .toColor(),
                               borderRadius: const BorderRadius.only(
                                 topRight: Radius.circular(90),

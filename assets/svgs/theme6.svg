@@ -13,14 +13,14 @@
         <g id="Triangle-Mask">
             <path
                 d="M84 0C97.2566 0 108 10.7434 108 24L108 84C108 97.2566 97.2566 108 84 108L24 108C10.7434 108 0 97.2566 0 84L0 24C0 10.7434 10.7434 0 24 0L84 0Z"
-                fill="#534D56" id="Mask" stroke="none" />
+                fill="#dda15e" id="Mask" stroke="none" />
             <g clip-path="url(#clip_1)">
-                <path d="M108 0L108 108L0 108L108 0Z" fill="#F8F1FF" fill-rule="evenodd"
+                <path d="M108 0L108 108L0 108L108 0Z" fill="#fefae0" fill-rule="evenodd"
                     id="Triangle" stroke="none" />
             </g>
         </g>
         <path
             d="M33 54C33 42.402 42.402 33 54 33C65.598 33 75 42.402 75 54C75 65.598 65.598 75 54 75C42.402 75 33 65.598 33 54Z"
-            fill="#d4d4d4" fill-rule="evenodd" id="Oval-5" stroke="none" />
+            fill="#606c38" fill-rule="evenodd" id="Oval-5" stroke="none" />
     </g>
 </svg>

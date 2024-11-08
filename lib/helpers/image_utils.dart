@@ -17,7 +17,13 @@ class ImageUtils {
       await svg.cache
           .putIfAbsent(loader.cacheKey(null), () => loader.loadBytes(null));
     }
-    // todo: implement one for themes
+
+    for (int i = 0; i <= 7; i++) {
+      var loader = SvgAssetLoader('assets/svgs/theme$i.svg');
+      await svg.cache
+          .putIfAbsent(loader.cacheKey(null), () => loader.loadBytes(null));
+    }
+    //todo set themes
     debugPrint('assets loaded successfully');
   }
 }

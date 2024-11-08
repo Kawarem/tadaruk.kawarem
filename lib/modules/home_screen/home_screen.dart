@@ -84,7 +84,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     HSLColor.fromColor(gradiantAnimationColor)
                         .withHue(
                             (HSLColor.fromColor(gradiantAnimationColor).hue +
-                                    20) %
+                                    27) %
                                 360)
                         .toColor()
                   ],
