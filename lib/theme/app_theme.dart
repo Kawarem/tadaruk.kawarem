@@ -216,6 +216,10 @@ final appThemeData = {
           fontSize: 14.sp,
           fontFamily: 'Rubik',
           overflow: TextOverflow.ellipsis),
+      labelLarge: TextStyle(
+          color: const Color(0xffC9C9C9),
+          fontSize: 24.sp,
+          fontFamily: 'Uthmani'),
     ),
     sliderTheme: SliderThemeData(
       activeTrackColor: theme1.primaryColor,
@@ -331,6 +335,10 @@ final appThemeData = {
           color: const Color(0xff0F1515), fontSize: 14.sp, fontFamily: 'Rubik'),
       headlineMedium: TextStyle(
           color: const Color(0xffCACACE), fontSize: 14.sp, fontFamily: 'Rubik'),
+      labelLarge: TextStyle(
+          color: const Color(0xffC9C9C9),
+          fontSize: 24.sp,
+          fontFamily: 'Uthmani'),
     ),
     sliderTheme: SliderThemeData(
       activeTrackColor: theme2.primaryColor,
@@ -446,6 +454,10 @@ final appThemeData = {
           color: const Color(0xff0F1515), fontSize: 14.sp, fontFamily: 'Rubik'),
       headlineMedium: TextStyle(
           color: const Color(0xffCACACE), fontSize: 14.sp, fontFamily: 'Rubik'),
+      labelLarge: TextStyle(
+          color: const Color(0xffC9C9C9),
+          fontSize: 24.sp,
+          fontFamily: 'Uthmani'),
     ),
     sliderTheme: SliderThemeData(
       activeTrackColor: theme3.primaryColor,
@@ -680,6 +692,10 @@ final appThemeData = {
           color: const Color(0xff0F1515), fontSize: 14.sp, fontFamily: 'Rubik'),
       headlineMedium: TextStyle(
           color: const Color(0xffCACACE), fontSize: 14.sp, fontFamily: 'Rubik'),
+      labelLarge: TextStyle(
+          color: const Color(0xffC9C9C9),
+          fontSize: 24.sp,
+          fontFamily: 'Uthmani'),
     ),
     sliderTheme: SliderThemeData(
       activeTrackColor: theme5.primaryColor,
@@ -795,6 +811,10 @@ final appThemeData = {
           color: const Color(0xff0F1515), fontSize: 14.sp, fontFamily: 'Rubik'),
       headlineMedium: TextStyle(
           color: const Color(0xffCACACE), fontSize: 14.sp, fontFamily: 'Rubik'),
+      labelLarge: TextStyle(
+          color: const Color(0xffC9C9C9),
+          fontSize: 24.sp,
+          fontFamily: 'Uthmani'),
     ),
     sliderTheme: SliderThemeData(
       activeTrackColor: theme6.primaryColor,
@@ -910,6 +930,10 @@ final appThemeData = {
           color: const Color(0xff0F1515), fontSize: 14.sp, fontFamily: 'Rubik'),
       headlineMedium: TextStyle(
           color: const Color(0xffCACACE), fontSize: 14.sp, fontFamily: 'Rubik'),
+      labelLarge: TextStyle(
+          color: const Color(0xffC9C9C9),
+          fontSize: 24.sp,
+          fontFamily: 'Uthmani'),
     ),
     sliderTheme: SliderThemeData(
       activeTrackColor: theme7.primaryColor,

@@ -177,8 +177,12 @@ class ExpandableAppBar extends StatelessWidget {
                               'assets/svgs/wondering.svg',
                               width: 180.r,
                               height: 180.r,
-                              color:
-                                  Theme.of(context).textTheme.labelLarge!.color,
+                              color: Theme.of(context)
+                                          .scaffoldBackgroundColor
+                                          .computeLuminance() <
+                                      .5
+                                  ? const Color(0xffefefef)
+                                  : const Color(0xff1d1d1d),
                             ),
                             SizedBox(
                               height: 16.h,
@@ -188,7 +192,17 @@ class ExpandableAppBar extends StatelessWidget {
                               children: [
                                 Text(
                                   'لا يوجد تنبيهات بعد',
-                                  style: Theme.of(context).textTheme.labelLarge,
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .labelLarge
+                                      ?.copyWith(
+                                        color: Theme.of(context)
+                                                    .scaffoldBackgroundColor
+                                                    .computeLuminance() <
+                                                .5
+                                            ? const Color(0xffefefef)
+                                            : const Color(0xff1d1d1d),
+                                      ),
                                 ),
                               ],
                             ),
