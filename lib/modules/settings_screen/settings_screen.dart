@@ -120,10 +120,10 @@ class SettingsScreen extends StatelessWidget {
                                         }
                                       },
                                       trackOutlineColor:
-                                          MaterialStateProperty.resolveWith(
-                                        (final Set<MaterialState> states) {
+                                          WidgetStateProperty.resolveWith(
+                                        (final Set<WidgetState> states) {
                                           if (states.contains(
-                                              MaterialState.selected)) {
+                                              WidgetState.selected)) {
                                             return null;
                                           }
 

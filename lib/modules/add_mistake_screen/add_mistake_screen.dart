@@ -855,7 +855,7 @@ class _AddMistakeScreenState extends State<AddMistakeScreen>
                                 labelText: 'التنبيه',
                                 prefixIcon:
                                     const Icon(Icons.bookmark_outline_rounded),
-                                fillColor: Color(0x34808080),
+                                fillColor: const Color(0x34808080),
                                 enabledBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(16),
                                   borderSide: BorderSide(

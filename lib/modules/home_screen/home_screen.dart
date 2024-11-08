@@ -1,11 +1,10 @@
-import 'dart:math';
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart' as bloc;
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:tadaruk/constants/components.dart';
+import 'package:tadaruk/constants/data.dart';
 import 'package:tadaruk/helpers/local_notifications_helper.dart';
 import 'package:tadaruk/modules/add_mistake_screen/add_mistake_screen.dart';
 import 'package:tadaruk/modules/archived_mistakes_screen/archived_mistakes_screen.dart';
@@ -63,9 +62,26 @@ class _HomeScreenState extends State<HomeScreen> {
             return Scaffold(
               body: Stack(children: [
                 ExpandableAppBar(
-                  expandedWidget: Text(
-                    'مساعدك في المراجعة',
-                    style: Theme.of(context).textTheme.headlineLarge,
+                  expandedWidget: FutureBuilder<String>(
+                    future: RandomAhadithPicker().getRandomAhadith(),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const CircularProgressIndicator();
+                      } else if (snapshot.hasError) {
+                        debugPrint('${snapshot.error}');
+                        return const SizedBox();
+                      } else {
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                          child: Text(
+                            'قال ﷺ :{${snapshot.data}}',
+                            style: Theme.of(context).textTheme.headlineLarge,
+                            textAlign: TextAlign.center,
+                            overflow: TextOverflow.fade,
+                          ),
+                        );
+                      }
+                    },
                   ),
                   colors: [
                     HSLColor.fromColor(gradiantAnimationColor)

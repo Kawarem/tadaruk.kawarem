@@ -1,6 +1,10 @@
+import 'dart:math';
+
+import 'package:shared_preferences/shared_preferences.dart';
+
 const String TELEGRAM_CHANNEL_LINK = 'https://t.me/+VjY01iPi_3BlMTI0';
 const String KAWAREM_BOT_LINK = 'https://t.me/KawaremBot';
-const String VERSION = '1.4.5';
+const String VERSION = '1.6.6';
 List<String> quranSurahNames = [
   'الفاتحة',
   'البقرة',
@@ -235,3 +239,101 @@ List<int> quranSurahVerses = [
   6,
 ];
 const List<String> mistakeKinds = ['كلّي', 'نقص', 'زيادة', 'تشكيل', 'إبدال'];
+
+class RandomAhadithPicker {
+  static const String lastSelectedKey = 'lastSelected';
+  static const String lastTimestampKey = 'lastTimestamp';
+  static const int durationInHours = 24;
+
+  static const List<String> ahadith = [
+    'إذا أتيتُمُ الغائطَ فلا تستقبلوا القِبلة ولا تستدبروها',
+    'إذا أتيتَ مضجعكَ فتوضأ وضوءكَ للصلاة',
+    'إذا استأذنت امرأة أحدكم إلى المسجد فلا يمنعها',
+    'اللهم إنَّ العيشَ عيشُ الآخرة',
+    'اللهم اغفر لي وارحمني وألحقني بالرفيق الأعلى',
+    'اللهم اغفر للمحلِّقين',
+    'اللهم اغفر للأنصار ولأبناء الأنصار',
+    'اللهم اغفر لقومي',
+    'اللهم أعنّي عليهم بسبعٍ كسبع يوسف',
+    'اللهم ارزق آل محمدٍ قوتا',
+    'اللهم اجعل في قلبي نوراً',
+    'ألحقوا الفرائضَ بأهلها',
+    'ألا من كان حالفاً فلا يحلف إلا بالله',
+    'ألا إن الله ينهاكم أن تحلفوا بآبائكم',
+    'ألا إنَّ الله حرم عليكم دمائكم',
+    'أكبر الكبائر: الإشراك بالله وقتل النّفس',
+    'أكبر الكبائر: الإشراك بالله وعقوق الوالدين',
+    'أقيموا صفوفكم وتراصّوا',
+    'اقرؤا القرآن ما ائتلفت قلوبكم',
+    'اقتلوا الحيّات',
+    'أفضل الصدقة ما تَرَكَ غنىً',
+    'اغتسلوا يوم الجمعة واغسلوا رؤوسكم',
+    'اعلموا أنَّ الجنَّةَ تحت ظلال السّيوف',
+    'أعظم النّاس أجراً في الصلاة أبعدهم فأبعدهم ممشىً',
+    'اعتدلوا في السجود',
+    'اطّلعتُ في الجنَّةِ فرأيت أكثر أهلها الفقراء',
+    'أطفئوا المصابيح بالليل',
+    'أطعموا الجائع وعودوا المريض',
+    'اصنع في عمرتك ما تصنع في حجك',
+    'اصبروا حتى تلقَوا الله ورسوله',
+    'أسرعوا بالجنازة',
+    'استوصوا بالنساء خيراً',
+    'اسبغوا الوضوء',
+    'الأرواح جنود مجندة',
+    'ارجعوا إلى أهليكم فعلموهم',
+    'أذهبِ البأس رب النّاس واشفِ أنت الشافي',
+    'إذا نعَسَ أحدكم وهو يصلّي فليرقد',
+    'إذا كنتم ثلاثةً فلا يتناجى رجلان دون الآخر',
+    'إذا قال الرجلُ لأخيهِ يا كافر فقد باء به أحدهما',
+    'إذا قاتل أحدكم فليجتنب الوجه',
+    'إذا عطس أحدكم فليقل الحمد لله',
+    'إذا ضيّعت الأمانة فانتظر الساعة',
+    'إذا صلّى أحدكم للناس فليخفف',
+    'أبغض الرجال إلى الله الألدُّ الخصِم',
+    'ابن أخت القوم منهم',
+    'اتَّقِ دعوة المظلوم',
+    'اتَّقوا النار ولو بشقِ تمرة',
+    'أتمّوا الركوع والسجود',
+    'اجتنبوا الموبقات الشرك بالله والسحر',
+    'اجعلوا آخر صلاتكم بالليل وتراً',
+    'اجعلوا في بيوتكم من صلاتكم',
+    'أجيبوا هذه الدعوة إذا دعيتم لها',
+    'أحب الحديث إليَّ أصدقه',
+    'أحلّت لي الغنائم',
+    'إذا استجنح الليل فكفّوا صبيانكم',
+    'إذا اشتد الحر فأبردوا بالصلاة',
+    'إذا اقترب الزمان لم تكد رؤيا المؤمن تكذب',
+    'إذا أقيمت الصلاة فلا تأتوها تسعون',
+    'إذا أمَّنَ الإمام فأمنوا',
+    'إذا انتعل أحدكم فليبدأ باليمين',
+    'إذا انق الرجل على أهله يحتسبها فهو له صدقة',
+    'إذا دعا أحدكم فليعزم المسألة',
+    'إذا رأيتم الجنازة فقوموا',
+  ];
+
+  Future<String> getRandomAhadith() async {
+    final prefs = await SharedPreferences.getInstance();
+    final lastSelected = prefs.getString(lastSelectedKey);
+    final lastTimestamp = prefs.getInt(lastTimestampKey);
+
+    final currentTime = DateTime.now().millisecondsSinceEpoch;
+
+    // Check if 24 hours have passed
+    if (lastTimestamp == null ||
+        (currentTime - lastTimestamp) >
+            const Duration(hours: durationInHours).inMilliseconds) {
+      // Select a new random ahadith
+      final randomIndex = Random().nextInt(ahadith.length);
+      final selectedAhadith = ahadith[randomIndex];
+
+      // Save the selected ahadith and current timestamp
+      await prefs.setString(lastSelectedKey, selectedAhadith);
+      await prefs.setInt(lastTimestampKey, currentTime);
+
+      return selectedAhadith;
+    } else {
+      // Return the previously selected ahadith
+      return lastSelected ?? ahadith[0]; // Fallback in case of null
+    }
+  }
+}

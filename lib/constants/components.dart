@@ -478,7 +478,7 @@ Widget mistakeCard(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      'ملظة: ',
+                                      'ملاحظة: ',
                                       style: TextStyle(
                                         color: const Color(0xff469e4a),
                                         fontFamily: Theme.of(context)
@@ -1107,8 +1107,8 @@ Widget categoriesRow(context) {
                     'عرض حسب:',
                     style: Theme.of(context).textTheme.displaySmall?.copyWith(
                         color: topColor.computeLuminance() < 0.5
-                            ? Color(0xffefefef)
-                            : Color(0xff1d1d1d)),
+                            ? const Color(0xffefefef)
+                            : const Color(0xff1d1d1d)),
                   ),
                   SizedBox(
                     width: 8.w,
