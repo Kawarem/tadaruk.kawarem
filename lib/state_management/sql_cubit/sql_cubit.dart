@@ -48,7 +48,7 @@ class SqlCubit extends Cubit<SqlState> {
   }
 
   Future<void> createDatabase() async {
-    await openDatabase('kawarem.tadaruk.db', version: 2,
+    await openDatabase('kawarem.tadaruk.db', version: 3,
         onCreate: (database, version) {
       _onCreate(database);
       if (kDebugMode) {
@@ -59,6 +59,38 @@ class SqlCubit extends Cubit<SqlState> {
         await db.execute(
             'ALTER TABLE surah_mistakes ADD COLUMN archived INTEGER DEFAULT 0');
         debugPrint('Database updated to version 2');
+      }
+      if (oldVersion < 3) {
+        // Create a new table with the new column name
+        await db.execute('''
+    CREATE TABLE new_surah_mistakes (
+      id INTEGER PRIMARY KEY,
+      surah_number INTEGER NOT NULL,
+      verse_number INTEGER,
+      page_number INTEGER,
+      juz_number INTEGER,
+      mistake_kind INTEGER,
+      mistake TEXT,
+      note TEXT,
+      mistake_repetition INTEGER,
+      is_archived INTEGER DEFAULT 0 -- New column name
+    )
+  ''');
+        // Copy data from the old table to the new table
+        await db.execute('''
+    INSERT INTO new_surah_mistakes (id, surah_number, verse_number, page_number, juz_number, mistake_kind, mistake, note, mistake_repetition, is_archived)
+    SELECT id, surah_number, verse_number, page_number, juz_number, mistake_kind, mistake, note, mistake_repetition, archived
+    FROM surah_mistakes
+  ''');
+        // Drop the old table
+        await db.execute('DROP TABLE surah_mistakes');
+        // Rename the new table to the original table's name
+        await db
+            .execute('ALTER TABLE new_surah_mistakes RENAME TO surah_mistakes');
+
+        debugPrint(
+            'Column "archived" has been renamed to "is_archived" in surah_mistakes table.');
+        debugPrint('Database updated to version 3');
       }
     }, onOpen: (database) {
       ensureSurahNamesInitialized(database);

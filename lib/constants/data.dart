@@ -4,7 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 const String TELEGRAM_CHANNEL_LINK = 'https://t.me/+VjY01iPi_3BlMTI0';
 const String KAWAREM_BOT_LINK = 'https://t.me/KawaremBot';
-const String VERSION = '1.6.6';
+const String VERSION = '1.6.7';
 List<String> quranSurahNames = [
   'الفاتحة',
   'البقرة',
