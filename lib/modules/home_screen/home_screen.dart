@@ -127,6 +127,19 @@ class _HomeScreenState extends State<HomeScreen> {
                           Icons.archive_outlined,
                           color: Theme.of(context).appBarTheme.iconTheme!.color,
                         )),
+                    ((kDebugMode)
+                        ? IconButton(
+                            onPressed: () {
+                              LocalNotificationsHelper.showSimpleNotification();
+                            },
+                            icon: Icon(
+                              Icons.notification_important_outlined,
+                              color: Theme.of(context)
+                                  .appBarTheme
+                                  .iconTheme!
+                                  .color,
+                            ))
+                        : const SizedBox()),
                   ],
                   sliverList: SliverList(
                     delegate: SliverChildBuilderDelegate((context, index) {

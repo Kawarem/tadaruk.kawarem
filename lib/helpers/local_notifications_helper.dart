@@ -239,20 +239,20 @@ class LocalNotificationsHelper {
     }
   }
 
-// static Future showSimpleNotification(
-//     {String title = 'Notifications rescheduled'}) async {
-//   const AndroidNotificationDetails androidNotificationDetails =
-//       AndroidNotificationDetails(
-//     'your channel id2',
-//     'your channel name2',
-//     channelDescription: 'your channel description',
-//     importance: Importance.high,
-//     priority: Priority.max,
-//   );
-//   const NotificationDetails notificationDetails =
-//       NotificationDetails(android: androidNotificationDetails);
-//   await _flutterLocalNotificationsPlugin.show(
-//       0, title, 'testing', notificationDetails,
-//       payload: '2, 1, 1, 1, 1, خطأ, ملاحظة');
-// }
+  static Future showSimpleNotification(
+      {String title = 'Notifications rescheduled'}) async {
+    const AndroidNotificationDetails androidNotificationDetails =
+        AndroidNotificationDetails(
+      'your channel id2',
+      'your channel name2',
+      channelDescription: 'your channel description',
+      importance: Importance.high,
+      priority: Priority.max,
+    );
+    const NotificationDetails notificationDetails =
+        NotificationDetails(android: androidNotificationDetails);
+    await _flutterLocalNotificationsPlugin.show(
+        0, title, 'testing', notificationDetails,
+        payload: '2, 1, 1, 1, 1, خطأ, ملاحظة');
+  }
 }
