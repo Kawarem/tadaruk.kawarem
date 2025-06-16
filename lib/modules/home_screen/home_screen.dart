@@ -1,3 +1,4 @@
+import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart' as bloc;
@@ -5,7 +6,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:tadaruk/constants/components.dart';
 import 'package:tadaruk/constants/data.dart';
-import 'package:tadaruk/helpers/local_notifications_helper.dart';
+import 'package:tadaruk/helpers/local_notifications_helper.dart'; //todo notif
 import 'package:tadaruk/modules/add_mistake_screen/add_mistake_screen.dart';
 import 'package:tadaruk/modules/archived_mistakes_screen/archived_mistakes_screen.dart';
 import 'package:tadaruk/modules/home_screen/expandable_app_bar/expandable_app_bar.dart';
@@ -14,10 +15,14 @@ import 'package:tadaruk/modules/settings_screen/settings_screen.dart';
 import 'package:tadaruk/state_management/app_bloc/app_bloc.dart';
 import 'package:tadaruk/state_management/sql_cubit/sql_cubit.dart';
 
+import 'package:tadaruk/helpers/local_awesome_notification_helper.dart';
+
 ScrollController scrollController = ScrollController();
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+  const HomeScreen({super.key, required this.receivedAction});
+
+  final ReceivedAction? receivedAction;
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -26,11 +31,20 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
+    LocalNotificationAwesomeHelper.startListeningNotificationEvents();
+
+    AwesomeNotifications().setListeners(
+        onActionReceivedMethod: (ReceivedAction receivedAction) async {
+      LocalNotificationAwesomeHelper.onActionReceivedMethod(
+          receivedAction, context);
+    });
+
+    print('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa');
+    listenToNotificationStream();
     super.initState();
     // FlutterNativeSplash.remove();
 
 //  to listen to any notification clicked
-    listenToNotificationStream();
   }
 
   @override
@@ -40,14 +54,20 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void listenToNotificationStream() {
+    print('lolololololoolookjdklsjflakszjc;lakj;dkjf;asf');
+    print(widget.receivedAction?.title);
+    print(widget.receivedAction?.payload);
+
+    //print(widget.receivedAction);
+    /*
     LocalNotificationsHelper.streamController.stream
         .listen((notificationResponse) async {
       if (kDebugMode) {
         print(notificationResponse.payload!.toString());
       }
-      showMistakeDialogWhenAppLunchedThroughNotification(
-          context, notificationResponse.payload!);
-    });
+      */ /*showMistakeDialogWhenAppLunchedThroughNotification(
+          context, notificationResponse.payload!);*/ /*
+    });*/
   }
 
   @override
@@ -130,7 +150,9 @@ class _HomeScreenState extends State<HomeScreen> {
                     ((kDebugMode)
                         ? IconButton(
                             onPressed: () {
-                              LocalNotificationsHelper.showSimpleNotification();
+                              //LocalNotificationsHelper.showSimpleNotification();
+                              LocalNotificationAwesomeHelper
+                                  .createNewNotification();
                             },
                             icon: Icon(
                               Icons.notification_important_outlined,

@@ -14,7 +14,8 @@ import 'package:sqflite/sqflite.dart';
 import 'package:tadaruk/constants/colors.dart';
 import 'package:tadaruk/constants/components.dart';
 import 'package:tadaruk/constants/data.dart';
-import 'package:tadaruk/helpers/local_notifications_helper.dart';
+import 'package:tadaruk/helpers/local_awesome_notification_helper.dart';
+import 'package:tadaruk/helpers/local_notifications_helper.dart'; //todo notif
 import 'package:tadaruk/state_management/app_bloc/app_bloc.dart';
 import 'package:vibration/vibration.dart';
 
@@ -508,7 +509,8 @@ class SqlCubit extends Cubit<SqlState> {
     printDatabase();
     changerCategoryType();
     if (AppBloc.isNotificationsActivated) {
-      await LocalNotificationsHelper.scheduleRecurringNotifications();
+      //await LocalNotificationsHelper.scheduleRecurringNotifications();
+      await LocalNotificationAwesomeHelper.scheduleRecurringNotifications();
     }
     FlutterNativeSplash.remove();
   }
@@ -618,7 +620,8 @@ class SqlCubit extends Cubit<SqlState> {
     ]).then((value) async {
       emit(UpdateDatabaseState());
       debugPrint('database updated: $value');
-      await LocalNotificationsHelper.cancelAll();
+      //await LocalNotificationsHelper.cancelAll();
+      await LocalNotificationAwesomeHelper.cancelNotifications();
       await getDatabase(database);
     });
   }
@@ -633,7 +636,8 @@ class SqlCubit extends Cubit<SqlState> {
         print('$value deleted successfully');
       }
       emit(DeleteDatabaseState());
-      await LocalNotificationsHelper.cancelAll();
+      //await LocalNotificationsHelper.cancelAll();
+      await LocalNotificationAwesomeHelper.cancelNotifications();
       await getDatabase(database);
       validateNotificationsActivation(context);
     });
@@ -834,7 +838,8 @@ class SqlCubit extends Cubit<SqlState> {
             if (isDatabaseMine.isNotEmpty) {
               final String databasePath = await getDatabasesPath();
               await selectedBackupFile.copy('$databasePath/kawarem.tadaruk.db');
-              await LocalNotificationsHelper.cancelAll();
+              await LocalNotificationAwesomeHelper.cancelNotifications();
+              //await LocalNotificationsHelper.cancelAll();
               // List<Map<String, dynamic>> result =
               //     await database.rawQuery('PRAGMA user_version;');
               // int oldVersion = result.first['user_version'] as int;
@@ -900,7 +905,8 @@ class SqlCubit extends Cubit<SqlState> {
     ''', [archived, id]).then((value) async {
       emit(UpdateDatabaseState());
       debugPrint('database updated: $value');
-      await LocalNotificationsHelper.cancelAll();
+      //await LocalNotificationsHelper.cancelAll();
+      await LocalNotificationAwesomeHelper.cancelNotifications();
       await getDatabase(database);
       validateNotificationsActivation(context);
     });
@@ -919,7 +925,8 @@ class SqlCubit extends Cubit<SqlState> {
     ''', [archived, index]).then((value) async {
           emit(UpdateDatabaseState());
           debugPrint('database updated: $value');
-          await LocalNotificationsHelper.cancelAll();
+          //await LocalNotificationsHelper.cancelAll();
+          await LocalNotificationAwesomeHelper.cancelNotifications();
           await getDatabase(database);
           validateNotificationsActivation(context);
         });
@@ -932,7 +939,8 @@ class SqlCubit extends Cubit<SqlState> {
     ''', [archived, index]).then((value) async {
           emit(UpdateDatabaseState());
           debugPrint('database updated: $value');
-          await LocalNotificationsHelper.cancelAll();
+          //await LocalNotificationsHelper.cancelAll();
+          await LocalNotificationAwesomeHelper.cancelNotifications();
           await getDatabase(database);
           validateNotificationsActivation(context);
         });
@@ -945,7 +953,8 @@ class SqlCubit extends Cubit<SqlState> {
     ''', [archived, index]).then((value) async {
           emit(UpdateDatabaseState());
           debugPrint('database updated: $value');
-          await LocalNotificationsHelper.cancelAll();
+          //await LocalNotificationsHelper.cancelAll();
+          await LocalNotificationAwesomeHelper.cancelNotifications();
           await getDatabase(database);
           validateNotificationsActivation(context);
         });
@@ -958,7 +967,8 @@ class SqlCubit extends Cubit<SqlState> {
     ''', [archived, index]).then((value) async {
           emit(UpdateDatabaseState());
           debugPrint('database updated: $value');
-          await LocalNotificationsHelper.cancelAll();
+          //await LocalNotificationsHelper.cancelAll();
+          await LocalNotificationAwesomeHelper.cancelNotifications();
           await getDatabase(database);
           validateNotificationsActivation(context);
         });
@@ -971,7 +981,8 @@ class SqlCubit extends Cubit<SqlState> {
     ''', [archived, index]).then((value) async {
           emit(UpdateDatabaseState());
           debugPrint('database updated: $value');
-          await LocalNotificationsHelper.cancelAll();
+          //await LocalNotificationsHelper.cancelAll();
+          await LocalNotificationAwesomeHelper.cancelNotifications();
           await getDatabase(database);
           validateNotificationsActivation(context);
         });

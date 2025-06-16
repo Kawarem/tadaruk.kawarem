@@ -8,7 +8,8 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:tadaruk/constants/colors.dart';
 import 'package:tadaruk/constants/data.dart';
-import 'package:tadaruk/helpers/local_notifications_helper.dart';
+import 'package:tadaruk/helpers/local_awesome_notification_helper.dart';
+//import 'package:tadaruk/helpers/local_notifications_helper.dart';
 import 'package:tadaruk/modules/about_screen/about_screen.dart';
 import 'package:tadaruk/modules/backup_and_restore_screen/backup_and_restore_screen.dart';
 import 'package:tadaruk/modules/themes_screen/themes_screen.dart';
@@ -122,8 +123,8 @@ class SettingsScreen extends StatelessWidget {
                                       trackOutlineColor:
                                           WidgetStateProperty.resolveWith(
                                         (final Set<WidgetState> states) {
-                                          if (states.contains(
-                                              WidgetState.selected)) {
+                                          if (states
+                                              .contains(WidgetState.selected)) {
                                             return null;
                                           }
 
@@ -458,6 +459,45 @@ class SettingsScreen extends StatelessWidget {
       bool isNotificationsActivated, AppBloc appBloc) async {
     if (isNotificationsActivated) {
       bool areNotificationsEnabled =
+          await LocalNotificationAwesomeHelper.displayNotificationRationale();
+      if (areNotificationsEnabled) {
+        if (SqlCubit.notificationsIds.isEmpty) {
+          Vibration.vibrate(duration: 50);
+          Fluttertoast.cancel();
+          Fluttertoast.showToast(
+              msg: 'يرجى إضافة تنبيه لتفعيل الإشعارات',
+              backgroundColor: TOAST_BACKGROUND_COLOR);
+        } else {
+          appBloc.add(ChangeNotificationsActivationEvent(
+              isNotificationsActivated: isNotificationsActivated));
+          Fluttertoast.cancel();
+          Fluttertoast.showToast(
+              msg: 'تم تفعيل الإشعارات',
+              backgroundColor: TOAST_BACKGROUND_COLOR);
+        }
+      } else {
+        Vibration.vibrate(duration: 50);
+        Fluttertoast.cancel();
+        Fluttertoast.showToast(
+            msg: 'يرجى تفعيل الإشعارات',
+            backgroundColor: TOAST_BACKGROUND_COLOR);
+        LocalNotificationAwesomeHelper.displayNotificationRationale();
+      }
+    } else {
+      appBloc.add(ChangeNotificationsActivationEvent(
+          isNotificationsActivated: isNotificationsActivated));
+      Fluttertoast.cancel();
+      Fluttertoast.showToast(
+          msg: 'تم إلغاء تفعيل الإشعارات',
+          backgroundColor: TOAST_BACKGROUND_COLOR);
+    }
+  }
+
+  /*
+    if (isNotificationsActivated) {
+
+
+      bool areNotificationsEnabled =
           await LocalNotificationsHelper.isAndroidPermissionGranted();
       if (areNotificationsEnabled) {
         if (SqlCubit.notificationsIds.isEmpty) {
@@ -490,7 +530,7 @@ class SettingsScreen extends StatelessWidget {
           msg: 'تم إلغاء تفعيل الإشعارات',
           backgroundColor: TOAST_BACKGROUND_COLOR);
     }
-  }
+  */
 }
 
 // @pragma('vm:entry-point')

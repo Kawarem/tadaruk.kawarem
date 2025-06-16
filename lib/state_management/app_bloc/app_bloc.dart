@@ -3,7 +3,9 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tadaruk/helpers/app_cache_helper.dart';
+import 'package:tadaruk/helpers/local_awesome_notification_helper.dart';
 import 'package:tadaruk/helpers/local_notifications_helper.dart';
+//import 'package:tadaruk/helpers/local_notifications_helper.dart';
 import 'package:tadaruk/state_management/sql_cubit/sql_cubit.dart';
 
 part 'app_event.dart';
@@ -47,8 +49,10 @@ class AppBloc extends Bloc<AppEvent, AppState> {
         _sliderValueChangeDebounceTimer = Timer(
           const Duration(seconds: 2),
           () {
-            LocalNotificationsHelper.cancelAll();
-            LocalNotificationsHelper.scheduleRecurringNotifications();
+            LocalNotificationAwesomeHelper.cancelNotifications();
+            LocalNotificationAwesomeHelper.scheduleRecurringNotifications();
+            //LocalNotificationsHelper.cancelAll();
+            //LocalNotificationsHelper.scheduleRecurringNotifications();
           },
         );
         emit(ChangeNotificationsNumberState());
@@ -58,14 +62,18 @@ class AppBloc extends Bloc<AppEvent, AppState> {
         await AppCacheHelper()
             .cacheNotificationStartTime(notificationStartTime);
         emit(ChangeNotificationsTimeState());
-        await LocalNotificationsHelper.cancelAll();
-        await LocalNotificationsHelper.scheduleRecurringNotifications();
+        LocalNotificationAwesomeHelper.cancelNotifications();
+        LocalNotificationAwesomeHelper.scheduleRecurringNotifications();
+        //await LocalNotificationsHelper.cancelAll();
+        //await LocalNotificationsHelper.scheduleRecurringNotifications();
       } else if (event is ChangeNotificationsEndTimeEvent) {
         notificationEndTime = event.notificationEndTime;
         timeBetweenEachNotifications = calculateTimeBetweenEachNotifications();
         await AppCacheHelper().cacheNotificationEndTime(notificationEndTime);
         emit(ChangeNotificationsTimeState());
-        await LocalNotificationsHelper.cancelAll();
+        await LocalNotificationAwesomeHelper.cancelNotifications();
+        await LocalNotificationAwesomeHelper.scheduleRecurringNotifications();
+        //await LocalNotificationsHelper.cancelAll();
         await LocalNotificationsHelper.scheduleRecurringNotifications();
       } else if (event is ChangeMistakeRepetitionEvent) {
         mistakeRepetition = event.mistakeRepetition.toInt();
@@ -106,10 +114,13 @@ class AppBloc extends Bloc<AppEvent, AppState> {
             .cacheIsNotificationsActivated(isNotificationsActivated);
         emit(ChangeNotificationsActivationState());
         if (isNotificationsActivated) {
-          await LocalNotificationsHelper.cancelAll();
-          await LocalNotificationsHelper.scheduleRecurringNotifications();
+          await LocalNotificationAwesomeHelper.cancelNotifications();
+          await LocalNotificationAwesomeHelper.scheduleRecurringNotifications();
+          //await LocalNotificationsHelper.cancelAll();
+          //await LocalNotificationsHelper.scheduleRecurringNotifications();
         } else {
-          await LocalNotificationsHelper.cancelAll();
+          await LocalNotificationAwesomeHelper.cancelNotifications();
+          //await LocalNotificationsHelper.cancelAll();
         }
       } else if (event is ChangeAyaInAddMistakeScreenEvent) {
         selectedSurahInAddMistakeScreen = event.selectedSurahInAddMistakeScreen;
